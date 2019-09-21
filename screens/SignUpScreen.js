@@ -10,6 +10,8 @@ import {
     View,
 } from "react-native"
 
+import * as firebase from "firebase"
+
 const SignUpScreen = ({ navigation }) => {
     const [errorMessage, setErrorMessage] = useState(null)
     const [email, setEmail] = useState("")
