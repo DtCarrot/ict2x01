@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { mapping, light as lightTheme } from "@eva-design/eva"
 import AppNavigator from "./navigation/AppNavigator"
 import { ApplicationProvider } from "react-native-ui-kitten"
+import NavigationService from "./navigation/NavigationService"
 
 export default function App(props) {
     const [isReady, setReady] = useState(false)
@@ -23,6 +24,7 @@ export default function App(props) {
     }, [])
 
     if (!isLoadingComplete && !props.skipLoadingScreen) {
+        console.log("Loading")
         return (
             <AppLoading
                 startAsync={loadResourcesAsync}
@@ -32,12 +34,17 @@ export default function App(props) {
         )
     } else {
         if (!isReady) {
+            console.log("Still loading")
             return <AppLoading />
         }
         return (
             <View style={styles.container}>
                 {Platform.OS === "ios" && <StatusBar barStyle="default" />}
-                <AppNavigator />
+                <AppNavigator
+                    ref={navigationRef => {
+                        NavigationService.setTopLevelNavigator(navigationRef)
+                    }}
+                />
             </View>
         )
     }

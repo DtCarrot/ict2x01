@@ -35,6 +35,7 @@ const DrawerStack = createDrawerNavigator(
     {
         contentComponent: DrawerScreen,
         drawerWidth: 300,
+        headerMode: "none",
     }
 )
 
@@ -42,36 +43,12 @@ const DrawerNavigator = createStackNavigator(
     {
         DrawerStack: {
             screen: DrawerStack,
-            headerMode: "float",
-            navigationOptions: ({ navigation }) => ({
-                title: "ReactNavigation", // Title to appear in status bar
-                headerLeft: (
-                    <TouchableOpacity
-                        onPress={() => {
-                            console.log("On click")
-                            navigation.dispatch(DrawerActions.toggleDrawer())
-                        }}
-                    >
-                        {/* <MenuImage style="styles.bar" navigation={navigation} /> */}
-                        <Text>Slider</Text>
-                    </TouchableOpacity>
-                ),
-                headerStyle: {
-                    backgroundColor: "#333",
-                },
-                headerTintColor: "#fff",
-                headerTitleStyle: {
-                    fontWeight: "bold",
-                },
-            }),
+            headerMode: "none",
         },
+    },
+    {
+        headerMode: "none",
     }
-
-    // {
-    //     initialRouteName: "Home",
-    //     contentComponent: DrawerScreen,
-    //     drawerWidth: 300,
-    // }
 )
 
 export default createAppContainer(
