@@ -28,9 +28,7 @@ export default function HomeScreen() {
                         <MonoText>screens/HomeScreen.js</MonoText>
                     </View>
 
-                    <Text style={styles.getStartedText}>
-                        Change this and your app will automatically reload.
-                    </Text>
+                    <Text style={styles.getStartedText}>GGGGG</Text>
                 </View>
 
                 <View style={styles.helpContainer}>

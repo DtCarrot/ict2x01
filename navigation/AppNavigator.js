@@ -1,5 +1,11 @@
 import React from "react"
-import { createAppContainer, createSwitchNavigator } from "react-navigation"
+import { Text, TouchableOpacity } from "react-native"
+import {
+    createAppContainer,
+    createSwitchNavigator,
+    createDrawerNavigator,
+    DrawerActions,
+} from "react-navigation"
 import { createStackNavigator } from "react-navigation-stack"
 
 import MainTabNavigator from "./MainTabNavigator"
@@ -8,17 +14,59 @@ import SignUpScreen from "../screens/SignUpScreen"
 import HomeScreen from "../screens/HomeScreen"
 import AuthLoadingScreen from "../screens/AuthLoadingScreen"
 import MainScreen from "../screens/MainScreen"
+import DrawerScreen from "../screens/Menu"
 
-const AuthStack = createStackNavigator({ SignIn: SignInScreen })
+const AuthStack = createStackNavigator(
+    {
+        SignIn: SignInScreen,
+        SignUp: SignUpScreen,
+    },
+    {
+        headerMode: "none",
+    }
+)
+
+const DrawerStack = createDrawerNavigator(
+    {
+        Home: {
+            screen: MainScreen,
+        },
+    },
+    {
+        contentComponent: DrawerScreen,
+        drawerWidth: 300,
+        headerMode: "none",
+    }
+)
+
+const DrawerNavigator = createStackNavigator(
+    {
+        DrawerStack: {
+            screen: DrawerStack,
+            headerMode: "none",
+        },
+    },
+    {
+        headerMode: "none",
+    }
+)
 
 export default createAppContainer(
-    createSwitchNavigator({
-        // You could add another route here for authentication.
-        // Read more at https://reactnavigation.org/docs/en/auth-flow.html
-        AuthLoading: AuthLoadingScreen,
-        Auth: AuthStack,
-        SignUp: SignUpScreen,
-        Home: MainScreen,
-        Main: MainTabNavigator,
-    })
+    createStackNavigator(
+        {
+            // You could add another route here for authentication.
+            // Read more at https://reactnavigation.org/docs/en/auth-flow.html
+            AuthLoading: AuthLoadingScreen,
+            Auth: AuthStack,
+            // SignUp: SignUpScreen,
+            // Home: MainScreen,
+            // Main: MainTabNavigator,
+            DrawerNavigator: { screen: DrawerNavigator },
+        },
+        {
+            headerMode: "none",
+            title: "Main",
+            initialRouteName: "AuthLoading",
+        }
+    )
 )
