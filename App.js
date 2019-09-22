@@ -1,14 +1,26 @@
 import { AppLoading } from "expo"
 import { Asset } from "expo-asset"
 import * as Font from "expo-font"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Platform, StatusBar, StyleSheet, View } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-
+import { mapping, light as lightTheme } from "@eva-design/eva"
 import AppNavigator from "./navigation/AppNavigator"
+import { ApplicationProvider } from "react-native-ui-kitten"
 
 export default function App(props) {
+    const [isReady, setReady] = useState(false)
     const [isLoadingComplete, setLoadingComplete] = useState(false)
+    useEffect(() => {
+        const initializeFont = async () => {
+            await Font.loadAsync({
+                Roboto: require("native-base/Fonts/Roboto.ttf"),
+                Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+            })
+            setReady(true)
+        }
+        initializeFont()
+    }, [])
 
     if (!isLoadingComplete && !props.skipLoadingScreen) {
         return (
@@ -19,6 +31,9 @@ export default function App(props) {
             />
         )
     } else {
+        if (!isReady) {
+            return <AppLoading />
+        }
         return (
             <View style={styles.container}>
                 {Platform.OS === "ios" && <StatusBar barStyle="default" />}

@@ -16,37 +16,34 @@ import AuthLoadingScreen from "../screens/AuthLoadingScreen"
 import MainScreen from "../screens/MainScreen"
 import DrawerScreen from "../screens/Menu"
 
-const AuthStack = createStackNavigator({
-    SignIn: SignInScreen,
-})
+const AuthStack = createStackNavigator(
+    {
+        SignIn: SignInScreen,
+        SignUp: SignUpScreen,
+    },
+    {
+        headerMode: "none",
+    }
+)
 
-const DrawerNavigator = createDrawerNavigator(
+const DrawerStack = createDrawerNavigator(
     {
         Home: {
             screen: MainScreen,
         },
     },
     {
-        initialRouteName: "Home",
         contentComponent: DrawerScreen,
         drawerWidth: 300,
     }
 )
 
-export default createAppContainer(
-    createStackNavigator(
-        {
-            // You could add another route here for authentication.
-            // Read more at https://reactnavigation.org/docs/en/auth-flow.html
-            AuthLoading: AuthLoadingScreen,
-            // Auth: AuthStack,
-            // SignUp: SignUpScreen,
-            // Home: MainScreen,
-            // Main: MainTabNavigator,
-            DrawerNavigator: { screen: DrawerNavigator },
-        },
-        {
-            defaultNavigationOptions: ({ navigation }) => ({
+const DrawerNavigator = createStackNavigator(
+    {
+        DrawerStack: {
+            screen: DrawerStack,
+            headerMode: "float",
+            navigationOptions: ({ navigation }) => ({
                 title: "ReactNavigation", // Title to appear in status bar
                 headerLeft: (
                     <TouchableOpacity
@@ -67,6 +64,32 @@ export default createAppContainer(
                     fontWeight: "bold",
                 },
             }),
+        },
+    }
+
+    // {
+    //     initialRouteName: "Home",
+    //     contentComponent: DrawerScreen,
+    //     drawerWidth: 300,
+    // }
+)
+
+export default createAppContainer(
+    createStackNavigator(
+        {
+            // You could add another route here for authentication.
+            // Read more at https://reactnavigation.org/docs/en/auth-flow.html
+            AuthLoading: AuthLoadingScreen,
+            Auth: AuthStack,
+            // SignUp: SignUpScreen,
+            // Home: MainScreen,
+            // Main: MainTabNavigator,
+            DrawerNavigator: { screen: DrawerNavigator },
+        },
+        {
+            headerMode: "none",
+            title: "Main",
+            initialRouteName: "AuthLoading",
         }
     )
 )

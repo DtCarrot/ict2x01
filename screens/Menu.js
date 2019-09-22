@@ -3,6 +3,7 @@ import { NavigationActions } from "react-navigation"
 import PropTypes from "prop-types"
 import { ScrollView, Text, View } from "react-native"
 import { DrawerActions } from "react-navigation"
+import * as firebase from "firebase"
 // import styles from "../../styles/index"
 const styles = {
     menuItem: {
@@ -18,6 +19,10 @@ class DrawerScreen extends Component {
         this.props.navigation.dispatch(navigateAction)
         this.props.navigation.dispatch(DrawerActions.closeDrawer())
     }
+    logout = async () => {
+        await firebase.auth().signOut()
+        this.navigateToScreen("SignIn")
+    }
 
     render() {
         return (
@@ -32,6 +37,9 @@ class DrawerScreen extends Component {
                         </View>
                         <View style={styles.menuItem}>
                             <Text onPress={this.navigateToScreen("Contact")}>Contact</Text>
+                        </View>
+                        <View style={styles.menuItem}>
+                            <Text onPress={() => this.logout()}>Contact</Text>
                         </View>
                     </View>
                 </ScrollView>

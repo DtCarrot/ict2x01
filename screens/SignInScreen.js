@@ -1,14 +1,7 @@
 import React, { useState } from "react"
-import {
-    TextInput,
-    Button,
-    ActivityIndicator,
-    AsyncStorage,
-    StatusBar,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native"
+// import { Input } from "react-native-ui-kitten"
+import { TextInput, ActivityIndicator, AsyncStorage, StatusBar, StyleSheet } from "react-native"
+import { Text, Button, Item, Input, Content, H1, View } from "native-base"
 
 import * as firebase from "firebase"
 
@@ -30,45 +23,85 @@ const SignInScreen = ({ navigation }) => {
         }
     }
     return (
-        <View style={styles.container}>
-            <Text>Login</Text>
-            {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
-            <TextInput
-                style={styles.textInput}
-                autoCapitalize="none"
-                placeholder="Email"
-                onChangeText={email => setEmail(email)}
-                value={email}
-            />
-            <TextInput
-                secureTextEntry
-                style={styles.textInput}
-                autoCapitalize="none"
-                placeholder="Password"
-                onChangeText={password => setPassword(password)}
-                value={password}
-            />
-            <Button title="Login" onPress={() => signIn()} />
-            <Button
-                title="Don't have an account? Sign Up"
-                onPress={() => navigation.navigate("SignUp")}
-            />
-        </View>
+        <Content style={styles.content}>
+            <View style={styles.container}>
+                <H1 style={styles.logo}>Login</H1>
+                {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
+                <Item regular style={styles.item}>
+                    <Input
+                        style={styles.textInput}
+                        placeholder="Email"
+                        onChangeText={email => setEmail(email)}
+                        value={email}
+                    />
+                </Item>
+                <Item regular style={styles.item}>
+                    <Input
+                        style={styles.textInput}
+                        secureTextEntry
+                        placeholder="Password"
+                        onChangeText={password => setPassword(password)}
+                        value={password}
+                    />
+                </Item>
+                <Button style={styles.button} title="Login" onPress={() => signIn()}>
+                    <Text style={styles.text}>Login</Text>
+                </Button>
+                <Text style={styles.smallText} onPress={() => navigation.navigate("SignUp")}>
+                    Don't have an account? Sign up
+                </Text>
+            </View>
+        </Content>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
+        // justifyContent: "center",
+        // alignItems: "center",
+        flexDirection: "column",
         alignItems: "center",
+        justifyContent: "center",
     },
     textInput: {
-        height: 40,
+        height: 60,
         width: "90%",
-        borderColor: "gray",
-        borderWidth: 1,
-        marginTop: 8,
+        borderColor: "white",
+        // borderWidth: 2,
+        backgroundColor: "#fff",
+        // marginTop: 20,
+    },
+    content: {
+        backgroundColor: "#446CB3",
+    },
+    text: {
+        color: "#fff",
+        fontSize: 20,
+        textTransform: "uppercase",
+    },
+    item: {
+        width: "80%",
+    },
+    logo: {
+        color: "#fff",
+        fontFamily: "Roboto",
+        fontSize: 45,
+        paddingTop: 150,
+        marginBottom: 50,
+    },
+    button: {
+        width: "70%",
+        marginBottom: 20,
+        marginTop: 20,
+        borderRadius: 50,
+        textAlign: "center",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    smallText: {
+        fontSize: 15,
+        color: "#000",
     },
 })
 
