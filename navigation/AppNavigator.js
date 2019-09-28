@@ -33,9 +33,9 @@ const DrawerStack = createDrawerNavigator(
         },
     },
     {
-        contentComponent: DrawerScreen,
-        drawerWidth: 300,
-        headerMode: "none",
+        contentComponent: props => <DrawerScreen {...props} />,
+        // drawerWidth: 300,
+        // headerMode: "none",
     }
 )
 

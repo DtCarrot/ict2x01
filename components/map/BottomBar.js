@@ -1,8 +1,15 @@
-import React from "react"
+import React, { useContext } from "react"
 import { StyleSheet } from "react-native"
 import NavigationService from "../../navigation/NavigationService"
-import { Text, View, Left, Right, Body, Title, Button, Icon } from "native-base"
+import SearchBar from "../../components/search/SearchBar"
+import { Text, View, Input, Item, Button, Icon } from "native-base"
+import { SearchBarContext } from "../search/SearchBarContext"
+import BottomLocationBar from "./BottomLocationBar"
 const BottomBar = () => {
+    const { state, dispatch } = useContext(SearchBarContext)
+    if (state.selectedPlaceObj !== null) {
+        return <BottomLocationBar />
+    }
     return (
         <View style={styles.wrapper}>
             <View style={styles.left}>
@@ -27,8 +34,7 @@ const BottomBar = () => {
                 </Button>
             </View>
             <View style={styles.center}>
-                {/* <Title>Header</Title> */}
-                <Text>Header</Text>
+                <SearchBar />
             </View>
             <View style={styles.right}>
                 <Button transparent>
@@ -47,7 +53,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "row",
         alignItems: "center",
-        zIndex: 9999,
+        zIndex: 990,
         backgroundColor: "#fff",
         width: "100%",
         height: 60,
