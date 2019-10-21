@@ -4,6 +4,7 @@ import { Image, View, StyleSheet, Text } from "react-native"
 import MapView from "react-native-maps"
 import Polyline from "@mapbox/polyline"
 import { SearchBarContext } from "../search/SearchBarContext"
+import { RouteContext } from "../routes/RouteContext"
 const GOOGLE_DIRECTION_API_KEY = "AIzaSyC2lJ_zm7nE5mU0252mbfbJd1BebTxTDu8"
 const mapRegion = {
     latitude: 1.29027,
@@ -15,15 +16,17 @@ const MapSelector = () => {
     const currentLocMarker = useRef()
     const mapRef = useRef(null)
     const [markerLoaded, setMarkerLoaded] = useState(false)
-    const [routes, setRoutes] = useState(null)
+    // const [routeState, setRoutes] = useState(null)
     const { state, dispatch } = useContext(SearchBarContext)
+    const { state: routeState, dispatch: routeDispatch } = useContext(RouteContext)
     // fetch directions and decode polylines
     const getDirections = async (startLoc, destinationLoc) => {
         try {
-            const directionUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&alternatives=true&destination=${destinationLoc}&key=${GOOGLE_DIRECTION_API_KEY}`
+            const directionUrl = `https://maps.googleapis.com/maps/api/directions/json?mode=transit&origin=${startLoc}&alternatives=true&destination=${destinationLoc}&key=${GOOGLE_DIRECTION_API_KEY}`
             let resp = await fetch(directionUrl)
             let respJson = await resp.json()
             const fitCoords = []
+            console.log("Routes list: ", respJson)
             const routesList = respJson.routes.slice(0, 3).map(route => {
                 let points = Polyline.decode(route.overview_polyline.points)
                 let coords = points.map((point, index) => {
@@ -34,10 +37,13 @@ const MapSelector = () => {
                     fitCoords.push(pointCoords)
                     return pointCoords
                 })
-                return coords
+                const routeObj = {
+                    ...route,
+                    overview_polyline: coords,
+                }
+                return routeObj
             })
-            console.log("Fit coords: ", fitCoords)
-            setRoutes(routesList)
+            routeDispatch({ type: "setRouteDetails", routeDetails: routesList })
             const edgePadding = {
                 top: 20,
                 left: 20,
@@ -70,9 +76,15 @@ const MapSelector = () => {
     }, [markerLoaded])
 
     const renderRoutes = routes => {
+        console.log("Route Test:", routes)
         return routes.map((route, idx) => {
             return (
-                <MapView.Polyline key={idx} coordinates={route} strokeWidth={2} strokeColor="red" />
+                <MapView.Polyline
+                    key={idx}
+                    coordinates={route.overview_polyline}
+                    strokeWidth={2}
+                    strokeColor="red"
+                />
             )
         })
     }
@@ -86,7 +98,9 @@ const MapSelector = () => {
             maxZoomLevel={18}
             zoomControlEnabled={true}
         >
-            {routes !== null && renderRoutes(routes)}
+            {routeState != null &&
+                routeState.routeDetails !== null &&
+                renderRoutes(routeState.routeDetails)}
             <MapView.Marker
                 ref={ref => {
                     currentLocMarker.current = ref

@@ -3,6 +3,7 @@ import { Image, View, StyleSheet, Text } from "react-native"
 import * as Permissions from "expo-permissions"
 import BottomBar from "../components/map/BottomBar"
 import { SearchBarProvider } from "../components/search/SearchBarContext"
+import { RouteProvider } from "../components/routes/RouteContext"
 import SearchBarOverlay from "../components/search/SearchBarOverlay"
 import MapSelector from "../components/map/MapSelector"
 
@@ -19,11 +20,13 @@ const MainScreen = () => {
 
     return (
         <SearchBarProvider>
-            <View style={styles.container}>
-                <SearchBarOverlay />
-                <MapSelector />
-                <BottomBar />
-            </View>
+            <RouteProvider>
+                <View style={styles.container}>
+                    <SearchBarOverlay />
+                    <MapSelector />
+                    <BottomBar />
+                </View>
+            </RouteProvider>
         </SearchBarProvider>
     )
 }
