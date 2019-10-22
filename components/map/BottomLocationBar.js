@@ -132,7 +132,11 @@ const BottomLocationBar = ({ navigation }) => {
                         marginRight: 20,
                         marginBottom: 10,
                     }}
-                    onPress={() => navigation.navigate("Journey")}
+                    onPress={() =>
+                        navigation.navigate("Journey", {
+                            journeyRoute: state.routeDetails[selectedRouteIdx],
+                        })
+                    }
                 >
                     <Text>Start Navigation</Text>
                 </Button>

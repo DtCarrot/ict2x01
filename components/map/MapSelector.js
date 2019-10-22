@@ -5,6 +5,8 @@ import MapView from "react-native-maps"
 import Polyline from "@mapbox/polyline"
 import { SearchBarContext } from "../search/SearchBarContext"
 import { RouteContext } from "../routes/RouteContext"
+import * as Permissions from "expo-permissions"
+import * as Location from "expo-location"
 const GOOGLE_DIRECTION_API_KEY = "AIzaSyC2lJ_zm7nE5mU0252mbfbJd1BebTxTDu8"
 const mapRegion = {
     latitude: 1.29027,
@@ -17,8 +19,35 @@ const MapSelector = () => {
     const mapRef = useRef(null)
     const [markerLoaded, setMarkerLoaded] = useState(false)
     // const [routeState, setRoutes] = useState(null)
+    const [currCoord, setCurrCoord] = useState(null)
     const { state, dispatch } = useContext(SearchBarContext)
     const { state: routeState, dispatch: routeDispatch } = useContext(RouteContext)
+    useEffect(() => {
+        const _getLocationAsync = async () => {
+            const { status } = await Permissions.askAsync(Permissions.LOCATION)
+            if (status !== "granted") {
+                console.log("Denied")
+            } else {
+                const location = await Location.getCurrentPositionAsync({})
+                console.log("Location: ", location)
+                const {
+                    coords: { latitude, longitude },
+                } = location
+                mapRef.current.animateCamera({
+                    center: {
+                        latitude,
+                        longitude,
+                    },
+                    zoom: 18,
+                })
+                setCurrCoord({
+                    latitude,
+                    longitude,
+                })
+            }
+        }
+        _getLocationAsync()
+    }, [])
     // fetch directions and decode polylines
     const getDirections = async (startLoc, destinationLoc) => {
         try {
@@ -59,7 +88,7 @@ const MapSelector = () => {
     useEffect(() => {
         const getDirectionsAPI = async () => {
             const { lat, lng } = state.selectedPlaceObj
-            const startLoc = `${mapRegion.latitude},${mapRegion.longitude}`
+            const startLoc = `${currCoord.latitude},${currCoord.longitude}`
             const endLoc = `${lat},${lng}`
             await getDirections(startLoc, endLoc)
         }
@@ -101,22 +130,21 @@ const MapSelector = () => {
             {routeState != null &&
                 routeState.routeDetails !== null &&
                 renderRoutes(routeState.routeDetails)}
-            <MapView.Marker
-                ref={ref => {
-                    currentLocMarker.current = ref
-                    setTimeout(() => currentLocMarker.current.showCallout(), 1)
-                }}
-                coordinate={{
-                    latitude: 1.29027,
-                    longitude: 103.851959,
-                }}
-            >
-                <Image
-                    source={require("../../assets/navigation/icons8-navigation-48.png")}
-                    style={{ width: 48, height: 48 }}
-                />
-                <LocationCallout />
-            </MapView.Marker>
+            {currCoord !== null && (
+                <MapView.Marker
+                    ref={ref => {
+                        currentLocMarker.current = ref
+                        setTimeout(() => currentLocMarker.current.showCallout(), 1)
+                    }}
+                    coordinate={currCoord}
+                >
+                    <Image
+                        source={require("../../assets/navigation/icons8-navigation-48.png")}
+                        style={{ width: 48, height: 48 }}
+                    />
+                    <LocationCallout />
+                </MapView.Marker>
+            )}
             {state.selectedPlaceObj !== null && (
                 <MapView.Marker
                     coordinate={{
