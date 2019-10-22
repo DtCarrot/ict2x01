@@ -1,23 +1,53 @@
-import React, { Component, useRef, useEffect, useState } from "react"
+import React, { Component, useContext, useRef, useEffect, useState } from "react"
 import { Text } from "native-base"
+import Polyline from "@mapbox/polyline"
 import { View } from "react-native"
 import MapView from "react-native-maps"
 import * as Permissions from "expo-permissions"
 import * as Location from "expo-location"
+import DirectionsBar from "../components/journey/DirectionsBar"
+import sampleRoutes from "../components/map/sampleRoutes"
+import { JourneyContext, JourneyProvider } from "../components/journey/JourneyContext"
 
 const JourneyScreen = ({ navigation }) => {
+    const { state, dispatch } = useContext(JourneyContext)
     const mapRef = useRef()
     const [journeyRoute, setJourneyRoute] = useState(null)
-    console.log("Navigation ref: ", navigation.getParam("journeyRoute", null))
+
+    const transformRoute = route => {
+        let points = Polyline.decode(route.overview_polyline.points)
+        let coords = points.map((point, index) => {
+            const pointCoords = {
+                latitude: point[0],
+                longitude: point[1],
+            }
+            return pointCoords
+        })
+        const routeObj = {
+            ...route,
+            overview_polyline: coords,
+        }
+        return routeObj
+    }
+
+    // console.log("Navigation ref: ", navigation.getParam("journeyRoute", null))
     useEffect(() => {
         const currJourneyRoute = navigation.getParam("journeyRoute", null)
-        setJourneyRoute(currJourneyRoute)
+        dispatch({
+            type: "setJourneyDetails",
+            journeyDetails: currJourneyRoute,
+        })
+        console.log("At journey screen")
+        // console.log(currJourneyRoute.overview_polyline)
+        // setJourneyRoute(currJourneyRoute)
+        // console.log("Sample Routes: ", sampleRoutes)
+        setJourneyRoute(transformRoute(sampleRoutes))
         const _getLocationAsync = async () => {
             const { status } = await Permissions.askAsync(Permissions.LOCATION)
             if (status !== "granted") {
                 console.log("Denied")
             } else {
-                setInterval(async () => {
+                setTimeout(async () => {
                     const location = await Location.getCurrentPositionAsync({})
                     // console.log("Location: ", location)
                     const {
@@ -28,13 +58,13 @@ const JourneyScreen = ({ navigation }) => {
                             latitude,
                             longitude,
                         },
-                        pitch: 90,
+                        pitch: 60,
                         heading,
                         zoom: 20,
                         altitude,
                     }
                     mapRef.current.setCamera(cameraObj)
-                }, 5000)
+                }, 1000)
             }
         }
         _getLocationAsync()
@@ -67,21 +97,31 @@ const JourneyScreen = ({ navigation }) => {
                 // mapType="satellite"
                 initialRegion={{
                     latitude: 3.2741004,
+
                     longitude: -76.6502307,
                     latitudeDelta: 0.002,
                     longitudeDelta: 0.001,
                 }}
             >
-                {journeyRoute !== null && (
+                {state.journeyDetails !== null && (
                     <MapView.Polyline
-                        coordinates={journeyRoute.overview_polyline}
+                        coordinates={state.journeyDetails.overview_polyline}
                         strokeWidth={2}
                         strokeColor="red"
                     />
                 )}
             </MapView>
+            {state.journeyDetails !== null && <DirectionsBar journeyRoute={state.journeyDetails} />}
         </View>
     )
 }
 
-export default JourneyScreen
+const withContext = Component => props => {
+    return (
+        <JourneyProvider>
+            <Component {...props} />
+        </JourneyProvider>
+    )
+}
+
+export default withContext(JourneyScreen)

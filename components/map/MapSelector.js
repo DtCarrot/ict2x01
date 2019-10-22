@@ -52,10 +52,11 @@ const MapSelector = () => {
     const getDirections = async (startLoc, destinationLoc) => {
         try {
             const directionUrl = `https://maps.googleapis.com/maps/api/directions/json?mode=transit&origin=${startLoc}&alternatives=true&destination=${destinationLoc}&key=${GOOGLE_DIRECTION_API_KEY}`
+            console.log("Direction URL: ", directionUrl)
             let resp = await fetch(directionUrl)
             let respJson = await resp.json()
             const fitCoords = []
-            console.log("Routes list: ", respJson)
+            // console.log("Routes list: ", respJson)
             const routesList = respJson.routes.slice(0, 3).map(route => {
                 let points = Polyline.decode(route.overview_polyline.points)
                 let coords = points.map((point, index) => {
@@ -98,14 +99,13 @@ const MapSelector = () => {
     }, [state.selectedPlaceObj])
 
     useEffect(() => {
-        console.log("Marker status: ", markerLoaded)
+        // console.log("Marker status: ", markerLoaded)
         if (markerLoaded) {
             currentLocMarker.current.showCallout()
         }
     }, [markerLoaded])
 
     const renderRoutes = routes => {
-        console.log("Route Test:", routes)
         return routes.map((route, idx) => {
             return (
                 <MapView.Polyline

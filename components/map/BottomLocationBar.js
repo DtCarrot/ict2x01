@@ -44,10 +44,7 @@ const BottomLocationBar = ({ navigation }) => {
                     const vehicleType = path.transit_details.line.vehicle.type
                     for (var transportMethod in TRANSPORT_MODE) {
                         const transportSubMode = TRANSPORT_MODE[transportMethod]
-                        console.log(transportSubMode)
-                        console.log("Travel mode: ", vehicleType)
                         const found = transportSubMode.find(subMode => vehicleType === subMode)
-                        console.log("Found: ", found)
                         if (typeof found !== "undefined") {
                             const exists = currentModes.find(
                                 currMode => currMode === transportMethod
@@ -59,7 +56,6 @@ const BottomLocationBar = ({ navigation }) => {
                     }
             }
         })
-        console.log("Current modes: ", currentModes)
         return currentModes.map(currMode => {
             const modeStyle = {
                 color: textColor,
