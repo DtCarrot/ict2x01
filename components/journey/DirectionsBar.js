@@ -1,8 +1,30 @@
-import React from "react"
+import React, { useEffect, useContext, useState } from "react"
 import { StyleSheet } from "react-native"
 import { View, Text } from "native-base"
+import { JourneyContext } from "../../components/journey/JourneyContext"
+import { statement } from "@babel/template"
 
 const DirectionsBar = () => {
+    const { state, dispatch } = useContext(JourneyContext)
+    const [text, setText] = useState(null)
+    // Called on every state change
+    useEffect(() => {
+        const renderDirections = () => {
+            // Check if the state is not null
+            if (state.journeyDetails !== null) {
+                const { gpsPosition, journeyDetails, journeyStepIdx, journeyStepSubIdx } = state
+                const nextTarget =
+                    journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
+
+                const regex = /(<([^>]+)>)/gi
+                // Strip the html tags that is returned from google directions api
+                const directionsText = nextTarget.html_instructions.replace(regex, "")
+                // Set the text direction
+                setText(directionsText)
+            }
+        }
+        renderDirections()
+    }, [state.journeyDetails])
     return (
         <View style={styles.wrapper}>
             <View style={styles.center}>
@@ -11,7 +33,7 @@ const DirectionsBar = () => {
                         paddingTop: 30,
                     }}
                 >
-                    Turn Left
+                    {text}
                 </Text>
             </View>
         </View>

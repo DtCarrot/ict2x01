@@ -83,3 +83,5 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
     },
 })
+
+console.log("Loading..")
