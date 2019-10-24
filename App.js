@@ -17,6 +17,7 @@ export default function App(props) {
             await Font.loadAsync({
                 Roboto: require("native-base/Fonts/Roboto.ttf"),
                 Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+                ionicons: require("@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf"),
             })
             setReady(true)
         }
@@ -82,3 +83,5 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
     },
 })
+
+console.log("Loading..")

@@ -45,7 +45,6 @@ const SearchSuggestions = () => {
         })
     }
     const renderPlaceSuggestions = places => {
-        console.log("Rendering places: ", places)
         return places.map((obj, idx) => (
             <ListItem key={idx}>
                 <Text onPress={() => selectSuggestedPlace(obj)}>{obj.description}</Text>

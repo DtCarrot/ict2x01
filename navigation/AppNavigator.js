@@ -15,11 +15,21 @@ import HomeScreen from "../screens/HomeScreen"
 import AuthLoadingScreen from "../screens/AuthLoadingScreen"
 import MainScreen from "../screens/MainScreen"
 import DrawerScreen from "../screens/Menu"
+import JourneyScreen from "../screens/JourneyScreen"
 
 const AuthStack = createStackNavigator(
     {
         SignIn: SignInScreen,
         SignUp: SignUpScreen,
+    },
+    {
+        headerMode: "none",
+    }
+)
+
+const JourneyStack = createStackNavigator(
+    {
+        Journey: JourneyScreen,
     },
     {
         headerMode: "none",
@@ -58,6 +68,7 @@ export default createAppContainer(
             // Read more at https://reactnavigation.org/docs/en/auth-flow.html
             AuthLoading: AuthLoadingScreen,
             Auth: AuthStack,
+            Journey: JourneyStack,
             // SignUp: SignUpScreen,
             // Home: MainScreen,
             // Main: MainTabNavigator,
@@ -67,6 +78,7 @@ export default createAppContainer(
             headerMode: "none",
             title: "Main",
             initialRouteName: "AuthLoading",
+            // initialRouteName: "Journey",
         }
     )
 )
