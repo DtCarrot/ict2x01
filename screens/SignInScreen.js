@@ -17,7 +17,7 @@ const SignInScreen = ({ navigation }) => {
             console.log("Signing in")
             const signInStatus = await firebase.auth().signInWithEmailAndPassword(email, password)
             console.log("Sign in status: ", signInStatus)
-            navigation.navigate("Main")
+            navigation.navigate("Home")
         } catch (err) {
             console.log("Failed to signin: ", err)
         }

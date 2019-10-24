@@ -18,14 +18,16 @@ const SignUpScreen = ({ navigation }) => {
             // After the user creation is successful - we need to redirect them to the login screen.
             navigation.navigate("SignIn")
         } catch (err) {
+            console.log(err.message)
             console.log("Error signing up", err)
+            setErrorMessage(err.message)
         }
     }
     return (
         <Content style={styles.content}>
             <View style={styles.container}>
                 <H1 style={styles.logo}>Register</H1>
-                {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
+                {errorMessage && <Text style={{ color: "#fff" }}>{errorMessage}</Text>}
                 <Item regular style={styles.item}>
                     <Input
                         style={styles.textInput}
@@ -45,7 +47,7 @@ const SignUpScreen = ({ navigation }) => {
                         value={password}
                     />
                 </Item>
-                <Button style={styles.button} title="Login" onPress={() => signIn()}>
+                <Button style={styles.button} title="Login" onPress={() => signUp()}>
                     <Text style={styles.text}>Sign up</Text>
                 </Button>
             </View>
