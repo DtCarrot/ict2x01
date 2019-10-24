@@ -14,6 +14,8 @@ import useInterval from "../utils/useInterval"
 
 import { getPreciseDistance, getCompassDirection } from "geolib"
 import DistanceManager from "../components/journey/DistanceManager"
+import JourneyRewardBar from "../components/journey/JourneyRewardBar"
+import GameDialog from "../components/journey/GameDialog"
 
 const JourneyScreen = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
@@ -96,7 +98,7 @@ const JourneyScreen = ({ navigation }) => {
                 })
             }
         }
-    }, 15000)
+    }, 45000)
 
     const transformRoute = route => {
         // console.log(route.overview_polyline.points)
@@ -248,6 +250,8 @@ const JourneyScreen = ({ navigation }) => {
                 )}
             </MapView>
             <DirectionsBar />
+            <GameDialog />
+            <JourneyRewardBar />
         </View>
     )
 }

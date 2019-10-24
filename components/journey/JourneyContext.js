@@ -12,11 +12,17 @@ const initialState = {
     currentAvailChance: 0,
     lastKnownPosition: null,
     totalChance: 0,
+    gameDialogOpen: false,
 }
 
 const reducer = (state, action) => {
     console.log("Prev state: ", state)
     switch (action.type) {
+        case "toggleGameDialog":
+            return {
+                ...state,
+                gameDialogOpen: action.open,
+            }
         case "setJourneyDetails":
             return {
                 ...state,
