@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useEffect } from "react"
+import React, { Fragment, useState, useRef, useContext, useEffect } from "react"
 import { BackHandler, StyleSheet, Modal, View } from "react-native"
 import { H1, H2, Text, Content } from "native-base"
 import Svg, { Defs, G, Rect, Circle, Path } from "react-native-svg"
@@ -47,7 +47,8 @@ const GameDialog = ({ navigation }) => {
     const animationRef = useRef(null)
     const { state, dispatch } = useContext(JourneyContext)
     const { gameDialogOpen: open } = state
-    const [text, setText] = useState(null)
+    const [isAwarded, setReward] = useState(false)
+    // const [text, setText] = useState(null)
     const onBackButtonPress = () => {
         console.log("Back button")
         dispatch({
@@ -58,7 +59,7 @@ const GameDialog = ({ navigation }) => {
     useEffect(() => {
         if (state.gameDialogOpen) {
             ShakeEvent.addListener(() => {
-                setText("Grats")
+                setReward(true)
             })
             console.log("Set hardware back press")
         } else {
@@ -84,21 +85,52 @@ const GameDialog = ({ navigation }) => {
                     }}
                 >
                     <H1 style={styles.logo}>Lucky Draw</H1>
-                    <Content
-                        style={{
-                            // alignContent: "center",
-                            // justifyContent: "center",
-                            // flex: 1,
-                            padding: 10,
-                            borderWidth: 1,
-                            borderColor: "#fff",
-                            maxHeight: 100,
-                        }}
-                    >
-                        <H2 style={styles.subtitle}>Shake to stand a chance to get a prize!</H2>
-                    </Content>
-                    <Text>{text}</Text>
-                    <SvgComponent />
+                    {isAwarded && (
+                        <Fragment>
+                            <Content
+                                style={{
+                                    padding: 10,
+                                    borderWidth: 1,
+                                    borderColor: "#fff",
+                                    maxHeight: 100,
+                                }}
+                            >
+                                <H2 style={styles.subtitle}>
+                                    Shake to stand a chance to get a prize!
+                                </H2>
+                            </Content>
+                            <SvgComponent />
+                        </Fragment>
+                    )}
+                    {!isAwarded && (
+                        <Fragment>
+                            <Content
+                                contentContainerStyle={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                }}
+                                style={{
+                                    borderColor: "#fff",
+                                    borderWidth: 2,
+                                    borderRadius: 40,
+                                    width: 200,
+                                    height: 200,
+                                    flex: 1,
+                                    marginBottom: 50,
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        flex: 1,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    Shaken!
+                                </Text>
+                            </Content>
+                        </Fragment>
+                    )}
                 </View>
             </Modal>
         </View>
