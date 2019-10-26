@@ -2,7 +2,6 @@ import React, { useEffect, useContext, useState } from "react"
 import { StyleSheet } from "react-native"
 import { View, Text } from "native-base"
 import { JourneyContext } from "../../components/journey/JourneyContext"
-import { statement } from "@babel/template"
 
 const DirectionsBar = () => {
     const { state, dispatch } = useContext(JourneyContext)
