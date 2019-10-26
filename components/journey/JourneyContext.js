@@ -12,12 +12,19 @@ const initialState = {
     currentAvailChance: 1,
     lastKnownPosition: null,
     totalChance: 1,
+    gameInProgress: true,
     gameDialogOpen: false,
+    gameType: null,
 }
 
 const reducer = (state, action) => {
     console.log("Prev state: ", state)
     switch (action.type) {
+        case "startGame":
+            return {
+                ...state,
+                gameType: action.gameType,
+            }
         case "toggleGameDialog":
             return {
                 ...state,

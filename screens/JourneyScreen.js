@@ -24,81 +24,81 @@ const JourneyScreen = ({ navigation }) => {
     const [initialRender, setInitialRender] = useState(false)
     const [currPolyline, setCurrPolyline] = useState(null)
     // Update the position every 30 seconds
-    useInterval(async () => {
-        // console.log("Journey details: ", state.journeyDetails.overview_polyline)
-        if (state.journeyDetails === null) {
-            return
-        }
-        const {
-            lastKnownPosition,
-            gpsPosition,
-            journeyDetails,
-            journeyStepIdx,
-            journeyStepSubIdx,
-        } = state
-        const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
-        console.log("Journey step: ", journeyStepIdx, journeyStepSubIdx)
-        console.log("GPS Target: ", nextTarget)
-        // Get the distance between the current and target destination
-        const distance = getPreciseDistance(
-            {
-                latitude: gpsPosition.latitude,
-                longitude: gpsPosition.longitude,
-            },
-            {
-                latitude: nextTarget.end_location.lat,
-                longitude: nextTarget.end_location.lng,
-            }
-        )
+    // useInterval(async () => {
+    //     // console.log("Journey details: ", state.journeyDetails.overview_polyline)
+    //     if (state.journeyDetails === null) {
+    //         return
+    //     }
+    //     const {
+    //         lastKnownPosition,
+    //         gpsPosition,
+    //         journeyDetails,
+    //         journeyStepIdx,
+    //         journeyStepSubIdx,
+    //     } = state
+    //     const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
+    //     console.log("Journey step: ", journeyStepIdx, journeyStepSubIdx)
+    //     console.log("GPS Target: ", nextTarget)
+    //     // Get the distance between the current and target destination
+    //     const distance = getPreciseDistance(
+    //         {
+    //             latitude: gpsPosition.latitude,
+    //             longitude: gpsPosition.longitude,
+    //         },
+    //         {
+    //             latitude: nextTarget.end_location.lat,
+    //             longitude: nextTarget.end_location.lng,
+    //         }
+    //     )
 
-        const location = await Location.getCurrentPositionAsync({})
-        console.log("Heading: ", location)
-        const {
-            coords: { latitude, longitude, heading, altitude },
-        } = location
-        dispatch({
-            type: "setGPSPosition",
-            gpsPosition: {
-                latitude,
-                longitude,
-                heading,
-            },
-        })
-        if (lastKnownPosition !== null) {
-            const distanceBetweenCurrAndPrevGPS = getPreciseDistance(
-                {
-                    latitude: gpsPosition.latitude,
-                    longitude: gpsPosition.longitude,
-                },
-                lastKnownPosition
-            )
-            const { distanceTravelled } = state
-            // Update the distance that has been travelled
-            console.log("Distance: ", distanceBetweenCurrAndPrevGPS, distanceTravelled)
-            dispatch({
-                type: "updateDistanceTravelled",
-                distanceTravelled: distanceTravelled + distanceBetweenCurrAndPrevGPS,
-            })
-        }
+    //     const location = await Location.getCurrentPositionAsync({})
+    //     console.log("Heading: ", location)
+    //     const {
+    //         coords: { latitude, longitude, heading, altitude },
+    //     } = location
+    //     dispatch({
+    //         type: "setGPSPosition",
+    //         gpsPosition: {
+    //             latitude,
+    //             longitude,
+    //             heading,
+    //         },
+    //     })
+    //     if (lastKnownPosition !== null) {
+    //         const distanceBetweenCurrAndPrevGPS = getPreciseDistance(
+    //             {
+    //                 latitude: gpsPosition.latitude,
+    //                 longitude: gpsPosition.longitude,
+    //             },
+    //             lastKnownPosition
+    //         )
+    //         const { distanceTravelled } = state
+    //         // Update the distance that has been travelled
+    //         console.log("Distance: ", distanceBetweenCurrAndPrevGPS, distanceTravelled)
+    //         dispatch({
+    //             type: "updateDistanceTravelled",
+    //             distanceTravelled: distanceTravelled + distanceBetweenCurrAndPrevGPS,
+    //         })
+    //     }
 
-        // Reached destination
-        if (distance < 10) {
-            // Check the current leg length
-            if (journeyStepSubIdx + 1 >= journeyDetails.legs[0].steps[journeyStepIdx].length) {
-                dispatch({
-                    type: "setJourneyStep",
-                    journeyStepIdx: journeyStepIdx + 1,
-                    journeyStepSubIdx: 0,
-                })
-            } else {
-                dispatch({
-                    type: "setJourneyStep",
-                    journeyStepIdx,
-                    journeyStepSubIdx: journeyStepSubIdx + 1,
-                })
-            }
-        }
-    }, 45000)
+    //     // Reached destination
+    //     if (distance < 10) {
+    //         // Check the current leg length
+    //         if (journeyStepSubIdx + 1 >= journeyDetails.legs[0].steps[journeyStepIdx].length) {
+    //             dispatch({
+    //                 type: "setJourneyStep",
+    //                 journeyStepIdx: journeyStepIdx + 1,
+    //                 journeyStepSubIdx: 0,
+    //             })
+    //         } else {
+    //             dispatch({
+    //                 type: "setJourneyStep",
+    //                 journeyStepIdx,
+    //                 journeyStepSubIdx: journeyStepSubIdx + 1,
+    //             })
+    //         }
+    //     }
+    // }, 45000)
 
     const transformRoute = route => {
         // console.log(route.overview_polyline.points)
@@ -112,7 +112,7 @@ const JourneyScreen = ({ navigation }) => {
         // })
         const leg = route.legs[0]
         const routeCoord = leg.steps.map(step => {
-            console.log("Step: ", step)
+            // console.log("Step: ", step)
             if (step.hasOwnProperty("steps")) {
                 return step.steps.map(subStep => {
                     const points = Polyline.decode(subStep.polyline.points)
@@ -129,7 +129,7 @@ const JourneyScreen = ({ navigation }) => {
             }
         })
 
-        console.log("Route coord: ", flattenDeep(routeCoord))
+        // console.log("Route coord: ", flattenDeep(routeCoord))
         const routeObj = {
             ...route,
             overview_polyline: flattenDeep(routeCoord),
@@ -159,34 +159,33 @@ const JourneyScreen = ({ navigation }) => {
             if (status !== "granted") {
                 console.log("Denied")
             } else {
-                setTimeout(async () => {
-                    console.log("Getting current position")
-                    const location = await Location.getCurrentPositionAsync({})
-                    console.log("Location: ", location)
-                    const {
-                        coords: { latitude, longitude, heading, altitude },
-                    } = location
-                    const cameraObj = {
-                        center: {
-                            latitude,
-                            longitude,
-                        },
-                        pitch: 60,
+                // setTimeout(async () => {
+                console.log("Getting current position")
+                const location = await Location.getCurrentPositionAsync({})
+                console.log("Location: ", location)
+                const {
+                    coords: { latitude, longitude, heading, altitude },
+                } = location
+                const cameraObj = {
+                    center: {
+                        latitude,
+                        longitude,
+                    },
+                    pitch: 60,
+                    heading,
+                    zoom: 20,
+                    altitude,
+                }
+                mapRef.current.setCamera(cameraObj)
+                dispatch({
+                    type: "setGPSPosition",
+                    gpsPosition: {
+                        latitude,
+                        longitude,
                         heading,
-                        zoom: 20,
-                        altitude,
-                    }
-                    console.log("Setting position: ", cameraObj)
-                    mapRef.current.setCamera(cameraObj)
-                    dispatch({
-                        type: "setGPSPosition",
-                        gpsPosition: {
-                            latitude,
-                            longitude,
-                            heading,
-                        },
-                    })
-                }, 1000)
+                    },
+                })
+                // }, 1000)
             }
         }
         _getLocationAsync()

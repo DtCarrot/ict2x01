@@ -54,6 +54,9 @@ const DrawerStack = createDrawerNavigator(
         Home: {
             screen: MainScreen,
         },
+        // Leaderboard: {
+        //     screen: LeaderboardScreen,
+        // },
     },
     {
         contentComponent: props => <DrawerScreen {...props} />,
@@ -90,9 +93,9 @@ export default createAppContainer(
         {
             headerMode: "none",
             title: "Main",
-            initialRouteName: "AuthLoading",
+            // initialRouteName: "AuthLoading",
             // initialRouteName: "SignUp",
-            // initialRouteName: "Journey",
+            initialRouteName: "Journey",
         }
     )
 )
