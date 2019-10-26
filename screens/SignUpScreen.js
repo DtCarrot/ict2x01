@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { TextInput, ActivityIndicator, AsyncStorage, StatusBar, StyleSheet } from "react-native"
 import { Text, Button, Item, Input, Content, H1, View } from "native-base"
-import * as firebase from "firebase"
+import { registerUser } from "../db/authService"
 
 const SignUpScreen = ({ navigation }) => {
     const [errorMessage, setErrorMessage] = useState(null)
@@ -13,8 +13,7 @@ const SignUpScreen = ({ navigation }) => {
     const signUp = async () => {
         try {
             console.log("Signing up")
-            const result = await firebase.auth().createUserWithEmailAndPassword(email, password)
-            console.log("Result: ", result)
+            await registerUser(email, password)
             // After the user creation is successful - we need to redirect them to the login screen.
             navigation.navigate("SignIn")
         } catch (err) {
@@ -47,7 +46,7 @@ const SignUpScreen = ({ navigation }) => {
                         value={password}
                     />
                 </Item>
-                <Button style={styles.button} title="Login" onPress={() => signUp()}>
+                <Button style={styles.button} title="Login" onPress={signUp}>
                     <Text style={styles.text}>Sign up</Text>
                 </Button>
             </View>

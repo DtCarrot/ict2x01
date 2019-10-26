@@ -17,6 +17,19 @@ import MainScreen from "../screens/MainScreen"
 import DrawerScreen from "../screens/Menu"
 import JourneyScreen from "../screens/JourneyScreen"
 
+import * as firebase from "firebase"
+
+// Initialize Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyCHAJmBB6hMn8dnxDO3lMZkWlvazk3wFGI",
+    projectId: "ict2101-22ad5",
+    authDomain: "ict2101-22ad5.firebaseapp.com",
+    databaseURL: "https://ict2101-22ad5.firebaseio.com",
+    storageBucket: "ict2101-22ad5.appspot.com",
+}
+
+firebase.initializeApp(firebaseConfig)
+
 const AuthStack = createStackNavigator(
     {
         SignIn: SignInScreen,
@@ -77,8 +90,9 @@ export default createAppContainer(
         {
             headerMode: "none",
             title: "Main",
-            // initialRouteName: "AuthLoading",
-            initialRouteName: "Journey",
+            initialRouteName: "AuthLoading",
+            // initialRouteName: "SignUp",
+            // initialRouteName: "Journey",
         }
     )
 )

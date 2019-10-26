@@ -1,16 +1,24 @@
-import React, { useContext, useEffect } from "react"
+import React, { useContext, useEffect, Fragment } from "react"
 import { Text, Badge, Button, Icon } from "native-base"
 import { JourneyContext } from "./JourneyContext"
 import GameDialog from "./GameDialog"
 import Svg, { Circle, Path } from "react-native-svg"
+import { initPoints } from "../../db/pointsService"
+import * as firebase from "firebase"
 
 const JourneyRewardBar = () => {
+    const db = firebase.firestore()
     const { state, dispatch } = useContext(JourneyContext)
+    const { currentAvailChance } = state
     const openGameDialog = () => {
         dispatch({
             type: "toggleGameDialog",
             open: true,
         })
+        initPoints()
+    }
+    if (currentAvailChance === 0) {
+        return null
     }
     return (
         <Button
@@ -34,7 +42,7 @@ const JourneyRewardBar = () => {
                     right: -15,
                 }}
             >
-                <Text>1</Text>
+                <Text>{currentAvailChance}</Text>
             </Badge>
             <Icon name="beer" />
         </Button>

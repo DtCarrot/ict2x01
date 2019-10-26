@@ -43,7 +43,9 @@ class DrawerScreen extends Component {
                 <Content>
                     <View style={styles.drawerItem}>
                         <Icon style={styles.icon} active name="airplane" />
-                        <Text style={{ color: "#000" }}>Airplane Mode</Text>
+                        <Text onPress={this.logout} style={{ color: "#000" }}>
+                            Logout
+                        </Text>
                     </View>
                 </Content>
                 {/* <View style={styles.menuItem}>

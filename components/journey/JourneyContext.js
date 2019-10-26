@@ -9,9 +9,9 @@ const initialState = {
     journeyStepIdx: 0,
     journeyStepSubIdx: 0,
     currPolyline: null,
-    currentAvailChance: 0,
+    currentAvailChance: 1,
     lastKnownPosition: null,
-    totalChance: 0,
+    totalChance: 1,
     gameDialogOpen: false,
 }
 

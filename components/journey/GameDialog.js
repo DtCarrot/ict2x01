@@ -6,13 +6,11 @@ import { JourneyContext } from "./JourneyContext"
 import LottieView from "lottie-react-native"
 import { withNavigation } from "react-navigation"
 import ShakeEvent from "./shakeEvent"
-// import Image from "react-native-remote-svg"
 
 const styles = StyleSheet.create({
     logo: {
         color: "#fff",
         fontFamily: "Roboto",
-        // fontWeight: 200,
         flex: 1,
         fontSize: 26,
         paddingTop: 50,
@@ -111,23 +109,29 @@ const GameDialog = ({ navigation }) => {
                                 }}
                                 style={{
                                     borderColor: "#fff",
-                                    borderWidth: 2,
-                                    borderRadius: 40,
-                                    width: 200,
-                                    height: 200,
                                     flex: 1,
                                     marginBottom: 50,
                                 }}
                             >
-                                <Text
+                                <Content
                                     style={{
-                                        flex: 1,
-                                        justifyContent: "center",
-                                        alignItems: "center",
+                                        borderWidth: 2,
+                                        borderRadius: 40,
+                                        width: 200,
+                                        height: 200,
                                     }}
                                 >
-                                    Shaken!
-                                </Text>
+                                    <Text
+                                        style={{
+                                            flex: 1,
+                                            textAlign: "center",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        Shaken!
+                                    </Text>
+                                </Content>
                             </Content>
                         </Fragment>
                     )}
