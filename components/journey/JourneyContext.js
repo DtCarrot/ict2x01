@@ -18,7 +18,6 @@ const initialState = {
 }
 
 const reducer = (state, action) => {
-    console.log("Prev state: ", state)
     switch (action.type) {
         case "startGame":
             return {

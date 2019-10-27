@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useRef, useContext, useEffect } from "react"
 import { Image, BackHandler, StyleSheet, Modal, View } from "react-native"
+import { addPoints } from "../../db/pointsService"
 import { Button, Icon, H2, Text, Content } from "native-base"
 import Svg, { Defs, G, Rect, Circle, Path } from "react-native-svg"
 import { JourneyContext } from "./JourneyContext"
@@ -7,6 +8,8 @@ import { withNavigation } from "react-navigation"
 import { generateLuckyDrawReward } from "../../utils/gameCreator"
 import ShakeEvent from "./shakeEvent"
 import FireworkWrapper from "./FireworkWrapper"
+import NextGameButton from "./buttons/NextGameButton"
+import ContinueNavigateButton from "./buttons/ContinueNavigateButton"
 
 const styles = StyleSheet.create({
     logo: {
@@ -19,15 +22,15 @@ const styles = StyleSheet.create({
     title: {
         color: "#C22259",
         fontSize: 56,
+        marginTop: 60,
         fontFamily: "Roboto_medium",
-        marginTop: 20,
     },
     subtitle: {
         color: "#000",
         fontSize: 48,
         fontFamily: "Roboto",
-        marginTop: -20,
-        marginBottom: 50,
+        marginTop: -10,
+        marginBottom: 30,
         marginLeft: 0,
         marginRight: 0,
         paddingLeft: 0,
@@ -62,8 +65,9 @@ const SvgComponent = () => (
 
 const ChanceDialog = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
-    const [finished, setFinished] = useState(true)
+    const [finished, setFinished] = useState(false)
     const [reward, setReward] = useState("300 POINTS")
+    const { currentAvailChance, totalChance } = state
     console.log("Finished: ", finished)
     useEffect(() => {
         if (state.gameDialogOpen) {
@@ -71,7 +75,14 @@ const ChanceDialog = ({ navigation }) => {
                 setFinished(true)
                 const reward = generateLuckyDrawReward()
                 if (reward.type === "point") {
+                    dispatch({
+                        type: "updateRewardChance",
+                        currentAvailChance: currentAvailChance - 1,
+                        totalChance: totalChance - 1,
+                    })
+                    const { value } = reward
                     setReward(`${value} points`)
+                    addPoints(value)
                 }
             })
             console.log("Set hardware back press")
@@ -81,159 +92,123 @@ const ChanceDialog = ({ navigation }) => {
     }, [state.gameDialogOpen])
     return (
         <Fragment>
-            <View
-                style={{
-                    zIndex: 9999,
-                    flex: 1,
-                    alignItems: "center",
-                    width: "100%",
-                    height: "100%",
-                }}
-            >
-                <Text style={styles.title}>LUCKY</Text>
-                <Text style={styles.subtitle}>TREASURE</Text>
+            <Text style={styles.title}>LUCKY</Text>
+            <Text style={styles.subtitle}>TREASURE</Text>
 
-                {/* <H1 style={styles.logo}>Lucky Draw</H1> */}
-                {!finished && (
-                    <Fragment>
-                        <SvgComponent />
-                        <Button
+            {/* <H1 style={styles.logo}>Lucky Draw</H1> */}
+            {!finished && (
+                <Fragment>
+                    <SvgComponent />
+                    <Button
+                        style={{
+                            width: 264,
+                            height: 102,
+                            marginTop: 40,
+                            borderWidth: 2,
+                            borderRadius: 20,
+                            borderColor: "#c22259",
+                            backgroundColor: "#fff",
+                        }}
+                    >
+                        <H2
                             style={{
-                                width: 264,
-                                height: 102,
-                                marginTop: 40,
-                                borderWidth: 2,
-                                borderRadius: 20,
-                                borderColor: "#c22259",
-                                backgroundColor: "#fff",
+                                fontSize: 22,
+                                lineHeight: 26,
+                                flex: 1,
+                                textAlign: "center",
+                                display: "flex",
+                                color: "#c22259",
                             }}
                         >
-                            <H2
-                                style={{
-                                    fontSize: 22,
-                                    lineHeight: 26,
-                                    flex: 1,
-                                    textAlign: "center",
-                                    display: "flex",
-                                    color: "#c22259",
-                                }}
-                            >
-                                Shake your phone to get some prizes!
-                            </H2>
-                        </Button>
-                    </Fragment>
-                )}
-                {finished && (
-                    <Fragment>
-                        <View
+                            Shake your phone to get some prizes!
+                        </H2>
+                    </Button>
+                </Fragment>
+            )}
+            {finished && (
+                <Fragment>
+                    <View
+                        style={{
+                            zIndex: 300,
+                            width: 270,
+                            height: 270,
+                            marginBottom: 30,
+                        }}
+                    >
+                        <FireworkWrapper position="top-right" />
+                        <FireworkWrapper position="top-left" />
+                        <FireworkWrapper position="bottom-right" />
+                        <FireworkWrapper position="bottom-left" />
+                        <Button
                             style={{
-                                zIndex: 300,
                                 width: 270,
                                 height: 270,
+                                backgroundColor: "#c22259",
+                                borderRadius: 135,
+                                position: "relative",
+                                borderColor: "#fff",
+                                zIndex: 310,
                             }}
                         >
-                            <FireworkWrapper position="top-right" />
-                            <FireworkWrapper position="top-left" />
-                            <FireworkWrapper position="bottom-right" />
-                            <FireworkWrapper position="bottom-left" />
-                            <Button
+                            <View
                                 style={{
-                                    width: 270,
-                                    height: 270,
-                                    backgroundColor: "#c22259",
-                                    borderRadius: 135,
+                                    flex: 1,
                                     position: "relative",
-                                    borderColor: "#fff",
-                                    zIndex: 310,
+                                    // flexDirection: "column",
+                                    marginBottom: 50,
                                 }}
                             >
-                                <View
+                                <H2
                                     style={{
-                                        flex: 1,
-                                        position: "relative",
-                                        flexDirection: "column",
+                                        textAlign: "center",
+                                        fontSize: 30,
+                                        lineHeight: 35,
+                                        fontWeight: "400",
+                                        fontFamily: "Roboto",
+                                        color: "#fff",
+                                        marginBottom: 20,
                                     }}
                                 >
-                                    <H2
+                                    You have won
+                                </H2>
+                                <Button
+                                    style={{
+                                        marginLeft: 22,
+                                        width: 225,
+                                        height: 60,
+                                        textAlign: "center",
+                                        backgroundColor: "#fff",
+                                        borderRadius: 20,
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <Text
                                         style={{
+                                            flex: 1,
                                             textAlign: "center",
-                                            fontSize: 30,
-                                            lineHeight: 35,
+                                            fontSize: 28,
+                                            lineHeight: 33,
                                             fontWeight: "400",
                                             fontFamily: "Roboto",
-                                            color: "#fff",
-                                            marginBottom: 20,
+                                            color: "#c22259",
                                         }}
                                     >
-                                        You have won
-                                    </H2>
-                                    <Button
-                                        style={{
-                                            justifyContent: "center",
-                                            marginLeft: 22,
-                                            width: 225,
-                                            height: 60,
-                                            textAlign: "center",
-                                            backgroundColor: "#fff",
-                                            borderRadius: 20,
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <Text
-                                            style={{
-                                                flex: 1,
-                                                textAlign: "center",
-                                                fontSize: 28,
-                                                lineHeight: 33,
-                                                fontWeight: "400",
-                                                fontFamily: "Roboto",
-                                                color: "#c22259",
-                                            }}
-                                        >
-                                            300 POINT
-                                        </Text>
-                                    </Button>
-                                </View>
-                            </Button>
-                        </View>
-                        <Button
-                            style={{
-                                marginTop: 60,
-                                width: 180,
-                                height: 56,
-                                borderRadius: 20,
-                                backgroundColor: "#c22259",
-                                zIndex: 300,
-                                position: "relative",
-                            }}
-                            iconRight
-                        >
-                            <Text
-                                style={{
-                                    fontSize: 20,
-                                    fontWeight: "200",
-                                    fontFamily: "Roboto",
-                                }}
-                            >
-                                Next Game
-                            </Text>
-                            <Icon
-                                style={{
-                                    fontSize: 32,
-                                }}
-                                name="ios-arrow-round-forward"
-                            />
-                            {/* <Image
-                                style={{
-                                    width: 116,
-                                    height: 116,
-                                }}
-                                source={require("../../assets/images/fireworks.png")}
-                            /> */}
+                                        300 POINT
+                                    </Text>
+                                </Button>
+                            </View>
                         </Button>
-                    </Fragment>
-                )}
-            </View>
+                    </View>
+                    <View
+                        style={{
+                            marginBottom: 50,
+                        }}
+                    >
+                        {currentAvailChance > 0 && <NextGameButton />}
+                        {currentAvailChance <= 0 && <ContinueNavigateButton />}
+                    </View>
+                </Fragment>
+            )}
         </Fragment>
     )
 }

@@ -3,10 +3,9 @@ import { BackHandler, StyleSheet, Modal, View } from "react-native"
 import Svg, { Defs, G, Rect, Circle, Path } from "react-native-svg"
 import { JourneyContext } from "./JourneyContext"
 import { Text, Button, Content } from "native-base"
-// import { withNavigation } from "react-navigation"
 import ChanceDialog from "./ChanceDialog"
-import { FrameAttribute } from "expo/build/AR"
 import { chooseGame } from "../../utils/gameCreator"
+import JourneyHeader from "./JourneyHeader"
 
 const styles = StyleSheet.create({
     logo: {
@@ -27,6 +26,14 @@ const GameDialog = () => {
         currentAvailChance,
         totalChance,
     } = state
+    // Function that will close the open state to false
+    const onBackButtonPress = () => {
+        console.log("Back button")
+        dispatch({
+            type: "toggleGameDialog",
+            open: false,
+        })
+    }
     useEffect(() => {
         // If the dialog is open, we need to trigger the
         // start of a game
@@ -48,22 +55,24 @@ const GameDialog = () => {
     }
     return (
         <Fragment>
-            <Button
-                style={{
-                    borderRadius: 500,
-                    width: 1000,
-                    position: "absolute",
-                    zIndex: 9999,
-                    height: 1000,
-                    backgroundColor: "#C22259",
-                    alignSelf: "center",
-                    top: -750,
-                }}
-            ></Button>
+            {state.gameDialogOpen && (
+                <Button
+                    style={{
+                        borderRadius: 500,
+                        width: 1000,
+                        position: "absolute",
+                        zIndex: 9999,
+                        height: 1000,
+                        backgroundColor: "#C22259",
+                        alignSelf: "center",
+                        top: -750,
+                    }}
+                ></Button>
+            )}
 
             <View>
                 <Modal
-                    // onRequestClose={onBackButtonPress}
+                    onRequestClose={onBackButtonPress}
                     animationType="slide"
                     transparent={true}
                     visible={state.gameDialogOpen}
@@ -89,9 +98,14 @@ const GameDialog = () => {
                     ></View>
                     <View
                         style={{
-                            maxWidth: "100%",
+                            zIndex: 9999,
+                            flex: 1,
+                            alignItems: "center",
+                            // width: "100%",
+                            // height: "100%",
                         }}
                     >
+                        <JourneyHeader />
                         {gameType !== null && renderGame()}
                     </View>
                 </Modal>

@@ -39,7 +39,7 @@ const CurrJourneyPolyline = () => {
                         zIndex: 101,
                     }}
                     strokeWidth={4}
-                    strokeColor="blue"
+                    strokeColor="#fc5c65"
                 />
             )}
         </Fragment>

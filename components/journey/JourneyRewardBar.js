@@ -29,7 +29,7 @@ const JourneyRewardBar = () => {
                 width: 50,
                 height: 50,
                 position: "absolute",
-                bottom: 30,
+                bottom: 120,
                 left: 30,
                 zIndex: 999,
             }}

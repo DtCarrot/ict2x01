@@ -16,6 +16,8 @@ import { getPreciseDistance, getCompassDirection } from "geolib"
 import DistanceManager from "../components/journey/DistanceManager"
 import JourneyRewardBar from "../components/journey/JourneyRewardBar"
 import GameDialog from "../components/journey/GameDialog"
+import mapStyles from "../components/map/mapStyles"
+import BottomJourneyBar from "../components/journey/BottomJourneyBar"
 
 const JourneyScreen = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
@@ -24,81 +26,81 @@ const JourneyScreen = ({ navigation }) => {
     const [initialRender, setInitialRender] = useState(false)
     const [currPolyline, setCurrPolyline] = useState(null)
     // Update the position every 30 seconds
-    // useInterval(async () => {
-    //     // console.log("Journey details: ", state.journeyDetails.overview_polyline)
-    //     if (state.journeyDetails === null) {
-    //         return
-    //     }
-    //     const {
-    //         lastKnownPosition,
-    //         gpsPosition,
-    //         journeyDetails,
-    //         journeyStepIdx,
-    //         journeyStepSubIdx,
-    //     } = state
-    //     const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
-    //     console.log("Journey step: ", journeyStepIdx, journeyStepSubIdx)
-    //     console.log("GPS Target: ", nextTarget)
-    //     // Get the distance between the current and target destination
-    //     const distance = getPreciseDistance(
-    //         {
-    //             latitude: gpsPosition.latitude,
-    //             longitude: gpsPosition.longitude,
-    //         },
-    //         {
-    //             latitude: nextTarget.end_location.lat,
-    //             longitude: nextTarget.end_location.lng,
-    //         }
-    //     )
+    useInterval(async () => {
+        // console.log("Journey details: ", state.journeyDetails.overview_polyline)
+        if (state.journeyDetails === null) {
+            return
+        }
+        const {
+            lastKnownPosition,
+            gpsPosition,
+            journeyDetails,
+            journeyStepIdx,
+            journeyStepSubIdx,
+        } = state
+        const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
+        console.log("Journey step: ", journeyStepIdx, journeyStepSubIdx)
+        console.log("GPS Target: ", nextTarget)
+        // Get the distance between the current and target destination
+        const distance = getPreciseDistance(
+            {
+                latitude: gpsPosition.latitude,
+                longitude: gpsPosition.longitude,
+            },
+            {
+                latitude: nextTarget.end_location.lat,
+                longitude: nextTarget.end_location.lng,
+            }
+        )
 
-    //     const location = await Location.getCurrentPositionAsync({})
-    //     console.log("Heading: ", location)
-    //     const {
-    //         coords: { latitude, longitude, heading, altitude },
-    //     } = location
-    //     dispatch({
-    //         type: "setGPSPosition",
-    //         gpsPosition: {
-    //             latitude,
-    //             longitude,
-    //             heading,
-    //         },
-    //     })
-    //     if (lastKnownPosition !== null) {
-    //         const distanceBetweenCurrAndPrevGPS = getPreciseDistance(
-    //             {
-    //                 latitude: gpsPosition.latitude,
-    //                 longitude: gpsPosition.longitude,
-    //             },
-    //             lastKnownPosition
-    //         )
-    //         const { distanceTravelled } = state
-    //         // Update the distance that has been travelled
-    //         console.log("Distance: ", distanceBetweenCurrAndPrevGPS, distanceTravelled)
-    //         dispatch({
-    //             type: "updateDistanceTravelled",
-    //             distanceTravelled: distanceTravelled + distanceBetweenCurrAndPrevGPS,
-    //         })
-    //     }
+        const location = await Location.getCurrentPositionAsync({})
+        console.log("Heading: ", location)
+        const {
+            coords: { latitude, longitude, heading, altitude },
+        } = location
+        dispatch({
+            type: "setGPSPosition",
+            gpsPosition: {
+                latitude,
+                longitude,
+                heading,
+            },
+        })
+        if (lastKnownPosition !== null) {
+            const distanceBetweenCurrAndPrevGPS = getPreciseDistance(
+                {
+                    latitude: gpsPosition.latitude,
+                    longitude: gpsPosition.longitude,
+                },
+                lastKnownPosition
+            )
+            const { distanceTravelled } = state
+            // Update the distance that has been travelled
+            console.log("Distance: ", distanceBetweenCurrAndPrevGPS, distanceTravelled)
+            dispatch({
+                type: "updateDistanceTravelled",
+                distanceTravelled: distanceTravelled + distanceBetweenCurrAndPrevGPS,
+            })
+        }
 
-    //     // Reached destination
-    //     if (distance < 10) {
-    //         // Check the current leg length
-    //         if (journeyStepSubIdx + 1 >= journeyDetails.legs[0].steps[journeyStepIdx].length) {
-    //             dispatch({
-    //                 type: "setJourneyStep",
-    //                 journeyStepIdx: journeyStepIdx + 1,
-    //                 journeyStepSubIdx: 0,
-    //             })
-    //         } else {
-    //             dispatch({
-    //                 type: "setJourneyStep",
-    //                 journeyStepIdx,
-    //                 journeyStepSubIdx: journeyStepSubIdx + 1,
-    //             })
-    //         }
-    //     }
-    // }, 45000)
+        // Reached destination
+        if (distance < 10) {
+            // Check the current leg length
+            if (journeyStepSubIdx + 1 >= journeyDetails.legs[0].steps[journeyStepIdx].length) {
+                dispatch({
+                    type: "setJourneyStep",
+                    journeyStepIdx: journeyStepIdx + 1,
+                    journeyStepSubIdx: 0,
+                })
+            } else {
+                dispatch({
+                    type: "setJourneyStep",
+                    journeyStepIdx,
+                    journeyStepSubIdx: journeyStepSubIdx + 1,
+                })
+            }
+        }
+    }, 45000)
 
     const transformRoute = route => {
         // console.log(route.overview_polyline.points)
@@ -202,6 +204,7 @@ const JourneyScreen = ({ navigation }) => {
             }}
         >
             <MapView
+                customMapStyle={mapStyles}
                 ref={mapRef}
                 camera={{
                     center: {
@@ -223,8 +226,8 @@ const JourneyScreen = ({ navigation }) => {
                             style={{
                                 zIndex: 99,
                             }}
-                            strokeWidth={2}
-                            strokeColor="red"
+                            strokeWidth={4}
+                            strokeColor="#26de81"
                         />
                         <CurrJourneyPolyline />
                     </React.Fragment>
@@ -251,6 +254,7 @@ const JourneyScreen = ({ navigation }) => {
             <DirectionsBar />
             <GameDialog />
             <JourneyRewardBar />
+            <BottomJourneyBar />
         </View>
     )
 }
