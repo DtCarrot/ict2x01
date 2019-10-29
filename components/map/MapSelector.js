@@ -18,10 +18,19 @@ const MapSelector = () => {
     const currentLocMarker = useRef()
     const mapRef = useRef(null)
     const [markerLoaded, setMarkerLoaded] = useState(false)
+    const [location, setLocation] = useState(null)
     // const [routeState, setRoutes] = useState(null)
     const [currCoord, setCurrCoord] = useState(null)
     const { state, dispatch } = useContext(SearchBarContext)
     const { state: routeState, dispatch: routeDispatch } = useContext(RouteContext)
+    const getReverseGeocode = async (lat, lng) => {
+        const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_DIRECTION_API_KEY}`
+        console.log(geocodeUrl)
+        let resp = await fetch(geocodeUrl)
+        let respJson = await resp.json()
+        console.log("Response json: ", respJson)
+        return respJson.results[0].formatted_address
+    }
     useEffect(() => {
         const _getLocationAsync = async () => {
             const { status } = await Permissions.askAsync(Permissions.LOCATION)
@@ -33,16 +42,24 @@ const MapSelector = () => {
                 const {
                     coords: { latitude, longitude },
                 } = location
+                setCurrCoord({
+                    latitude,
+                    longitude,
+                })
+                // const locationName = await Location.reverseGeocodeAsync({
+                //     latitude,
+                //     longitude,
+                // })
+                // console.log("Location obj: ", locationName)
+                // const { name } = locationName[0]
+                const name = await getReverseGeocode(latitude, longitude)
+                setLocation(name)
                 mapRef.current.animateCamera({
                     center: {
                         latitude,
                         longitude,
                     },
                     zoom: 18,
-                })
-                setCurrCoord({
-                    latitude,
-                    longitude,
                 })
             }
         }
@@ -139,10 +156,10 @@ const MapSelector = () => {
                     coordinate={currCoord}
                 >
                     <Image
-                        source={require("../../assets/navigation/icons8-navigation-48.png")}
+                        source={require("../../assets/navigation/maps-and-flags.png")}
                         style={{ width: 48, height: 48 }}
                     />
-                    <LocationCallout />
+                    {location !== null && <LocationCallout name={location} />}
                 </MapView.Marker>
             )}
             {state.selectedPlaceObj !== null && (
@@ -153,7 +170,7 @@ const MapSelector = () => {
                     }}
                 >
                     <Image
-                        source={require("../../assets/navigation/icons8-navigation-48.png")}
+                        source={require("../../assets/navigation/maps-and-flags.png")}
                         style={{ width: 48, height: 48 }}
                     />
                     <LocationCallout />

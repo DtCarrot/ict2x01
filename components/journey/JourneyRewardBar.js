@@ -25,26 +25,29 @@ const JourneyRewardBar = () => {
             onPress={() => openGameDialog()}
             icon
             style={{
-                borderRadius: 10,
+                borderRadius: 50,
                 width: 50,
                 height: 50,
                 position: "absolute",
                 bottom: 120,
-                left: 30,
+                marginLeft: 5,
+                // left: 30,
+                left: "2%",
                 zIndex: 999,
+                backgroundColor: "#966FD6",
             }}
         >
             <Badge
                 danger
                 style={{
                     position: "absolute",
-                    top: -15,
-                    right: -15,
+                    top: -10,
+                    right: -10,
                 }}
             >
                 <Text>{currentAvailChance}</Text>
             </Badge>
-            <Icon name="beer" />
+            <Icon name="ios-gift" />
         </Button>
     )
 }

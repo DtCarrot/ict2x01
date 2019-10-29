@@ -90,9 +90,9 @@ export default createAppContainer(
         {
             headerMode: "none",
             title: "Main",
-            // initialRouteName: "AuthLoading",
+            initialRouteName: "AuthLoading",
             // initialRouteName: "SignUp",
-            initialRouteName: "Journey",
+            // initialRouteName: "Journey",
         }
     )
 )

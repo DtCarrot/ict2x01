@@ -65,14 +65,17 @@ const SvgComponent = () => (
 
 const ChanceDialog = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
-    const [finished, setFinished] = useState(false)
+    // const [finished, setFinished] = useState(false)
     const [reward, setReward] = useState("300 POINTS")
-    const { currentAvailChance, totalChance } = state
+    const { currentAvailChance, totalChance, finished } = state
     console.log("Finished: ", finished)
     useEffect(() => {
-        if (state.gameDialogOpen) {
+        if (!state.finished) {
             ShakeEvent.addListener(() => {
-                setFinished(true)
+                // setFinished(true)
+                dispatch({
+                    type: "endGame",
+                })
                 const reward = generateLuckyDrawReward()
                 if (reward.type === "point") {
                     dispatch({
@@ -89,7 +92,7 @@ const ChanceDialog = ({ navigation }) => {
         } else {
             ShakeEvent.removeListener()
         }
-    }, [state.gameDialogOpen])
+    }, [state.gameDialogOpen, state.finished])
     return (
         <Fragment>
             <Text style={styles.title}>LUCKY</Text>
