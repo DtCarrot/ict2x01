@@ -1,6 +1,13 @@
 import React from "react"
 import NavigationTestUtils from "react-navigation/NavigationTestUtils"
 import renderer from "react-test-renderer"
+import * as admin from "firebase-admin"
+const adminConfig = {
+    databaseURL: "https://ict2101-22ad5.firebaseio.com",
+    credential: admin.credential.applicationDefault(),
+}
+
+admin.initializeApp()
 
 import App from "../App"
 
@@ -29,43 +36,112 @@ import App from "../App"
 // });
 
 import * as firebase from "firebase"
-import { exportAllDeclaration } from "@babel/types"
+import { exportAllDeclaration, jsxText, jsxEmptyExpression } from "@babel/types"
 import { registerUser } from "../db/authService"
 
-describe("Authentication test", () => {
-    // beforeAll(() => {
-    // Initialize Firebase
-    // const firebaseConfig = {
-    //     apiKey: "AIzaSyCHAJmBB6hMn8dnxDO3lMZkWlvazk3wFGI",
-    //     projectId: "ict2101-22ad5",
-    //     authDomain: "ict2101-22ad5.firebaseapp.com",
-    //     databaseURL: "https://ict2101-22ad5.firebaseio.com",
-    //     storageBucket: "ict2101-22ad5.appspot.com",
-    // }
-
-    // firebase.initializeApp(firebaseConfig)
-    // })
-    it("User shall login with valid email and password combination", async () => {
-        const signInStatus = await firebase
-            .auth()
-            .signInWithEmailAndPassword("darrenng53@gmail.com", "imsims")
-        // except(signInStatus).to
-    })
-    it("User shall login with invalid email and password combination", async () => {
-        try {
-            const signInStatus = await firebase
-                .auth()
-                .signInWithEmailAndPassword("darrenng@gmail.com", "imsims")
-        } catch (err) {
-            console.log(err.code)
+const testRegisterUser = async (email, password) => {
+    try {
+        // Register for an account
+        const result = await firebase.auth().createUserWithEmailAndPassword(email, password)
+        const {
+            user: { uid: userId },
+        } = result
+        return {
+            err: null,
         }
-        // except(signInStatus).to
+    } catch (err) {
+        console.log("Error in signing in: ", err.code, err.message)
+        return {
+            err: err.code,
+            msg: err.message,
+        }
+    }
+}
+
+const testLoginUser = async (email, password) => {
+    try {
+        const signInStatus = await firebase.auth().signInWithEmailAndPassword(email, password)
+        return {
+            err: null,
+        }
+    } catch (err) {
+        console.log("Error in signing in: ", err.code, err.message)
+        return {
+            err: err.code,
+            msg: err.message,
+        }
+    }
+}
+
+const defaultEmail = "default.ict2x01@gmail.com"
+const defaultPassword = "abc123"
+const stubRegisterEmail = "create.ict2x01@gmail.com"
+const testEmails = [defaultEmail, stubRegisterEmail]
+
+describe("Authentication test", () => {
+    beforeAll(async () => {
+        console.log("Stubbing database here")
+        let i = 0
+        for (i = 0; i < testEmails.length; i++) {
+            console.log("At test email: ", testEmails[i])
+            const deleteEmail = testEmails[i]
+            try {
+                const { uid: deleteUid } = await admin.auth().getUserByEmail(deleteEmail)
+                console.log("Deleting user with id ", deleteUid, deleteEmail)
+                await admin.auth().deleteUser(deleteUid)
+            } catch (err) {
+                console.log("Failed to delete user")
+            }
+        }
+
+        console.log("Starting to create user")
+
+        try {
+            const userResult = await admin.auth().createUser({
+                email: defaultEmail,
+                emailVerified: true,
+                password: defaultPassword,
+            })
+        } catch (err) {
+            console.log("Error in creating stub user: ", err.code)
+        }
+    }, 20000)
+
+    test("User shall login with valid email and password combination", async () => {
+        const res = await testLoginUser(defaultEmail, defaultPassword)
+        console.log("Res: ", res)
+        expect(res.err).toBe(null) // True
+    }, 10000)
+    test("User shall login with correct email and invalid password", async () => {
+        const res = await testLoginUser(defaultEmail, "badpw")
+        console.log("Res: ", res)
+        expect(res.err).toBe("auth/wrong-password")
+    }, 10000)
+    test("User shall login with incorrect email and password", async () => {
+        const res = await testLoginUser("ict2102@gmail.com", "asd123")
+        console.log("Res: ", res)
+        expect(res.err).toBe("auth/user-not-found")
+    }, 10000)
+    test("User shall register with email that already exists in the database", async () => {
+        const emailAddress = "darrenong53@gmail.com"
+        const password = "test123"
+        const res = await testRegisterUser(defaultEmail, password)
+        console.log("Res: ", res)
+        expect(res.err).toBe("auth/email-already-in-use")
     })
-    it("User shall register with valid email and password combination", async () => {
-        console.log("Valid email and password combination")
-        await registerUser("dtcarrot@gmail.com", "imsims")
+    test("User shall register with a valid email", async () => {
+        const emailAddress = stubRegisterEmail
+        const password = "abc123"
+        const res = await testRegisterUser(stubRegisterEmail, password)
+        console.log("Res: ", res)
+        expect(res.err).toBe(null)
     })
-    it("User shall be unable to register with duplicate email", async () => {
-        console.log("Unable to register with duplicate email")
+})
+
+afterAll(async () => {
+    testEmails.forEach(async deleteEmail => {
+        const { uid: deleteUid } = await admin.auth().getUserByEmail(deleteEmail)
+        console.log("Deleting user with id ", deleteUid)
+        await admin.auth().deleteUser(deleteUid)
     })
 })

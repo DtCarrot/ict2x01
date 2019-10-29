@@ -25,6 +25,7 @@
     "expo-sensors": "^6.0.0",
     "expo-web-browser": "6.0.0",
     "firebase": "^6.5.0",
+    "firebase-admin": "^8.6.1",
     "geolib": "^3.0.4",
     "lodash": "^4.17.15",
     "lottie-react-native": "^2.6.1",
