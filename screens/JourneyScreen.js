@@ -11,16 +11,79 @@ import DirectionsBar from "../components/journey/DirectionsBar"
 import sampleRoutes from "../components/map/sampleRoutes"
 import { JourneyContext, JourneyProvider } from "../components/journey/JourneyContext"
 import useInterval from "../utils/useInterval"
-
+import { differenceInSeconds } from "date-fns/fp"
 import { getPreciseDistance, getCompassDirection } from "geolib"
 import DistanceManager from "../components/journey/DistanceManager"
+import JourneyRewardBar from "../components/journey/JourneyRewardBar"
+import GameDialog from "../components/journey/GameDialog"
+import mapStyles from "../components/map/mapStyles"
+import BottomJourneyBar from "../components/journey/BottomJourneyBar"
 
 const JourneyScreen = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
+    const dateTimeRef = useRef(null)
     const mapRef = useRef()
     const [journeyRoute, setJourneyRoute] = useState(null)
     const [initialRender, setInitialRender] = useState(false)
     const [currPolyline, setCurrPolyline] = useState(null)
+    const getGPSPosition = async () => {
+        const location = await Location.getCurrentPositionAsync({})
+        console.log("Heading: ", location)
+        const {
+            coords: { latitude, longitude, heading, altitude },
+        } = location
+        dispatch({
+            type: "setGPSPosition",
+            latitude,
+            longitude,
+        })
+        return { latitude, longitude, heading, altitude }
+    }
+    const onUserFocus = async () => {
+        console.log("Getting gps position")
+        const { latitude, longitude, heading, altitude } = await getGPSPosition()
+        const cameraObj = {
+            center: {
+                latitude,
+                longitude,
+            },
+            pitch: 60,
+            heading,
+            zoom: 20,
+            altitude,
+        }
+        console.log("Camera obj: ", cameraObj)
+        mapRef.current.setCamera(cameraObj)
+    }
+    useEffect(() => {
+        Location.watchHeadingAsync(heading => {
+            const {
+                gpsPosition: { heading: currHeading },
+            } = state
+            console.log("Heading: ", heading)
+            const { magHeading } = heading
+            const currentTime = new Date()
+            // If the time is not null
+            if (dateTimeRef.current !== null) {
+                const diffSeconds = differenceInSeconds(dateTimeRef.current, currentTime)
+                if (diffSeconds < 3) {
+                    return false
+                }
+                dateTimeRef.current = currentTime
+            }
+            console.log("State: ", state.gpsPosition)
+            console.log("Curr Heading: ", currHeading, "Mag heading: ", magHeading)
+            console.log("Heading diff: ", Math.abs(currHeading - magHeading))
+            if (currHeading === null || Math.abs(currHeading - magHeading) > 5) {
+                dispatch({ type: "setGPSHeading", heading: magHeading })
+                const cameraObj = {
+                    heading: magHeading,
+                }
+                console.log("Camera obj: ", cameraObj)
+                mapRef.current.animateCamera(cameraObj, { duration: 300 })
+            }
+        })
+    }, [])
     // Update the position every 30 seconds
     useInterval(async () => {
         // console.log("Journey details: ", state.journeyDetails.overview_polyline)
@@ -48,20 +111,8 @@ const JourneyScreen = ({ navigation }) => {
                 longitude: nextTarget.end_location.lng,
             }
         )
+        await getGPSPosition()
 
-        const location = await Location.getCurrentPositionAsync({})
-        console.log("Heading: ", location)
-        const {
-            coords: { latitude, longitude, heading, altitude },
-        } = location
-        dispatch({
-            type: "setGPSPosition",
-            gpsPosition: {
-                latitude,
-                longitude,
-                heading,
-            },
-        })
         if (lastKnownPosition !== null) {
             const distanceBetweenCurrAndPrevGPS = getPreciseDistance(
                 {
@@ -96,7 +147,7 @@ const JourneyScreen = ({ navigation }) => {
                 })
             }
         }
-    }, 15000)
+    }, 45000)
 
     const transformRoute = route => {
         // console.log(route.overview_polyline.points)
@@ -110,7 +161,7 @@ const JourneyScreen = ({ navigation }) => {
         // })
         const leg = route.legs[0]
         const routeCoord = leg.steps.map(step => {
-            console.log("Step: ", step)
+            // console.log("Step: ", step)
             if (step.hasOwnProperty("steps")) {
                 return step.steps.map(subStep => {
                     const points = Polyline.decode(subStep.polyline.points)
@@ -127,7 +178,7 @@ const JourneyScreen = ({ navigation }) => {
             }
         })
 
-        console.log("Route coord: ", flattenDeep(routeCoord))
+        // console.log("Route coord: ", flattenDeep(routeCoord))
         const routeObj = {
             ...route,
             overview_polyline: flattenDeep(routeCoord),
@@ -157,34 +208,30 @@ const JourneyScreen = ({ navigation }) => {
             if (status !== "granted") {
                 console.log("Denied")
             } else {
-                setTimeout(async () => {
-                    console.log("Getting current position")
-                    const location = await Location.getCurrentPositionAsync({})
-                    console.log("Location: ", location)
-                    const {
-                        coords: { latitude, longitude, heading, altitude },
-                    } = location
-                    const cameraObj = {
-                        center: {
-                            latitude,
-                            longitude,
-                        },
-                        pitch: 60,
-                        heading,
-                        zoom: 20,
-                        altitude,
-                    }
-                    console.log("Setting position: ", cameraObj)
-                    mapRef.current.setCamera(cameraObj)
-                    dispatch({
-                        type: "setGPSPosition",
-                        gpsPosition: {
-                            latitude,
-                            longitude,
-                            heading,
-                        },
-                    })
-                }, 1000)
+                // setTimeout(async () => {
+                console.log("Getting current position")
+                const location = await Location.getCurrentPositionAsync({})
+                console.log("Location: ", location)
+                const {
+                    coords: { latitude, longitude, heading, altitude },
+                } = location
+                const cameraObj = {
+                    center: {
+                        latitude,
+                        longitude,
+                    },
+                    pitch: 60,
+                    heading,
+                    zoom: 20,
+                    altitude,
+                }
+                mapRef.current.setCamera(cameraObj)
+                dispatch({
+                    type: "setGPSPosition",
+                    latitude,
+                    longitude,
+                })
+                // }, 1000)
             }
         }
         _getLocationAsync()
@@ -201,6 +248,7 @@ const JourneyScreen = ({ navigation }) => {
             }}
         >
             <MapView
+                customMapStyle={mapStyles}
                 ref={mapRef}
                 camera={{
                     center: {
@@ -222,32 +270,61 @@ const JourneyScreen = ({ navigation }) => {
                             style={{
                                 zIndex: 99,
                             }}
-                            strokeWidth={2}
-                            strokeColor="red"
+                            strokeWidth={4}
+                            strokeColor="#26de81"
                         />
                         <CurrJourneyPolyline />
+                        <MapView.Marker
+                            coordinate={{
+                                latitude: state.journeyDetails.legs[0].end_location.lat,
+                                longitude: state.journeyDetails.legs[0].end_location.lng,
+                            }}
+                        >
+                            <Image
+                                source={require("../assets/navigation/maps-and-flags.png")}
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                }}
+                            />
+                        </MapView.Marker>
                     </React.Fragment>
                 )}
-                {state.gpsPosition !== null && (
+                {state.gpsPosition.latitude !== null && state.gpsPosition.heading !== null && (
                     <MapView.Marker
                         coordinate={{
                             latitude: state.gpsPosition.latitude,
                             longitude: state.gpsPosition.longitude,
                         }}
-                        rotation={state.gpsPosition.heading}
+                        // rotation={state.gpsPosition.heading + 90}
+                        // rotation={90}
                     >
                         <Image
-                            source={require("../assets/navigation/icons8-upward-arrow-64.png")}
+                            source={require("../assets/navigation/icons8-arrow-64.png")}
                             style={{
-                                width: 48,
-                                height: 48,
-                                transform: [{ rotate: `${state.gpsPosition.heading}deg` }],
+                                width: 64,
+                                height: 64,
+                                transform: [
+                                    {
+                                        rotateY: "15deg",
+                                    },
+                                    {
+                                        rotate: "-90deg",
+                                    },
+                                ],
+                                // {
+                                //     rotate: `${state.gpsPosition.heading + 90}deg`,
+                                // },
+                                // ],
                             }}
                         />
                     </MapView.Marker>
                 )}
             </MapView>
             <DirectionsBar />
+            <GameDialog />
+            <JourneyRewardBar />
+            <BottomJourneyBar onUserFocus={onUserFocus} />
         </View>
     )
 }

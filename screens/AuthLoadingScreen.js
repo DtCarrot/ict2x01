@@ -1,14 +1,6 @@
 import React, { Component } from "react"
+import { initUserRecordsIfNotExists } from "../db/authService"
 import * as firebase from "firebase"
-// Initialize Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyCHAJmBB6hMn8dnxDO3lMZkWlvazk3wFGI",
-    authDomain: "ict2101-22ad5.firebaseapp.com",
-    databaseURL: "https://ict2101-22ad5.firebaseio.com",
-    storageBucket: "ict2101-22ad5.appspot.com",
-}
-
-firebase.initializeApp(firebaseConfig)
 
 class AuthLoadingScreen extends Component {
     componentDidMount() {
@@ -16,8 +8,11 @@ class AuthLoadingScreen extends Component {
     }
     _checkAuth = async () => {
         // Listen for authentication state to change.
-        firebase.auth().onAuthStateChanged(user => {
+        firebase.auth().onAuthStateChanged(async user => {
+            console.log("User onAuthStateChanged: ", user)
             if (user != null) {
+                const { uid: userId } = user
+                const success = await initUserRecordsIfNotExists(userId)
                 console.log("We are authenticated now!")
                 this.props.navigation.navigate("Home")
                 return

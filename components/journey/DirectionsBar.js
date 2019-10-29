@@ -1,8 +1,8 @@
 import React, { useEffect, useContext, useState } from "react"
-import { StyleSheet } from "react-native"
-import { View, Text } from "native-base"
+import { View, StyleSheet } from "react-native"
 import { JourneyContext } from "../../components/journey/JourneyContext"
-import { statement } from "@babel/template"
+import { LinearGradient } from "expo-linear-gradient"
+import { Button, Text } from "native-base"
 
 const DirectionsBar = () => {
     const { state, dispatch } = useContext(JourneyContext)
@@ -33,34 +33,75 @@ const DirectionsBar = () => {
                 <Text
                     style={{
                         paddingTop: 30,
+                        fontSize: 18,
+                        fontFamily: "Roboto",
+                        color: "#966fd6",
                     }}
                 >
                     {text}
                 </Text>
             </View>
+            {/* <View style={styles.timeBtn}> */}
+            {/* <View> */}
+            <LinearGradient
+                colors={["#966FD6", "#6B3BB9"]}
+                start={[0, 0]}
+                end={[1, 1]}
+                location={[-0.1, 0.8251]}
+                style={styles.timeBtn}
+            >
+                {/* <Button style={styles.timeBtn}> */}
+                <Text
+                    style={{
+                        lineHeight: 22,
+                        fontSize: 19,
+                        fontFamily: "Roboto",
+                        fontWeight: "400",
+                        textAlign: "center",
+                        justifyContent: "center",
+                        color: "#fff",
+                    }}
+                >
+                    17 min | 10 km | 09:51
+                </Text>
+                {/* </Button> */}
+            </LinearGradient>
+            {/* </View> */}
+            {/* </View> */}
         </View>
     )
 }
 
 const styles = StyleSheet.create({
+    timeBtn: {
+        width: 240,
+        borderRadius: 20,
+        height: 38,
+        marginTop: 10,
+        display: "flex",
+        justifyContent: "center",
+    },
     wrapper: {
         position: "absolute",
+        width: "100%",
+        top: 0,
         display: "flex",
         justifyContent: "space-between",
         flex: 1,
-        flexDirection: "row",
+        flexDirection: "column",
         alignItems: "center",
         zIndex: 990,
-        backgroundColor: "#fff",
-        width: "100%",
-        height: 100,
-        top: 0,
     },
     center: {
         // flex: "1 1 auto",
-        flex: 1,
+        // flex: 1,
         alignItems: "center",
         justifyContent: "center",
+        width: "100%",
+        height: 100,
+        backgroundColor: "#fff",
+        borderBottomWidth: 2,
+        borderBottomColor: "#966FD6",
     },
 })
 export default DirectionsBar

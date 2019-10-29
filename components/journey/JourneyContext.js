@@ -5,18 +5,41 @@ const JourneyContext = createContext()
 const initialState = {
     distanceTravelled: 0,
     journeyDetails: null,
-    gpsPosition: null,
+    gpsPosition: {
+        latitude: null,
+        longitude: null,
+        heading: null,
+    },
     journeyStepIdx: 0,
     journeyStepSubIdx: 0,
     currPolyline: null,
-    currentAvailChance: 0,
+    currentAvailChance: 1,
     lastKnownPosition: null,
-    totalChance: 0,
+    totalChance: 1,
+    finished: false,
+    gameInProgress: true,
+    gameDialogOpen: false,
+    gameType: null,
 }
 
 const reducer = (state, action) => {
-    console.log("Prev state: ", state)
     switch (action.type) {
+        case "startGame":
+            return {
+                ...state,
+                gameType: action.gameType,
+                finished: false,
+            }
+        case "endGame":
+            return {
+                ...state,
+                finished: true,
+            }
+        case "toggleGameDialog":
+            return {
+                ...state,
+                gameDialogOpen: action.open,
+            }
         case "setJourneyDetails":
             return {
                 ...state,
@@ -26,7 +49,21 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 lastKnownPosition: state.gpsPosition,
-                gpsPosition: action.gpsPosition,
+                // gpsPosition: action.gpsPosition,
+                gpsPosition: {
+                    ...state.gpsPosition,
+                    latitude: action.latitude,
+                    longitude: action.longitude,
+                },
+            }
+        case "setGPSHeading":
+            console.log("Position: ", state.gpsPosition)
+            return {
+                ...state,
+                gpsPosition: {
+                    ...state.gpsPosition,
+                    heading: action.heading,
+                },
             }
         case "setJourneyStep":
             console.log("New journey step idx: ", action)
