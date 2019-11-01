@@ -14,6 +14,17 @@ admin.initializeApp()
 const stubEmailAddress = "point.ict2x01@gmail.com"
 const stubPassword = "abc123"
 
+// Check Journey
+const checkJourney = () => {
+    const endPointLat = "1.29"
+    const endPointLng = "120.00"
+    let finished = false
+    let distanceTravelled = 0
+    do {
+        const distanceDiff = getDistanceTravelledBetweenLastPoint()
+    } while (!finished)
+}
+
 const checkPointCount = async () => {
     const user = firebase.auth().currentUser
     const { uid: userId } = user

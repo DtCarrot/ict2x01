@@ -42,7 +42,8 @@ import { registerUser } from "../db/authService"
 const testRegisterUser = async (email, password) => {
     try {
         // Register for an account
-        const result = await firebase.auth().createUserWithEmailAndPassword(email, password)
+        const result = await firebase.auth().
+        createUserWithEmailAndPassword(email, password)
         const {
             user: { uid: userId },
         } = result
@@ -73,7 +74,7 @@ const testLoginUser = async (email, password) => {
     }
 }
 
-const defaultEmail = "default.ict2x01@gmail.com"
+const defaultEmail  "default.ict2x01@gmail.com"
 const defaultPassword = "abc123"
 const stubRegisterEmail = "create.ict2x01@gmail.com"
 const testEmails = [defaultEmail, stubRegisterEmail]
@@ -107,28 +108,33 @@ describe("Authentication test", () => {
         }
     }, 20000)
 
-    test("User shall login with valid email and password combination", async () => {
+    test("User shall login with valid email and password combination", 
+    async () => {
         const res = await testLoginUser(defaultEmail, defaultPassword)
-        console.log("Res: ", res)
         expect(res.err).toBe(null) // True
     }, 10000)
-    test("User shall login with correct email and invalid password", async () => {
+
+    test("User shall login with correct email and invalid password", 
+    async () => {
         const res = await testLoginUser(defaultEmail, "badpw")
-        console.log("Res: ", res)
         expect(res.err).toBe("auth/wrong-password")
     }, 10000)
+
     test("User shall login with incorrect email and password", async () => {
         const res = await testLoginUser("ict2102@gmail.com", "asd123")
         console.log("Res: ", res)
         expect(res.err).toBe("auth/user-not-found")
     }, 10000)
-    test("User shall register with email that already exists in the database", async () => {
+
+    test("User shall register with email that already exists in the database", 
+    async () => {
         const emailAddress = "darrenong53@gmail.com"
         const password = "test123"
         const res = await testRegisterUser(defaultEmail, password)
         console.log("Res: ", res)
         expect(res.err).toBe("auth/email-already-in-use")
     })
+
     test("User shall register with a valid email", async () => {
         const emailAddress = stubRegisterEmail
         const password = "abc123"
