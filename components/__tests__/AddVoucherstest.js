@@ -1,3 +1,5 @@
+import { exportAllDeclaration } from "@babel/types";
+
 const addVoucher = (name, desc, pointsRequired, noOfRedeemableVouchers) => {
     if(isEmpty(name) || isEmpty(desc)) {
         console.error('Name or descrption field cannot be empty')
@@ -40,3 +42,64 @@ const addVoucher = (name, desc, pointsRequired, noOfRedeemableVouchers) => {
         }
     }
 }
+
+
+test('Add vouchers with valid inputs', () => {
+    const name = '$3 Liho Milk Tea voucher'
+    const desc = 'Enjoy $3 Liho Milk Tea at all outlets'
+    const pointsRequired = 200
+    const noOfRedeemableVouchers = 10
+    const result = await addVoucher(name, desc, pointsRequired, noOfRedeemableVouchers)
+    expect(result.err).toBe(false)
+})
+
+test('Add vouchers with empty name input', () => {
+    const name = ''
+    const desc = 'Enjoy $3 Liho Milk Tea at all outlets'
+    const pointsRequired = 200
+    const noOfRedeemableVouchers = 10
+    const result = await addVoucher(name, desc, pointsRequired, noOfRedeemableVouchers)
+    expect(result.err).toBe(true)
+})
+
+test('Add vouchers with point input as string', () => {
+
+    const name = '$3 Liho Milk Tea voucher'
+    const desc = 'Enjoy $3 Liho Milk Tea at all outlets'
+    const pointsRequired = "200"
+    const noOfRedeemableVouchers = 10
+    const result = await addVoucher(name, desc, pointsRequired, noOfRedeemableVouchers)
+
+    // There should be no error if admin have successfully added voucher.
+    expect(result.err).toBe(true)
+
+
+})
+
+test('Add vouchers with redemption limit set to -5', () => {
+    const name = '$3 Liho Milk Tea voucher'
+    const desc = 'Enjoy $3 Liho Milk Tea at all outlets'
+    const pointsRequired = 200
+    const noOfRedeemableVouchers = -5
+    const result = await addVoucher(name, desc, pointsRequired, noOfRedeemableVouchers)
+    expect(result.err).toBe(true)
+})
+
+test('Add vouchers with non admin user credetnails', () => {
+
+    const commuterEmail = "commuter@gmail.com"
+    const commuterPassword = "iamacommutter"
+    // Login as a regular user instead of admin
+    await loginUser(commuterEmail, commuterPassword)
+    // Firebase shall reject if the user is a normal one
+    const name = '$3 Liho Milk Tea voucher'
+    const desc = 'Enjoy $3 Liho Milk Tea at all outlets'
+    const pointsRequired = 200
+    const noOfRedeemableVouchers = 10
+
+    // Should trigger exception in adding vouchers to firebase as user have insufficient
+    // permission based on ACL control
+    const result = await addVoucher(name, desc, pointsRequired, noOfRedeemableVouchers)
+    expect(result.err).toBe(true)
+
+})

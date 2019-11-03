@@ -77,6 +77,7 @@ const GameDialog = () => {
                     transparent={true}
                     visible={state.gameDialogOpen}
                 >
+
                     <View
                         style={{
                             backgroundColor:
