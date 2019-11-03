@@ -20,6 +20,7 @@ const initialState = {
     gameInProgress: true,
     gameDialogOpen: false,
     gameType: null,
+    endJourneyDialogOpen: false,
 }
 
 const reducer = (state, action) => {
@@ -88,6 +89,11 @@ const reducer = (state, action) => {
                 ...state,
                 currentAvailChance: action.currentAvailChance,
                 totalChance: action.totalChance,
+            }
+        case "toggleEndJourney":
+            return {
+                ...state,
+                endJourneyDialogOpen: action.open,
             }
         default:
             return state

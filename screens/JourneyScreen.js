@@ -18,6 +18,7 @@ import JourneyRewardBar from "../components/journey/JourneyRewardBar"
 import GameDialog from "../components/journey/GameDialog"
 import mapStyles from "../components/map/mapStyles"
 import BottomJourneyBar from "../components/journey/BottomJourneyBar"
+import EndJourneyPromptDialog from "../components/journey/EndJourneyPromptDialog"
 
 const JourneyScreen = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
@@ -55,12 +56,13 @@ const JourneyScreen = ({ navigation }) => {
         console.log("Camera obj: ", cameraObj)
         mapRef.current.setCamera(cameraObj)
     }
-    useEffect(() => {
+    // useEffect(() => {
+    useInterval(() => {
         Location.watchHeadingAsync(heading => {
             const {
                 gpsPosition: { heading: currHeading },
             } = state
-            console.log("Heading: ", heading)
+            // console.log("Heading: ", heading)
             const { magHeading } = heading
             const currentTime = new Date()
             // If the time is not null
@@ -71,19 +73,20 @@ const JourneyScreen = ({ navigation }) => {
                 }
                 dateTimeRef.current = currentTime
             }
-            console.log("State: ", state.gpsPosition)
-            console.log("Curr Heading: ", currHeading, "Mag heading: ", magHeading)
-            console.log("Heading diff: ", Math.abs(currHeading - magHeading))
+            // console.log("State: ", state.gpsPosition)
+            // console.log("Curr Heading: ", currHeading, "Mag heading: ", magHeading)
+            // console.log("Heading diff: ", Math.abs(currHeading - magHeading))
             if (currHeading === null || Math.abs(currHeading - magHeading) > 5) {
                 dispatch({ type: "setGPSHeading", heading: magHeading })
                 const cameraObj = {
                     heading: magHeading,
                 }
-                console.log("Camera obj: ", cameraObj)
-                mapRef.current.animateCamera(cameraObj, { duration: 300 })
+                // console.log("Camera obj: ", cameraObj)
+                mapRef.current.animateCamera(cameraObj, { duration: 100 })
             }
         })
-    }, [])
+    }, 1000)
+    // }, [])
     // Update the position every 30 seconds
     useInterval(async () => {
         // console.log("Journey details: ", state.journeyDetails.overview_polyline)
@@ -325,6 +328,7 @@ const JourneyScreen = ({ navigation }) => {
             <GameDialog />
             <JourneyRewardBar />
             <BottomJourneyBar onUserFocus={onUserFocus} />
+            <EndJourneyPromptDialog />
         </View>
     )
 }
