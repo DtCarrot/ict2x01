@@ -48,6 +48,7 @@ const JourneyStack = createDrawerNavigator(
     },
     {
         headerMode: "none",
+        drawerWidth: 220,
         contentComponent: props => <DrawerScreen {...props} />,
     }
 )
@@ -72,7 +73,7 @@ const DrawerStack = createDrawerNavigator(
     },
     {
         contentComponent: props => <DrawerScreen {...props} />,
-        // drawerWidth: 300,
+        drawerWidth: 220,
         // headerMode: "none",
     }
 )

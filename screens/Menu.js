@@ -16,50 +16,92 @@ class DrawerScreen extends Component {
         this.props.navigation.dispatch(navigateAction)
         this.props.navigation.dispatch(DrawerActions.closeDrawer())
     }
-    logout = async () => {
-        await firebase.auth().signOut()
-        this.navigateToScreen("SignIn")
+    // logout = async () => {
+    //     await firebase.auth().signOut()
+    //     this.navigateToScreen("SignIn")
+    // }
+    navigate = to => {
+        switch (to) {
+            case "navigate":
+                this.navigateToScreen("Home")
+                break
+            case "leaderboard":
+                this.navigateToScreen("Leaderboard")
+                break
+            case "voucher":
+                this.navigateToScreen("Voucher")
+                break
+            case "profile":
+                this.navigateToScreen("Profile")
+                break
+        }
     }
 
     render() {
         return (
-            <Container>
+            <Container
+                style={{
+                    backgroundColor: "F1F1F1",
+                }}
+            >
                 <View
                     style={{
-                        backgroundColor: "#000",
                         paddingTop: 40,
                         paddingBottom: 20,
+                        flex: 1,
                     }}
                 >
+                    <View
+                        style={{
+                            borderRadius: 126,
+                            width: 126,
+                            height: 126,
+                            backgroundColor: "#c4c4c4",
+                            alignSelf: "center",
+                        }}
+                    ></View>
                     <H2
                         style={{
-                            color: "#fff",
+                            marginTop: 20,
+                            marginBottom: 20,
+                            color: "#000",
+                            fontSize: 25,
+                            fontFamily: "Roboto",
+                            fontWeight: "200",
                             marginLeft: 10,
+                            alignSelf: "center",
                         }}
                     >
                         Darren Ong
                     </H2>
-                </View>
-                <Content>
                     <View style={styles.drawerItem}>
-                        <Icon style={styles.icon} active name="airplane" />
-                        <Text onPress={this.logout} style={{ color: "#000" }}>
-                            Logout
+                        <Icon style={styles.icon} active name="compass" />
+                        <Text onPress={() => this.navigate("navigate")} style={styles.drawerText}>
+                            Navigate
                         </Text>
                     </View>
-                </Content>
-                {/* <View style={styles.menuItem}>
-                            <Text onPress={this.navigateToScreen("Home")}>Home</Text>
-                        </View>
-                        <View style={styles.menuItem}>
-                            <Text onPress={this.navigateToScreen("About")}>About</Text>
-                        </View>
-                        <View style={styles.menuItem}>
-                            <Text onPress={this.navigateToScreen("Contact")}>Contact</Text>
-                        </View>
-                        <View style={styles.menuItem}>
-                            <Text onPress={() => this.logout()}>Contact</Text>
-                        </View> */}
+                    <View style={styles.drawerItem}>
+                        <Icon style={styles.icon} active name="paper" />
+                        <Text onPress={() => this.navigate("voucher")} style={styles.drawerText}>
+                            Vouchers
+                        </Text>
+                    </View>
+                    <View style={styles.drawerItem}>
+                        <Icon style={styles.icon} active name="trophy" />
+                        <Text
+                            onPress={() => this.navigate("leaderboard")}
+                            style={styles.drawerText}
+                        >
+                            Leaderboard
+                        </Text>
+                    </View>
+                    <View style={styles.drawerItem}>
+                        <Icon style={styles.icon} active name="person" />
+                        <Text onPress={() => this.navigate("profile")} style={styles.drawerText}>
+                            Profile
+                        </Text>
+                    </View>
+                </View>
             </Container>
         )
     }
@@ -79,14 +121,22 @@ const styles = StyleSheet.create({
         backgroundColor: "#0ff",
     },
     drawerItem: {
+        display: "flex",
         height: 50,
-        flex: 1,
         flexDirection: "row",
+        alignContent: "flex-start",
         // borderBottomColor: "#000",
         // borderBottomWidth: 2,
     },
+    drawerText: {
+        lineHeight: 30,
+        marginTop: 8,
+        display: "flex",
+        color: "#000",
+        marginLeft: 20,
+        // alignItems: "center",
+    },
 })
-
 DrawerScreen.propTypes = {
     navigation: PropTypes.object,
 }
