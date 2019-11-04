@@ -12,8 +12,12 @@ const styles = StyleSheet.create({
         fontSize: 26,
     },
     subtitle: {
+        width: "80%",
+        alignSelf: "center",
+        color: "#fff",
         marginTop: 15,
         fontFamily: "Roboto",
+        textAlign: "center",
         fontSize: 19,
     },
 })
@@ -30,6 +34,11 @@ const EndJourneyPromptDialog = ({ navigation }) => {
     }
     const goToFinishedScreen = () => {
         // Navigate to the finish screen
+        console.log("Going to finish screen")
+        dispatch({
+            type: "toggleEndJourney",
+            open: false,
+        })
         navigation.navigate("FinishedJourney")
     }
 
@@ -50,9 +59,9 @@ const EndJourneyPromptDialog = ({ navigation }) => {
                         // justifyContent: "center",
                         // width: 300,
                         width: "90%",
-                        height: "80%",
-                        marginTop: "10%",
-                        marginBottom: "10%",
+                        height: "50%",
+                        marginTop: "25%",
+                        marginBottom: "25%",
                         marginLeft: "5%",
                         marginRight: "5%",
                         height: 400,
@@ -64,11 +73,17 @@ const EndJourneyPromptDialog = ({ navigation }) => {
                 >
                     <H3 style={styles.title}>End your journey?</H3>
                     <Text style={styles.subtitle}>Have you reached your destination?</Text>
-                    <View>
-                        <Button onPress={() => closeDialog()}>
+                    <View
+                        style={{
+                            display: "flex",
+                            marginTop: 30,
+                            flexDirection: "row",
+                        }}
+                    >
+                        <Button style={{ marginRight: 15 }} onPress={() => closeDialog()}>
                             <Text>No</Text>
                         </Button>
-                        <Button onPress={() => goToFinishedScreen()}>
+                        <Button style={{ marginLeft: 15 }} onPress={() => goToFinishedScreen()}>
                             <Text>Yes</Text>
                         </Button>
                     </View>

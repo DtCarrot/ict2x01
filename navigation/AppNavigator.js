@@ -47,6 +47,8 @@ const JourneyStack = createDrawerNavigator(
         FinishedJourney: FinishedJourneyScreen,
     },
     {
+        initialRouteName: "Journey",
+        // initialRouteName: "FinishedJourney",
         headerMode: "none",
         drawerWidth: 220,
         contentComponent: props => <DrawerScreen {...props} />,
@@ -106,11 +108,12 @@ export default createAppContainer(
         {
             headerMode: "none",
             title: "Main",
-            // initialRouteName: "AuthLoading",
+            initialRouteName: "AuthLoading",
             // initialRouteParams: "Home",
             // initialRouteName: "SignUp",
             // initialRouteParams: "JourneyStack",
-            initialRouteName: "JourneyStack",
+            // initialRouteName: "JourneyStack",
+            // initialRouteName: "JourneyStack",
         }
     )
 )

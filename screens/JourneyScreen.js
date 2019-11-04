@@ -1,6 +1,5 @@
 import React, { Component, useContext, useRef, useEffect, useState } from "react"
 import flattenDeep from "lodash/fp/flattenDeep"
-import { Text } from "native-base"
 import Polyline from "@mapbox/polyline"
 import { View, Image } from "react-native"
 import MapView from "react-native-maps"
@@ -19,6 +18,7 @@ import GameDialog from "../components/journey/GameDialog"
 import mapStyles from "../components/map/mapStyles"
 import BottomJourneyBar from "../components/journey/BottomJourneyBar"
 import EndJourneyPromptDialog from "../components/journey/EndJourneyPromptDialog"
+import { startJourney } from "../db/journeyService"
 
 const JourneyScreen = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
@@ -101,8 +101,8 @@ const JourneyScreen = ({ navigation }) => {
             journeyStepSubIdx,
         } = state
         const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
-        console.log("Journey step: ", journeyStepIdx, journeyStepSubIdx)
-        console.log("GPS Target: ", nextTarget)
+        // console.log("Journey step: ", journeyStepIdx, journeyStepSubIdx)
+        // console.log("GPS Target: ", nextTarget)
         // Get the distance between the current and target destination
         const distance = getPreciseDistance(
             {
@@ -153,15 +153,6 @@ const JourneyScreen = ({ navigation }) => {
     }, 45000)
 
     const transformRoute = route => {
-        // console.log(route.overview_polyline.points)
-        // let points = Polyline.decode(route.overview_polyline.points)
-        // let coords = points.map((point, index) => {
-        //     const pointCoords = {
-        //         latitude: point[0],
-        //         longitude: point[1],
-        //     }
-        //     return pointCoords
-        // })
         const leg = route.legs[0]
         const routeCoord = leg.steps.map(step => {
             // console.log("Step: ", step)
@@ -181,7 +172,6 @@ const JourneyScreen = ({ navigation }) => {
             }
         })
 
-        // console.log("Route coord: ", flattenDeep(routeCoord))
         const routeObj = {
             ...route,
             overview_polyline: flattenDeep(routeCoord),
@@ -189,55 +179,50 @@ const JourneyScreen = ({ navigation }) => {
         return routeObj
     }
 
-    // console.log("Navigation ref: ", navigation.getParam("journeyRoute", null))
     useEffect(() => {
-        const currJourneyRoute = navigation.getParam("journeyRoute", null)
-        // dispatch({
-        //     type: "setJourneyDetails",
-        //     journeyDetails: currJourneyRoute,
-        // })
-        dispatch({
-            type: "setJourneyDetails",
-            journeyDetails: transformRoute(sampleRoutes),
-        })
-        // console.log("At journey screen", state.journeyDetails.overview_polyline)
-        // console.log(currJourneyRoute.overview_polyline)
-        // setJourneyRoute(currJourneyRoute)
-        // console.log("Sample Routes: ", sampleRoutes)
-        // setJourneyRoute(transformRoute(sampleRoutes))
-        const _getLocationAsync = async () => {
-            const { status } = await Permissions.askAsync(Permissions.LOCATION)
-            console.log("Status: ", status)
-            if (status !== "granted") {
-                console.log("Denied")
-            } else {
-                // setTimeout(async () => {
-                console.log("Getting current position")
-                const location = await Location.getCurrentPositionAsync({})
-                console.log("Location: ", location)
-                const {
-                    coords: { latitude, longitude, heading, altitude },
-                } = location
-                const cameraObj = {
-                    center: {
+        const init = async () => {
+            await startJourney()
+            // We start by initialize the journey information
+            const currJourneyRoute = navigation.getParam("journeyRoute", null)
+            dispatch({
+                type: "setJourneyDetails",
+                journeyDetails: transformRoute(sampleRoutes),
+            })
+            const _getLocationAsync = async () => {
+                const { status } = await Permissions.askAsync(Permissions.LOCATION)
+                console.log("Status: ", status)
+                if (status !== "granted") {
+                    console.log("Denied")
+                } else {
+                    // setTimeout(async () => {
+                    console.log("Getting current position")
+                    const location = await Location.getCurrentPositionAsync({})
+                    console.log("Location: ", location)
+                    const {
+                        coords: { latitude, longitude, heading, altitude },
+                    } = location
+                    const cameraObj = {
+                        center: {
+                            latitude,
+                            longitude,
+                        },
+                        pitch: 60,
+                        heading,
+                        zoom: 20,
+                        altitude,
+                    }
+                    mapRef.current.setCamera(cameraObj)
+                    dispatch({
+                        type: "setGPSPosition",
                         latitude,
                         longitude,
-                    },
-                    pitch: 60,
-                    heading,
-                    zoom: 20,
-                    altitude,
+                    })
+                    // }, 1000)
                 }
-                mapRef.current.setCamera(cameraObj)
-                dispatch({
-                    type: "setGPSPosition",
-                    latitude,
-                    longitude,
-                })
-                // }, 1000)
             }
+            _getLocationAsync()
         }
-        _getLocationAsync()
+        init()
     }, [])
     const getLayout = async () => {}
     return (
