@@ -18,6 +18,8 @@ import GameDialog from "../components/journey/GameDialog"
 import mapStyles from "../components/map/mapStyles"
 import BottomJourneyBar from "../components/journey/BottomJourneyBar"
 import EndJourneyPromptDialog from "../components/journey/EndJourneyPromptDialog"
+import { checkAllDistance } from "../components/journey/distanceCalculator"
+
 import { startJourney } from "../db/journeyService"
 
 const JourneyScreen = ({ navigation }) => {
@@ -96,21 +98,55 @@ const JourneyScreen = ({ navigation }) => {
             journeyStepIdx,
             journeyStepSubIdx,
         } = state
-        const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
-        // console.log("Journey step: ", journeyStepIdx, journeyStepSubIdx)
-        // console.log("GPS Target: ", nextTarget)
-        // Get the distance between the current and target destination
-        const distance = getPreciseDistance(
-            {
-                latitude: gpsPosition.latitude,
-                longitude: gpsPosition.longitude,
-            },
-            {
-                latitude: nextTarget.end_location.lat,
-                longitude: nextTarget.end_location.lng,
-            }
-        )
+        // const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
+        const journeyStepTarget = journeyDetails.legs[0].steps[journeyStepIdx]
+        console.log("Step Target: ", journeyStepTarget)
+        let nextTarget = null
+        if ("steps" in journeyStepTarget) {
+            nextTarget = journeyStepTarget.steps[journeyStepSubIdx]
+        } else {
+            nextTarget = journeyStepTarget
+        }
+
         await getGPSPosition()
+        const { latitude: currLat, longitude: currLng } = gpsPosition
+
+        const closeDistanceList = checkAllDistance(journeyDetails, { currLat, currLng })
+        console.log("Distance: ", closeDistanceList)
+        if (closeDistanceList.length > 0) {
+            const { innerStep, outerStep, distance } = closeDistanceList[0]
+            const oldStep = journeyDetails.legs[0].steps[outerStep]
+            let newOuterStep = outerStep
+            let newInnerStep = innerStep
+            if ("steps" in oldStep) {
+                // Check whether end of current inner step
+                const oldInnerStepLen = oldStep.steps.length
+                if (innerStep === oldInnerStepLen - 1) {
+                    newOuterStep = outerStep++
+                    const newStep = journeyDetails.legs[0].steps[newOuterStep]
+                    if ("steps" in newStep) {
+                        newInnerStep = 0
+                    } else {
+                        newInnerStep = null
+                    }
+                }
+            } else {
+                // very simple if it does not have inner steps
+                // just inc the outer step by 1
+                newOuterStep++
+                const newStep = journeyDetails.legs[0].steps[newOuterStep]
+                if ("steps" in newStep) {
+                    newInnerStep = 0
+                } else {
+                    newInnerStep = null
+                }
+            }
+            dispatch({
+                type: "setJourneyStep",
+                journeyStepIdx: newOuterStep,
+                journeyStepSubIdx: newInnerStep,
+            })
+        }
 
         if (lastKnownPosition !== null) {
             const distanceBetweenCurrAndPrevGPS = getPreciseDistance(
@@ -130,23 +166,23 @@ const JourneyScreen = ({ navigation }) => {
         }
 
         // Reached destination
-        if (distance < 10) {
-            // Check the current leg length
-            if (journeyStepSubIdx + 1 >= journeyDetails.legs[0].steps[journeyStepIdx].length) {
-                dispatch({
-                    type: "setJourneyStep",
-                    journeyStepIdx: journeyStepIdx + 1,
-                    journeyStepSubIdx: 0,
-                })
-            } else {
-                dispatch({
-                    type: "setJourneyStep",
-                    journeyStepIdx,
-                    journeyStepSubIdx: journeyStepSubIdx + 1,
-                })
-            }
-        }
-    }, 45000)
+        // if (distance < 10) {
+        //     // Check the current leg length
+        //     if (journeyStepSubIdx + 1 >= journeyDetails.legs[0].steps[journeyStepIdx].length) {
+        //         dispatch({
+        //             type: "setJourneyStep",
+        //             journeyStepIdx: journeyStepIdx + 1,
+        //             journeyStepSubIdx: 0,
+        //         })
+        //     } else {
+        //         dispatch({
+        //             type: "setJourneyStep",
+        //             journeyStepIdx,
+        //             journeyStepSubIdx: journeyStepSubIdx + 1,
+        //         })
+        //     }
+        // }
+    }, 30000)
 
     const transformRoute = route => {
         const leg = route.legs[0]

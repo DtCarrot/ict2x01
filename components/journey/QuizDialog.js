@@ -29,9 +29,10 @@ const QuizDialog = () => {
     return (
         <Fragment
             style={{
-                alignItem: "center",
+                alignItems: "center",
                 display: "flex",
                 backgroundColor: "#fff",
+                zIndex: 99999,
             }}
         >
             <Text style={styles.title}>{"< LUCKY >"}</Text>
@@ -47,6 +48,8 @@ const QuizDialog = () => {
             </Text>
             <Text
                 style={{
+                    display: "flex",
+                    alignSelf: "center",
                     width: 250,
                     color: "#363636",
                     fontFamily: "Roboto",
@@ -60,6 +63,7 @@ const QuizDialog = () => {
                 style={{
                     display: "flex",
                     zIndex: 9200,
+                    marginTop: 40,
                     flexGrow: 1,
                     width: "90%",
                     paddingLeft: 30,
@@ -81,14 +85,47 @@ const QuizDialog = () => {
                         return (
                             <View
                                 style={{
+                                    marginTop: 15,
+                                    borderRadius: 30,
                                     height: 50,
                                     flexDirection: "row",
                                     width: "100%",
                                     backgroundColor: "#fff",
+                                    alignContent: "center",
                                 }}
                             >
-                                <Text>{idx}</Text>
-                                <Text>{answer.ans}</Text>
+                                <View
+                                    style={{
+                                        width: 30,
+                                        height: 30,
+                                        backgroundColor: "#966FD6",
+                                        borderRadius: 30,
+                                        marginLeft: 10,
+                                        marginTop: 10,
+                                        display: "flex",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <Text
+                                        style={{
+                                            fontSize: 21,
+                                            fontFamily: "Roboto",
+                                            color: "#fff",
+                                        }}
+                                    >
+                                        {idx}
+                                    </Text>
+                                </View>
+                                <Text
+                                    style={{
+                                        marginTop: 10,
+                                        marginLeft: 10,
+                                        fontSize: 20,
+                                        color: "#030303",
+                                    }}
+                                >
+                                    {answer.ans}
+                                </Text>
                             </View>
                         )
                     })}
@@ -96,11 +133,15 @@ const QuizDialog = () => {
                 <Button
                     style={{
                         backgroundColor: "#fff",
+                        borderRadius: 30,
+                        marginTop: 10,
+                        justifyContent: "center",
                     }}
                 >
                     <Text
                         style={{
                             color: "#c22259",
+                            fontSize: 20,
                         }}
                     >
                         Submit Answer
