@@ -56,7 +56,6 @@ const JourneyScreen = ({ navigation }) => {
         console.log("Camera obj: ", cameraObj)
         mapRef.current.setCamera(cameraObj)
     }
-    // useEffect(() => {
     useInterval(() => {
         Location.watchHeadingAsync(heading => {
             const {
@@ -73,9 +72,6 @@ const JourneyScreen = ({ navigation }) => {
                 }
                 dateTimeRef.current = currentTime
             }
-            // console.log("State: ", state.gpsPosition)
-            // console.log("Curr Heading: ", currHeading, "Mag heading: ", magHeading)
-            // console.log("Heading diff: ", Math.abs(currHeading - magHeading))
             if (currHeading === null || Math.abs(currHeading - magHeading) > 5) {
                 dispatch({ type: "setGPSHeading", heading: magHeading })
                 const cameraObj = {
