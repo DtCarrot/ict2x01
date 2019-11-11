@@ -14,7 +14,9 @@ class AuthLoadingScreen extends Component {
                 const { uid: userId } = user
                 const success = await initUserRecordsIfNotExists(userId)
                 console.log("We are authenticated now!")
+                // this.props.navigation.navigate("Journey")
                 this.props.navigation.navigate("Journey")
+
                 return
             }
             this.props.navigation.navigate("SignIn")
