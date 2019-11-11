@@ -16,6 +16,7 @@ import AuthLoadingScreen from "../screens/AuthLoadingScreen"
 import MainScreen from "../screens/MainScreen"
 import DrawerScreen from "../screens/Menu"
 import JourneyScreen from "../screens/JourneyScreen"
+import LeaderboardScreen from "../screens/LeaderboardScreen"
 
 const AuthStack = createStackNavigator(
     {
@@ -36,11 +37,23 @@ const JourneyStack = createStackNavigator(
     }
 )
 
+const LeaderboardStack = createStackNavigator(
+    {
+        Leaderboard: LeaderboardScreen,
+    },
+    {
+        headerMode: "none",
+    }
+)
+
 const DrawerStack = createDrawerNavigator(
     {
         Home: {
             screen: MainScreen,
         },
+        Leaderboard:{
+            screen: LeaderboardScreen
+        }
     },
     {
         contentComponent: props => <DrawerScreen {...props} />,
@@ -70,7 +83,7 @@ export default createAppContainer(
             Auth: AuthStack,
             Journey: JourneyStack,
             // SignUp: SignUpScreen,
-            // Home: MainScreen,
+            // Home: MainScreen,    
             // Main: MainTabNavigator,
             DrawerNavigator: { screen: DrawerNavigator },
         },

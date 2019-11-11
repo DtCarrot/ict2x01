@@ -43,7 +43,15 @@ class DrawerScreen extends Component {
                 <Content>
                     <View style={styles.drawerItem}>
                         <Icon style={styles.icon} active name="airplane" />
-                        <Text style={{ color: "#000" }}>Airplane Mode</Text>
+                        <Text style={{ color: "#000" }}>Airplane</Text>
+                    </View>
+                    <View style={styles.drawerItem}>
+                        <Icon style={styles.icon} active name="airplane" />
+                        <Text onPress={this.navigateToScreen("Leaderboard")}>View Leaderboard</Text>
+                    </View>
+                    <View style={styles.drawerItem}>
+                        <Icon style={styles.icon} active name="airplane" />
+                        <Text onPress={this.logout}>Logout</Text>
                     </View>
                 </Content>
                 {/* <View style={styles.menuItem}>

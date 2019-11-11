@@ -6,6 +6,7 @@ const firebaseConfig = {
     authDomain: "ict2101-22ad5.firebaseapp.com",
     databaseURL: "https://ict2101-22ad5.firebaseio.com",
     storageBucket: "ict2101-22ad5.appspot.com",
+    projectId:"ict2101-22ad5",
 }
 
 firebase.initializeApp(firebaseConfig)

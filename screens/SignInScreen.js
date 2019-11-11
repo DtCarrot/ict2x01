@@ -2,6 +2,7 @@ import React, { useState } from "react"
 // import { Input } from "react-native-ui-kitten"
 import { TextInput, ActivityIndicator, AsyncStorage, StatusBar, StyleSheet } from "react-native"
 import { Text, Button, Item, Input, Content, H1, View } from "native-base"
+import 'firebase/firestore';
 
 import * as firebase from "firebase"
 
