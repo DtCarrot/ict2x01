@@ -10,3 +10,4 @@ npm-debug.*
 .projectile
 web-build/
 web-report/
+package-lock.json
