@@ -11,8 +11,11 @@ const CurrJourneyPolyline = () => {
         const getCurrentPolyline = () => {
             if (state.journeyDetails !== null) {
                 const { gpsPosition, journeyDetails, journeyStepIdx, journeyStepSubIdx } = state
-                const nextTarget =
-                    journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
+                let journeyStepDetail = journeyDetails.legs[0].steps
+                if ("steps" in journeyStepDetail) {
+                    // const nextTarget =
+                    journeyStepDetail = journeyStepDetail.steps[journeyStepSubIdx]
+                }
 
                 console.log("Next target:", nextTarget)
                 const points = Polyline.decode(nextTarget.polyline.points)

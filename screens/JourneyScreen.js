@@ -114,21 +114,23 @@ const JourneyScreen = ({ navigation }) => {
         const closeDistanceList = checkAllDistance(journeyDetails, { currLat, currLng })
         console.log("Distance: ", closeDistanceList)
         if (closeDistanceList.length > 0) {
-            const { innerStep, outerStep, distance } = closeDistanceList[0]
-            const oldStep = journeyDetails.legs[0].steps[outerStep]
+            let { innerStep, outerStep, distance } = closeDistanceList[0]
+            let oldStep = journeyDetails.legs[0].steps[outerStep]
             let newOuterStep = outerStep
             let newInnerStep = innerStep
             if ("steps" in oldStep) {
                 // Check whether end of current inner step
                 const oldInnerStepLen = oldStep.steps.length
                 if (innerStep === oldInnerStepLen - 1) {
-                    newOuterStep = outerStep++
+                    newOuterStep = outerStep + 1
                     const newStep = journeyDetails.legs[0].steps[newOuterStep]
                     if ("steps" in newStep) {
                         newInnerStep = 0
                     } else {
                         newInnerStep = null
                     }
+                } else {
+                    newInnerStep++
                 }
             } else {
                 // very simple if it does not have inner steps
@@ -141,6 +143,8 @@ const JourneyScreen = ({ navigation }) => {
                     newInnerStep = null
                 }
             }
+            console.log("Dispatching")
+            console.log("New outer step: ", newOuterStep, "New inner step: ", newInnerStep)
             dispatch({
                 type: "setJourneyStep",
                 journeyStepIdx: newOuterStep,
@@ -316,8 +320,6 @@ const JourneyScreen = ({ navigation }) => {
                             latitude: state.gpsPosition.latitude,
                             longitude: state.gpsPosition.longitude,
                         }}
-                        // rotation={state.gpsPosition.heading + 90}
-                        // rotation={90}
                     >
                         <Image
                             source={require("../assets/navigation/icons8-arrow-64.png")}
@@ -332,10 +334,6 @@ const JourneyScreen = ({ navigation }) => {
                                         rotate: "-90deg",
                                     },
                                 ],
-                                // {
-                                //     rotate: `${state.gpsPosition.heading + 90}deg`,
-                                // },
-                                // ],
                             }}
                         />
                     </MapView.Marker>

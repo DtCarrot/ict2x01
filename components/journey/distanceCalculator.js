@@ -68,7 +68,7 @@ const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
     })
     const closeDistanceList = distanceList.filter(obj => {
         const { distance } = obj
-        if (distance < 15) {
+        if (distance < 30) {
             return true
         }
         return false
