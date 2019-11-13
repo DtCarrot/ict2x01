@@ -48,7 +48,7 @@ const GameDialog = () => {
     }, [state.gameDialogOpen])
 
     const renderGame = () => {
-        if (gameType === "treasurebox") {
+        if (gameType !== "treasurebox") {
             return <ChanceDialog />
         } else {
             return <QuizDialog />

@@ -1,7 +1,10 @@
-import React, { Fragment, useState, useRef, useContext, useEffect } from "react"
-import { StyleSheet } from "react-native"
+import React, { Fragment, useState, useContext, useEffect } from "react"
 import { View, Text, Button } from "native-base"
-
+import { getRandomQuiz, validateQuiz } from "../../db/quizService"
+import { JourneyContext } from "./JourneyContext"
+import { StyleSheet } from "react-native"
+import NextGameButton from "./buttons/NextGameButton"
+import ContinueNavigateButton from "./buttons/ContinueNavigateButton"
 const styles = StyleSheet.create({
     title: {
         color: "#C22259",
@@ -12,20 +15,61 @@ const styles = StyleSheet.create({
 })
 
 const QuizDialog = () => {
-    const possibleAnswers = [
-        {
-            ans: "City Hall",
-        },
-        {
-            ans: "Jurong East",
-        },
-        {
-            ans: "Tampines",
-        },
-        {
-            ans: "Chinatown",
-        },
-    ]
+    const { state, dispatch } = useContext(JourneyContext)
+    const [selectedIdx, setSelectedIdx] = useState(null)
+    const [quizObj, setQuizObj] = useState(null)
+    const { currentAvailChance, totalChance, finished } = state
+    // Call everytime a new game is created
+    useEffect(() => {
+        if (!state.finished) {
+            const quiz = getRandomQuiz()
+            console.log("Quiz obj: ", quiz)
+            setQuizObj(quiz)
+        }
+    }, [state.gameDialogOpen, state.finished])
+    const answerQuiz = answerIdx => {
+        // If the answer is correct
+        if (validateQuiz(quizObj.quizIdx, answerIdx)) {
+            console.log("Correct answer")
+        } else {
+            console.log("Wrong answer")
+        }
+        dispatch({
+            type: "endGame",
+        })
+        dispatch({
+            type: "updateRewardChance",
+            currentAvailChance: currentAvailChance - 1,
+            totalChance: totalChance - 1,
+        })
+    }
+    if (quizObj === null) {
+        return null
+    }
+    if (finished) {
+        return (
+            <Fragment>
+                <View
+                    style={{
+                        zIndex: 300,
+                        width: 270,
+                        height: 270,
+                        marginBottom: 30,
+                    }}
+                >
+                    <Text>You have answered correctly</Text>
+                </View>
+                <View
+                    style={{
+                        marginBottom: 50,
+                    }}
+                >
+                    {currentAvailChance > 0 && <NextGameButton />}
+                    {currentAvailChance <= 0 && <ContinueNavigateButton />}
+                </View>
+            </Fragment>
+        )
+    }
     return (
         <Fragment
             style={{
@@ -57,7 +101,7 @@ const QuizDialog = () => {
                     fontSize: 21,
                 }}
             >
-                What is the MRT stop after Tanjong Pagar on the East West Line
+                {quizObj.title}
             </Text>
             <View
                 style={{
@@ -81,9 +125,13 @@ const QuizDialog = () => {
                         display: "flex",
                     }}
                 >
-                    {possibleAnswers.map((answer, idx) => {
+                    {quizObj.questions.map((question, idx) => {
                         return (
                             <View
+                                onPress={() => {
+                                    console.log("Setting selected idx")
+                                    setSelectedIdx(idx)
+                                }}
                                 style={{
                                     marginTop: 15,
                                     borderRadius: 30,
@@ -92,6 +140,8 @@ const QuizDialog = () => {
                                     width: "100%",
                                     backgroundColor: "#fff",
                                     alignContent: "center",
+                                    borderWidth: idx === selectedIdx ? 5 : 0,
+                                    borderColor: idx === selectedIdx ? "#000" : "none",
                                 }}
                             >
                                 <View
@@ -124,13 +174,14 @@ const QuizDialog = () => {
                                         color: "#030303",
                                     }}
                                 >
-                                    {answer.ans}
+                                    {question}
                                 </Text>
                             </View>
                         )
                     })}
                 </View>
                 <Button
+                    onPress={answerQuiz}
                     style={{
                         backgroundColor: "#fff",
                         borderRadius: 30,
