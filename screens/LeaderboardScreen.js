@@ -10,6 +10,7 @@ import * as firebase from "firebase"
 const LeaderboardScreen = ({ navigation }) => {
     const [userPoint, setUserPoint] = useState(0);
     const [userPosition, setUserPosition] = useState(0);
+    const [userDetails, setUserDetails] = useState(0);
     const B = (props) => <Text style={{fontWeight: 'bold'}}>{props.children}</Text>
 
     const navigationOptions = {
@@ -38,10 +39,12 @@ const LeaderboardScreen = ({ navigation }) => {
         const userPosition = descendingUniquePoints.indexOf(userPoint) + 1
         setUserPosition(userPosition)
         const userDate = snapshot.docs.map(doc => Date.parse(doc.data().pointsUpdatedDate))
-        var newArr = _.sortBy(userDate, 'pointsUpdatedDate', function(n) {
-            return n;
-          });          
-        console.log(newArr)
+        const userDetails = snapshot.docs.map(doc => Date.parse(doc.data()))
+        setUserDetails(userDetails)
+        //var newArr = _.sortBy(userDate, 'pointsUpdatedDate', function(n) {
+          //  return n;
+          //});          
+        //console.log(newArr)
     }
 
     useEffect(() => {
@@ -54,6 +57,7 @@ const LeaderboardScreen = ({ navigation }) => {
                 <H1 style={styles.title}>Leaderboard</H1>
                 <Text><B>User Score:</B> {userPoint}</Text>
                 <Text><B>User Position:</B> {userPosition}</Text>
+                <Text>{userDetails}</Text>
             </View>
         </Content>
     );
