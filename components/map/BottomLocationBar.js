@@ -26,6 +26,12 @@ const BottomLocationBar = ({ navigation }) => {
     useEffect(() => {
         setSelectedRouteIdx(0)
     }, [state.routeDetails])
+    useEffect(() => {
+        dispatch({
+            type: "setRouteIdx",
+            idx: selectedRouteIdx,
+        })
+    }, [selectedRouteIdx])
     const renderTransportIcons = (leg, textColor) => {
         let currentModes = []
         leg.steps.forEach(path => {
