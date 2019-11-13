@@ -36,13 +36,6 @@ const styles = StyleSheet.create({
         paddingLeft: 0,
         paddingRight: 0,
     },
-
-    // subtitle: {
-    //     width: 220,
-    //     color: "#fff",
-    //     fontFamily: "Roboto",
-    //     fontSize: 20,
-    // },
 })
 
 const SvgComponent = () => (

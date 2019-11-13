@@ -1,9 +1,18 @@
-import React from "react"
+import React, { useContext } from "react"
 import { StyleSheet } from "react-native"
 import { Badge, Text, View, Button, Icon } from "native-base"
 import { LinearGradient } from "expo-linear-gradient"
+import NavigationService from "../../navigation/NavigationService"
+import { JourneyContext } from "./JourneyContext"
 
 const BottomJourneyBar = ({ onUserFocus }) => {
+    const { state, dispatch } = useContext(JourneyContext)
+    const endJourneyDialog = () => {
+        dispatch({
+            type: "toggleEndJourney",
+            open: true,
+        })
+    }
     return (
         <LinearGradient
             colors={["#966FD6", "#6B3BB9"]}
@@ -29,13 +38,13 @@ const BottomJourneyBar = ({ onUserFocus }) => {
                         alignItems: "center",
                         justifyContent: "center",
                     }}
-                    // transparent
-                    onPress={() => {
-                        console.log("Toggle drawer")
-                        NavigationService.toggleDrawer()
-                    }}
                 >
                     <Icon
+                        // transparent
+                        onPress={() => {
+                            console.log("Toggle drawer")
+                            NavigationService.toggleDrawer()
+                        }}
                         style={{
                             textAlign: "center",
                             alignItems: "center",
@@ -100,6 +109,7 @@ const BottomJourneyBar = ({ onUserFocus }) => {
                         alignSelf: "flex-end",
                         display: "flex",
                     }}
+                    onPress={() => endJourneyDialog()}
                 >
                     <Text
                         style={{
