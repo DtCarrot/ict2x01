@@ -13,13 +13,14 @@ const initialState = {
     journeyStepIdx: 0,
     journeyStepSubIdx: 0,
     currPolyline: null,
-    currentAvailChance: 1,
+    currentAvailChance: 5,
     lastKnownPosition: null,
-    totalChance: 1,
+    totalChance: 5,
     finished: false,
     gameInProgress: true,
     gameDialogOpen: false,
     gameType: null,
+    endJourneyDialogOpen: false,
 }
 
 const reducer = (state, action) => {
@@ -88,6 +89,11 @@ const reducer = (state, action) => {
                 ...state,
                 currentAvailChance: action.currentAvailChance,
                 totalChance: action.totalChance,
+            }
+        case "toggleEndJourney":
+            return {
+                ...state,
+                endJourneyDialogOpen: action.open,
             }
         default:
             return state

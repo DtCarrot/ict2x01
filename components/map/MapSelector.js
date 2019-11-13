@@ -14,8 +14,16 @@ const mapRegion = {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
 }
+const edgePadding = {
+    top: 15,
+    left: 15,
+    right: 15,
+    bottom: 15,
+}
+
 const MapSelector = () => {
     const currentLocMarker = useRef()
+    const targetLocMarker = useRef()
     const mapRef = useRef(null)
     const [markerLoaded, setMarkerLoaded] = useState(false)
     const [location, setLocation] = useState(null)
@@ -46,12 +54,6 @@ const MapSelector = () => {
                     latitude,
                     longitude,
                 })
-                // const locationName = await Location.reverseGeocodeAsync({
-                //     latitude,
-                //     longitude,
-                // })
-                // console.log("Location obj: ", locationName)
-                // const { name } = locationName[0]
                 const name = await getReverseGeocode(latitude, longitude)
                 setLocation(name)
                 mapRef.current.animateCamera({
@@ -91,12 +93,6 @@ const MapSelector = () => {
                 return routeObj
             })
             routeDispatch({ type: "setRouteDetails", routeDetails: routesList })
-            const edgePadding = {
-                top: 20,
-                left: 20,
-                right: 20,
-                bottom: 20,
-            }
             mapRef.current.fitToCoordinates(fitCoords, { edgePadding })
         } catch (error) {
             console.log(error)
@@ -112,6 +108,7 @@ const MapSelector = () => {
         }
         if (state.selectedPlaceObj !== null) {
             getDirectionsAPI()
+            // targetLocMarker.current.showCallout()
         }
     }, [state.selectedPlaceObj])
 
@@ -123,16 +120,25 @@ const MapSelector = () => {
     }, [markerLoaded])
 
     const renderRoutes = routes => {
-        return routes.map((route, idx) => {
-            return (
-                <MapView.Polyline
-                    key={idx}
-                    coordinates={route.overview_polyline}
-                    strokeWidth={2}
-                    strokeColor="red"
-                />
-            )
-        })
+        const currRouteDetails = routeState.routeDetails[routeState.currRouteIdx]
+        // currRouteDetails.concat(currCoord)
+        // const fitPositions = []
+        // fitPositions.concat(currCoord)
+        // fitPositions.concat(currRouteDetails.overview_polyline)
+        const fitPositions = [...currRouteDetails.overview_polyline, ...[currCoord]]
+
+        mapRef.current.fitToCoordinates(fitPositions, { edgePadding })
+        // return routeState.routeDetails[routeState.currRouteIdx].map((route, idx) => {
+        // return (
+        return (
+            <MapView.Polyline
+                coordinates={currRouteDetails.overview_polyline}
+                strokeWidth={2}
+                strokeColor="red"
+            />
+        )
+        // )
+        // })
     }
 
     return (
@@ -151,7 +157,11 @@ const MapSelector = () => {
                 <MapView.Marker
                     ref={ref => {
                         currentLocMarker.current = ref
-                        setTimeout(() => currentLocMarker.current.showCallout(), 1)
+                        setTimeout(() => {
+                            if (currentLocMarker.current !== null) {
+                                currentLocMarker.current.showCallout()
+                            }
+                        }, 1)
                     }}
                     coordinate={currCoord}
                 >
@@ -164,6 +174,9 @@ const MapSelector = () => {
             )}
             {state.selectedPlaceObj !== null && (
                 <MapView.Marker
+                    ref={ref => {
+                        targetLocMarker.current = ref
+                    }}
                     coordinate={{
                         latitude: state.selectedPlaceObj.lat,
                         longitude: state.selectedPlaceObj.lng,
@@ -173,7 +186,7 @@ const MapSelector = () => {
                         source={require("../../assets/navigation/maps-and-flags.png")}
                         style={{ width: 48, height: 48 }}
                     />
-                    <LocationCallout />
+                    <LocationCallout name={state.selectedPlaceObj.description} />
                 </MapView.Marker>
             )}
         </MapView>
