@@ -21,6 +21,8 @@ const initialState = {
     gameDialogOpen: false,
     gameType: null,
     endJourneyDialogOpen: false,
+    quizCorrect: false,
+    quizAnswered: false,
 }
 
 const reducer = (state, action) => {
@@ -30,6 +32,8 @@ const reducer = (state, action) => {
                 ...state,
                 gameType: action.gameType,
                 finished: false,
+                quizAnswered: false,
+                quizCorrect: false,
             }
         case "endGame":
             return {
@@ -94,6 +98,18 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 endJourneyDialogOpen: action.open,
+            }
+        case "answerQuestion":
+            return {
+                ...state,
+                quizAnswered: true,
+                quizCorrect: action.quizCorrect,
+                finished: true,
+            }
+        case "resetQuestion":
+            return {
+                ...state,
+                quizAnswered: false,
             }
         default:
             return state

@@ -2,9 +2,10 @@ import React, { Fragment, useState, useContext, useEffect } from "react"
 import { View, Text, Button } from "native-base"
 import { getRandomQuiz, validateQuiz } from "../../db/quizService"
 import { JourneyContext } from "./JourneyContext"
-import { StyleSheet } from "react-native"
+import { TouchableOpacity, StyleSheet } from "react-native"
 import NextGameButton from "./buttons/NextGameButton"
 import ContinueNavigateButton from "./buttons/ContinueNavigateButton"
+import AnswerResult from "./quiz/AnswerResult"
 const styles = StyleSheet.create({
     title: {
         color: "#C22259",
@@ -16,26 +17,37 @@ const styles = StyleSheet.create({
 
 const QuizDialog = () => {
     const { state, dispatch } = useContext(JourneyContext)
-    const [selectedIdx, setSelectedIdx] = useState(null)
+    const [selectedIdx, setSelectedIdx] = useState(0)
     const [quizObj, setQuizObj] = useState(null)
-    const { currentAvailChance, totalChance, finished } = state
+    const { quizAnswered, currentAvailChance, totalChance, finished } = state
+
     // Call everytime a new game is created
     useEffect(() => {
+        dispatch({
+            action: "resetQuestion",
+        })
         if (!state.finished) {
             const quiz = getRandomQuiz()
             console.log("Quiz obj: ", quiz)
             setQuizObj(quiz)
         }
     }, [state.gameDialogOpen, state.finished])
+
+    console.log("Selected Idx: ", selectedIdx)
+
     const answerQuiz = answerIdx => {
         // If the answer is correct
+        let correct = true
         if (validateQuiz(quizObj.quizIdx, answerIdx)) {
             console.log("Correct answer")
+            correct = true
         } else {
             console.log("Wrong answer")
+            correct = false
         }
         dispatch({
-            type: "endGame",
+            type: "answerQuestion",
+            quizCorrect: correct,
         })
         dispatch({
             type: "updateRewardChance",
@@ -46,27 +58,17 @@ const QuizDialog = () => {
     if (quizObj === null) {
         return null
     }
-    if (finished) {
+    if (quizAnswered) {
         return (
-            <Fragment>
-                <View
-                    style={{
-                        zIndex: 300,
-                        width: 270,
-                        height: 270,
-                        marginBottom: 30,
-                    }}
-                >
-                    <Text>You have answered correctly</Text>
-                </View>
-                <View
-                    style={{
-                        marginBottom: 50,
-                    }}
-                >
-                    {currentAvailChance > 0 && <NextGameButton />}
-                    {currentAvailChance <= 0 && <ContinueNavigateButton />}
-                </View>
+            <Fragment
+                style={{
+                    alignItems: "center",
+                    display: "flex",
+                    backgroundColor: "#fff",
+                    zIndex: 99999,
+                }}
+            >
+                <AnswerResult />
             </Fragment>
         )
     }
@@ -114,20 +116,18 @@ const QuizDialog = () => {
                     paddingRight: 30,
                     marginBottom: 15,
                     alignItems: "stretch",
-                    // marginLeft: "5%",
                     backgroundColor: "#966fd6",
                 }}
             >
                 <View
                     style={{
                         width: "100%",
-                        // alignItems: "stretch",
                         display: "flex",
                     }}
                 >
                     {quizObj.questions.map((question, idx) => {
                         return (
-                            <View
+                            <TouchableOpacity
                                 onPress={() => {
                                     console.log("Setting selected idx")
                                     setSelectedIdx(idx)
@@ -140,7 +140,7 @@ const QuizDialog = () => {
                                     width: "100%",
                                     backgroundColor: "#fff",
                                     alignContent: "center",
-                                    borderWidth: idx === selectedIdx ? 5 : 0,
+                                    borderWidth: 1,
                                     borderColor: idx === selectedIdx ? "#000" : "none",
                                 }}
                             >
@@ -172,11 +172,13 @@ const QuizDialog = () => {
                                         marginLeft: 10,
                                         fontSize: 20,
                                         color: "#030303",
+                                        fontFamily: "Roboto",
+                                        fontWeight: idx === selectedIdx ? "400" : "200",
                                     }}
                                 >
                                     {question}
                                 </Text>
-                            </View>
+                            </TouchableOpacity>
                         )
                     })}
                 </View>
