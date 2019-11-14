@@ -34,6 +34,9 @@ const reducer = (state, action) => {
                 finished: false,
                 quizAnswered: false,
                 quizCorrect: false,
+                // quizAnswered: true,
+                // quizCorrect: true,
+                // finished: true,
             }
         case "endGame":
             return {

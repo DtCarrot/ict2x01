@@ -33,12 +33,10 @@ const QuizDialog = () => {
         }
     }, [state.gameDialogOpen, state.finished])
 
-    console.log("Selected Idx: ", selectedIdx)
-
     const answerQuiz = answerIdx => {
         // If the answer is correct
         let correct = true
-        if (validateQuiz(quizObj.quizIdx, answerIdx)) {
+        if (validateQuiz(quizObj.quizIdx, selectedIdx)) {
             console.log("Correct answer")
             correct = true
         } else {
@@ -60,14 +58,7 @@ const QuizDialog = () => {
     }
     if (quizAnswered) {
         return (
-            <Fragment
-                style={{
-                    alignItems: "center",
-                    display: "flex",
-                    backgroundColor: "#fff",
-                    zIndex: 99999,
-                }}
-            >
+            <Fragment>
                 <AnswerResult />
             </Fragment>
         )
@@ -126,22 +117,20 @@ const QuizDialog = () => {
                     }}
                 >
                     {quizObj.questions.map((question, idx) => {
+                        console.log("Idx: ", idx, " vs ", selectedIdx, idx === selectedIdx)
                         return (
-                            <TouchableOpacity
-                                onPress={() => {
-                                    console.log("Setting selected idx")
-                                    setSelectedIdx(idx)
-                                }}
+                            <View
+                                key={idx}
                                 style={{
-                                    marginTop: 15,
+                                    marginTop: 14,
                                     borderRadius: 30,
                                     height: 50,
                                     flexDirection: "row",
                                     width: "100%",
                                     backgroundColor: "#fff",
                                     alignContent: "center",
-                                    borderWidth: 1,
-                                    borderColor: idx === selectedIdx ? "#000" : "none",
+                                    borderWidth: 2,
+                                    borderColor: idx === selectedIdx ? "#000" : "#fff",
                                 }}
                             >
                                 <View
@@ -167,6 +156,10 @@ const QuizDialog = () => {
                                     </Text>
                                 </View>
                                 <Text
+                                    onPress={() => {
+                                        console.log("Setting selected idx")
+                                        setSelectedIdx(idx)
+                                    }}
                                     style={{
                                         marginTop: 10,
                                         marginLeft: 10,
@@ -178,7 +171,7 @@ const QuizDialog = () => {
                                 >
                                     {question}
                                 </Text>
-                            </TouchableOpacity>
+                            </View>
                         )
                     })}
                 </View>
