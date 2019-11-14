@@ -1,63 +1,167 @@
 import React, { useState, useEffect } from "react"
-// import { Input } from "react-native-ui-kitten"
-import { TextInput, ActivityIndicator, AsyncStorage, StatusBar, StyleSheet } from "react-native"
-import { Text, Button, Item, Input, Content, H1, View } from "native-base"
+import { NavigationActions } from "react-navigation"
+import { DrawerActions } from "react-navigation"
+import { StyleSheet, TouchableOpacity } from "react-native"
+import { Text, Content, H1, View} from "native-base"
 import 'firebase/firestore'
-import AuthLoadingScreen from "../screens/AuthLoadingScreen"
-
 import * as firebase from "firebase"
 
 const LeaderboardScreen = ({ navigation }) => {
-    const [userPoint, setUserPoint] = useState(0);
-    const [userPosition, setUserPosition] = useState(0);
-    const [userDetails, setUserDetails] = useState(0);
-    const B = (props) => <Text style={{fontWeight: 'bold'}}>{props.children}</Text>
+    const [userDetails, setUserDetails] = useState([])
+    const [usersDetails, setUsersDetails] = useState([])
+    const [top10Details, setTop10Details] = useState([])
+    const B = (props) => <Text style={{ fontWeight: 'bold' }}>{props.children}</Text>
+    var db = firebase.firestore()
 
     const navigationOptions = {
         title: "Leaderboard",
     }
 
-    const getuserScoreAndPosition = async () => {
-        var db = firebase.firestore()
+    navigateToScreen = route => () => {
+        const navigateAction = NavigationActions.navigate({
+            routeName: route,
+        })
+        this.props.navigation.dispatch(navigateAction)
+        this.props.navigation.dispatch(DrawerActions.closeDrawer())
+    }
+
+    const getUsersDetails = async () => {
+        try {
+            const usersDetailsSnapshot = await db.collection('user').get()
+            let userDetailsCollection = []
+            usersDetailsSnapshot.docs.map((doc) => {
+                userDetailsCollection.push({ Name: doc.data().name, Points: doc.data().points, UpdatedDate: Date.parse(doc.data().pointsUpdatedDate) })
+            })
+            userDetailsCollection = userDetailsCollection.sort((a, b) => {
+                return a.Points < b.Points
+            });
+            for (let i = 0; i < userDetailsCollection.length - 1; i++) {
+                if (userDetailsCollection[i].Points === userDetailsCollection[i + 1].Points) {
+                    if (userDetailsCollection[i].UpdatedDate > userDetailsCollection[i + 1].UpdatedDate) {
+                        let tmp = userDetailsCollection[i];
+                        userDetailsCollection[i] = userDetailsCollection[i + 1];
+                        userDetailsCollection[i + 1] = tmp;
+                    }
+                }
+            }
+            setUsersDetails(userDetailsCollection)
+            return userDetailsCollection
+        } catch (err) {
+            console.log("Failed to retrieve data", err)
+        }
+    }
+
+    const getuserScoreAndPosition = async (usersDetails) => {
         var userId = firebase.auth().currentUser.uid
-        var userPoint = null
+        const usersInformation = await usersDetails
         try {
             const userData = await db.collection("user").doc(userId).get()
             if (userData.exists) {
-                setUserPoint(userData.data().points)
-                userPoint = userData.data().points
+                const userPosition = usersInformation.findIndex(x => x.Points === userData.data().points && x.UpdatedDate === Date.parse(userData.data().pointsUpdatedDate))
+                setUserDetails({ Position: userPosition, Points: userData.data().points })
             }
             else {
                 db.collection("user").doc(userId).set({ points: 0 })
             }
         } catch (err) {
-            console.log("Failed to signin: ", err)
+            console.log("Failed to retrieve data", err)
         }
-        const snapshot = await firebase.firestore().collection('user').get()
-        const uniquePoints =  Array.from(new Set(snapshot.docs.map(doc => doc.data().points)))
-        const descendingUniquePoints = uniquePoints.sort(function(a, b){return b-a})
-        const userPosition = descendingUniquePoints.indexOf(userPoint) + 1
-        setUserPosition(userPosition)
-        const userDate = snapshot.docs.map(doc => Date.parse(doc.data().pointsUpdatedDate))
-        const userDetails = snapshot.docs.map(doc => Date.parse(doc.data()))
-        setUserDetails(userDetails)
-        //var newArr = _.sortBy(userDate, 'pointsUpdatedDate', function(n) {
-          //  return n;
-          //});          
-        //console.log(newArr)
+    }
+
+    const getTop10Users = async (usersDetails) => {
+        let top10UsersDetails = []
+        const usersInformation = await usersDetails
+        for (let i = 0; i < 10; i++) {
+            top10UsersDetails.push({ UserName: usersInformation[i].Name, Points: usersInformation[i].Points, Position: i + 1 })
+        }
+        setTop10Details(top10UsersDetails)
     }
 
     useEffect(() => {
-        getuserScoreAndPosition()
-    })
+        const usersDetails = getUsersDetails()
+        getuserScoreAndPosition(usersDetails)
+        getTop10Users(usersDetails)
+    }, [])
 
     return (
         <Content style={styles.content}>
+            <TouchableOpacity style={styles.btnLogin} onPress={() => navigation.navigate('Home')}>
+                <Text style={{
+                    fontSize: 15
+                }}
+                >
+                    Back
+                    </Text>
+            </TouchableOpacity>
             <View style={styles.container}>
                 <H1 style={styles.title}>Leaderboard</H1>
-                <Text><B>User Score:</B> {userPoint}</Text>
-                <Text><B>User Position:</B> {userPosition}</Text>
-                <Text>{userDetails}</Text>
+                <Text><B style={{ fontSize: 40 }}>User Score:  </B>{userDetails.Points}</Text>
+                <Text><B style={{ fontSize: 40 }}>User Position:  </B>{userDetails.Position}</Text>
+                {top10Details.map(top10Details => {
+                    return (
+                        <View
+                            style={{
+                                marginTop: 10,
+                                borderRadius: 10,
+                                height: 36,
+                                flexDirection: "row",
+                                width: "90%",
+                                backgroundColor: "#fff",
+                                alignContent: "center",
+                            }}
+                        >
+                            <View
+                                style={{
+                                    width: 23,
+                                    height: 23,
+                                    backgroundColor: "#966FD6",
+                                    borderRadius: 30,
+                                    marginLeft: 10,
+                                    marginTop: 8,
+                                    display: "flex",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        fontSize: 16,
+                                        fontFamily: "Roboto",
+                                        color: "#fff",
+                                    }}
+                                >
+                                    {top10Details.Position}
+                                </Text>
+                            </View>
+                            <View
+                                style={{
+                                    marginTop: 7,
+                                    marginLeft: 30,
+                                    width: 80,
+                                    display: "flex",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Text>
+                                    {top10Details.UserName}
+                                </Text>
+                            </View>
+                            <View
+                                style={{
+                                    marginTop: 7,
+                                    marginLeft: 160,
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        position: 'absolute',
+                                        right: 0
+                                    }}>
+                                    {top10Details.Points}
+                                </Text>
+                            </View>
+                        </View>
+                    )
+                })}
             </View>
         </Content>
     );
@@ -93,8 +197,8 @@ const styles = StyleSheet.create({
     title: {
         color: "#fff",
         fontFamily: "Roboto",
-        paddingTop: 80,
-        marginBottom: 50,
+        paddingTop: 40,
+        marginBottom: 30,
     },
     button: {
         width: "70%",
@@ -108,6 +212,16 @@ const styles = StyleSheet.create({
     smallText: {
         fontSize: 15,
         color: "#000",
+    },
+    btnLogin: {
+        width: 45,
+        height: 20,
+        marginTop: 28,
+        marginLeft:20,
+        borderTopLeftRadius: 50,
+        borderBottomLeftRadius:50,
+        backgroundColor: "#A9A9B0",
+        alignItems: "center",
     },
 })
 
