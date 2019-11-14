@@ -6,7 +6,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "test": "jest --watchAll"
+    "test": "GOOGLE_APPLICATION_CREDENTIALS=./firebase-admin-key.json jest --watchAll"
   },
   "jest": {
     "preset": "jest-expo"
@@ -25,6 +25,7 @@
     "expo-sensors": "^6.0.0",
     "expo-web-browser": "6.0.0",
     "firebase": "^6.5.0",
+    "firebase-admin": "^8.7.0",
     "geolib": "^3.0.4",
     "lodash": "^4.17.15",
     "lottie-react-native": "^2.6.1",

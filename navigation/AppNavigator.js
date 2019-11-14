@@ -72,6 +72,9 @@ const DrawerStack = createDrawerNavigator(
         Home: {
             screen: MainScreen,
         },
+        Profile: {
+            screen: () => <Text>Hello World</Text>,
+        },
     },
     {
         contentComponent: props => <DrawerScreen {...props} />,
