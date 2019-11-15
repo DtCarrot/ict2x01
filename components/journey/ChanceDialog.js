@@ -59,7 +59,7 @@ const SvgComponent = () => (
 const ChanceDialog = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
     // const [finished, setFinished] = useState(false)
-    const [reward, setReward] = useState("300 POINTS")
+    const [reward, setReward] = useState("")
     const { currentAvailChance, totalChance, finished } = state
     console.log("Finished: ", finished)
     useEffect(() => {
