@@ -17,6 +17,7 @@ import MainScreen from "../screens/MainScreen"
 import DrawerScreen from "../screens/Menu"
 import JourneyScreen from "../screens/JourneyScreen"
 import LeaderboardScreen from "../screens/LeaderboardScreen"
+import FinishedJourneyScreen from "../screens/FinishedJourney"
 
 import * as firebase from "firebase"
 
@@ -41,9 +42,26 @@ const AuthStack = createStackNavigator(
     }
 )
 
-const JourneyStack = createStackNavigator(
+const JourneyStack = createDrawerNavigator(
     {
         Journey: JourneyScreen,
+        FinishedJourney: FinishedJourneyScreen,
+    },
+    {
+        initialRouteName: "Journey",
+        // initialRouteName: "FinishedJourney",
+        headerMode: "none",
+        drawerWidth: 220,
+        contentComponent: props => <DrawerScreen {...props} />,
+    }
+)
+
+const JourneyNavigator = createStackNavigator(
+    {
+        JourneyStack: {
+            screen: JourneyStack,
+            headerMode: "none",
+        },
     },
     {
         headerMode: "none",
@@ -61,7 +79,7 @@ const DrawerStack = createDrawerNavigator(
     },
     {
         contentComponent: props => <DrawerScreen {...props} />,
-        // drawerWidth: 300,
+        drawerWidth: 220,
         // headerMode: "none",
     }
 )
@@ -77,7 +95,6 @@ const DrawerNavigator = createStackNavigator(
         headerMode: "none",
     }
 )
-
 export default createAppContainer(
     createStackNavigator(
         {
@@ -85,7 +102,8 @@ export default createAppContainer(
             // Read more at https://reactnavigation.org/docs/en/auth-flow.html
             AuthLoading: AuthLoadingScreen,
             Auth: AuthStack,
-            Journey: JourneyStack,
+            // JourneyNavigator: { screen: JourneyNavigator },
+            JourneyStack: JourneyStack,
             // SignUp: SignUpScreen,
             // Home: MainScreen,    
             // Main: MainTabNavigator,
@@ -95,8 +113,11 @@ export default createAppContainer(
             headerMode: "none",
             title: "Main",
             initialRouteName: "AuthLoading",
+            // initialRouteParams: "Home",
             // initialRouteName: "SignUp",
-            // initialRouteName: "Journey",
+            // initialRouteParams: "JourneyStack",
+            // initialRouteName: "JourneyStack",
+            // initialRouteName: "JourneyStack",
         }
     )
 )

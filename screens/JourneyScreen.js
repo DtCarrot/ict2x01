@@ -1,6 +1,5 @@
 import React, { Component, useContext, useRef, useEffect, useState } from "react"
 import flattenDeep from "lodash/fp/flattenDeep"
-import { Text } from "native-base"
 import Polyline from "@mapbox/polyline"
 import { View, Image } from "react-native"
 import MapView from "react-native-maps"
@@ -18,6 +17,10 @@ import JourneyRewardBar from "../components/journey/JourneyRewardBar"
 import GameDialog from "../components/journey/GameDialog"
 import mapStyles from "../components/map/mapStyles"
 import BottomJourneyBar from "../components/journey/BottomJourneyBar"
+import EndJourneyPromptDialog from "../components/journey/EndJourneyPromptDialog"
+import { checkAllDistance } from "../components/journey/distanceCalculator"
+
+import { startJourney } from "../db/journeyService"
 
 const JourneyScreen = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
@@ -55,12 +58,12 @@ const JourneyScreen = ({ navigation }) => {
         console.log("Camera obj: ", cameraObj)
         mapRef.current.setCamera(cameraObj)
     }
-    useEffect(() => {
+    useInterval(() => {
         Location.watchHeadingAsync(heading => {
             const {
                 gpsPosition: { heading: currHeading },
             } = state
-            console.log("Heading: ", heading)
+            // console.log("Heading: ", heading)
             const { magHeading } = heading
             const currentTime = new Date()
             // If the time is not null
@@ -71,19 +74,17 @@ const JourneyScreen = ({ navigation }) => {
                 }
                 dateTimeRef.current = currentTime
             }
-            console.log("State: ", state.gpsPosition)
-            console.log("Curr Heading: ", currHeading, "Mag heading: ", magHeading)
-            console.log("Heading diff: ", Math.abs(currHeading - magHeading))
             if (currHeading === null || Math.abs(currHeading - magHeading) > 5) {
                 dispatch({ type: "setGPSHeading", heading: magHeading })
                 const cameraObj = {
                     heading: magHeading,
                 }
-                console.log("Camera obj: ", cameraObj)
-                mapRef.current.animateCamera(cameraObj, { duration: 300 })
+                // console.log("Camera obj: ", cameraObj)
+                mapRef.current.animateCamera(cameraObj, { duration: 100 })
             }
         })
-    }, [])
+    }, 1000)
+    // }, [])
     // Update the position every 30 seconds
     useInterval(async () => {
         // console.log("Journey details: ", state.journeyDetails.overview_polyline)
@@ -97,21 +98,59 @@ const JourneyScreen = ({ navigation }) => {
             journeyStepIdx,
             journeyStepSubIdx,
         } = state
-        const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
-        console.log("Journey step: ", journeyStepIdx, journeyStepSubIdx)
-        console.log("GPS Target: ", nextTarget)
-        // Get the distance between the current and target destination
-        const distance = getPreciseDistance(
-            {
-                latitude: gpsPosition.latitude,
-                longitude: gpsPosition.longitude,
-            },
-            {
-                latitude: nextTarget.end_location.lat,
-                longitude: nextTarget.end_location.lng,
-            }
-        )
+        // const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
+        const journeyStepTarget = journeyDetails.legs[0].steps[journeyStepIdx]
+        console.log("Step Target: ", journeyStepTarget)
+        let nextTarget = null
+        if ("steps" in journeyStepTarget) {
+            nextTarget = journeyStepTarget.steps[journeyStepSubIdx]
+        } else {
+            nextTarget = journeyStepTarget
+        }
+
         await getGPSPosition()
+        const { latitude: currLat, longitude: currLng } = gpsPosition
+
+        const closeDistanceList = checkAllDistance(journeyDetails, { currLat, currLng })
+        console.log("Distance: ", closeDistanceList)
+        if (closeDistanceList.length > 0) {
+            let { innerStep, outerStep, distance } = closeDistanceList[0]
+            let oldStep = journeyDetails.legs[0].steps[outerStep]
+            let newOuterStep = outerStep
+            let newInnerStep = innerStep
+            if ("steps" in oldStep) {
+                // Check whether end of current inner step
+                const oldInnerStepLen = oldStep.steps.length
+                if (innerStep === oldInnerStepLen - 1) {
+                    newOuterStep = outerStep + 1
+                    const newStep = journeyDetails.legs[0].steps[newOuterStep]
+                    if ("steps" in newStep) {
+                        newInnerStep = 0
+                    } else {
+                        newInnerStep = null
+                    }
+                } else {
+                    newInnerStep++
+                }
+            } else {
+                // very simple if it does not have inner steps
+                // just inc the outer step by 1
+                newOuterStep++
+                const newStep = journeyDetails.legs[0].steps[newOuterStep]
+                if ("steps" in newStep) {
+                    newInnerStep = 0
+                } else {
+                    newInnerStep = null
+                }
+            }
+            console.log("Dispatching")
+            console.log("New outer step: ", newOuterStep, "New inner step: ", newInnerStep)
+            dispatch({
+                type: "setJourneyStep",
+                journeyStepIdx: newOuterStep,
+                journeyStepSubIdx: newInnerStep,
+            })
+        }
 
         if (lastKnownPosition !== null) {
             const distanceBetweenCurrAndPrevGPS = getPreciseDistance(
@@ -131,34 +170,25 @@ const JourneyScreen = ({ navigation }) => {
         }
 
         // Reached destination
-        if (distance < 10) {
-            // Check the current leg length
-            if (journeyStepSubIdx + 1 >= journeyDetails.legs[0].steps[journeyStepIdx].length) {
-                dispatch({
-                    type: "setJourneyStep",
-                    journeyStepIdx: journeyStepIdx + 1,
-                    journeyStepSubIdx: 0,
-                })
-            } else {
-                dispatch({
-                    type: "setJourneyStep",
-                    journeyStepIdx,
-                    journeyStepSubIdx: journeyStepSubIdx + 1,
-                })
-            }
-        }
-    }, 45000)
+        // if (distance < 10) {
+        //     // Check the current leg length
+        //     if (journeyStepSubIdx + 1 >= journeyDetails.legs[0].steps[journeyStepIdx].length) {
+        //         dispatch({
+        //             type: "setJourneyStep",
+        //             journeyStepIdx: journeyStepIdx + 1,
+        //             journeyStepSubIdx: 0,
+        //         })
+        //     } else {
+        //         dispatch({
+        //             type: "setJourneyStep",
+        //             journeyStepIdx,
+        //             journeyStepSubIdx: journeyStepSubIdx + 1,
+        //         })
+        //     }
+        // }
+    }, 30000)
 
     const transformRoute = route => {
-        // console.log(route.overview_polyline.points)
-        // let points = Polyline.decode(route.overview_polyline.points)
-        // let coords = points.map((point, index) => {
-        //     const pointCoords = {
-        //         latitude: point[0],
-        //         longitude: point[1],
-        //     }
-        //     return pointCoords
-        // })
         const leg = route.legs[0]
         const routeCoord = leg.steps.map(step => {
             // console.log("Step: ", step)
@@ -178,7 +208,6 @@ const JourneyScreen = ({ navigation }) => {
             }
         })
 
-        // console.log("Route coord: ", flattenDeep(routeCoord))
         const routeObj = {
             ...route,
             overview_polyline: flattenDeep(routeCoord),
@@ -186,55 +215,50 @@ const JourneyScreen = ({ navigation }) => {
         return routeObj
     }
 
-    // console.log("Navigation ref: ", navigation.getParam("journeyRoute", null))
     useEffect(() => {
-        const currJourneyRoute = navigation.getParam("journeyRoute", null)
-        // dispatch({
-        //     type: "setJourneyDetails",
-        //     journeyDetails: currJourneyRoute,
-        // })
-        dispatch({
-            type: "setJourneyDetails",
-            journeyDetails: transformRoute(sampleRoutes),
-        })
-        // console.log("At journey screen", state.journeyDetails.overview_polyline)
-        // console.log(currJourneyRoute.overview_polyline)
-        // setJourneyRoute(currJourneyRoute)
-        // console.log("Sample Routes: ", sampleRoutes)
-        // setJourneyRoute(transformRoute(sampleRoutes))
-        const _getLocationAsync = async () => {
-            const { status } = await Permissions.askAsync(Permissions.LOCATION)
-            console.log("Status: ", status)
-            if (status !== "granted") {
-                console.log("Denied")
-            } else {
-                // setTimeout(async () => {
-                console.log("Getting current position")
-                const location = await Location.getCurrentPositionAsync({})
-                console.log("Location: ", location)
-                const {
-                    coords: { latitude, longitude, heading, altitude },
-                } = location
-                const cameraObj = {
-                    center: {
+        const init = async () => {
+            await startJourney()
+            // We start by initialize the journey information
+            const currJourneyRoute = navigation.getParam("journeyRoute", null)
+            dispatch({
+                type: "setJourneyDetails",
+                journeyDetails: transformRoute(sampleRoutes),
+            })
+            const _getLocationAsync = async () => {
+                const { status } = await Permissions.askAsync(Permissions.LOCATION)
+                console.log("Status: ", status)
+                if (status !== "granted") {
+                    console.log("Denied")
+                } else {
+                    // setTimeout(async () => {
+                    console.log("Getting current position")
+                    const location = await Location.getCurrentPositionAsync({})
+                    console.log("Location: ", location)
+                    const {
+                        coords: { latitude, longitude, heading, altitude },
+                    } = location
+                    const cameraObj = {
+                        center: {
+                            latitude,
+                            longitude,
+                        },
+                        pitch: 60,
+                        heading,
+                        zoom: 20,
+                        altitude,
+                    }
+                    mapRef.current.setCamera(cameraObj)
+                    dispatch({
+                        type: "setGPSPosition",
                         latitude,
                         longitude,
-                    },
-                    pitch: 60,
-                    heading,
-                    zoom: 20,
-                    altitude,
+                    })
+                    // }, 1000)
                 }
-                mapRef.current.setCamera(cameraObj)
-                dispatch({
-                    type: "setGPSPosition",
-                    latitude,
-                    longitude,
-                })
-                // }, 1000)
             }
+            _getLocationAsync()
         }
-        _getLocationAsync()
+        init()
     }, [])
     const getLayout = async () => {}
     return (
@@ -296,8 +320,6 @@ const JourneyScreen = ({ navigation }) => {
                             latitude: state.gpsPosition.latitude,
                             longitude: state.gpsPosition.longitude,
                         }}
-                        // rotation={state.gpsPosition.heading + 90}
-                        // rotation={90}
                     >
                         <Image
                             source={require("../assets/navigation/icons8-arrow-64.png")}
@@ -312,10 +334,6 @@ const JourneyScreen = ({ navigation }) => {
                                         rotate: "-90deg",
                                     },
                                 ],
-                                // {
-                                //     rotate: `${state.gpsPosition.heading + 90}deg`,
-                                // },
-                                // ],
                             }}
                         />
                     </MapView.Marker>
@@ -325,6 +343,7 @@ const JourneyScreen = ({ navigation }) => {
             <GameDialog />
             <JourneyRewardBar />
             <BottomJourneyBar onUserFocus={onUserFocus} />
+            <EndJourneyPromptDialog />
         </View>
     )
 }

@@ -6,6 +6,7 @@ import { Text, Button, Content } from "native-base"
 import ChanceDialog from "./ChanceDialog"
 import { chooseGame } from "../../utils/gameCreator"
 import JourneyHeader from "./JourneyHeader"
+import QuizDialog from "./QuizDialog"
 
 const styles = StyleSheet.create({
     logo: {
@@ -47,10 +48,10 @@ const GameDialog = () => {
     }, [state.gameDialogOpen])
 
     const renderGame = () => {
-        if (gameType === "treasurebox") {
+        if (gameType !== "treasurebox") {
             return <ChanceDialog />
         } else {
-            return <Text>Quiz</Text>
+            return <QuizDialog />
         }
     }
     return (
@@ -82,10 +83,7 @@ const GameDialog = () => {
                             backgroundColor:
                                 "linear-gradient(180deg, rgba(255, 255, 255, 0.8) 42.36%, rgba(255, 255, 255, 0.552) 83.51%)",
                             boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-                            // backgroundColor: "#fff",
                             opacity: 0.8,
-                            // flex: 1,
-                            // backgroundColor: "#009990",
                             position: "absolute",
                             alignSelf: "center",
                             justifyContent: "center",
@@ -93,7 +91,6 @@ const GameDialog = () => {
                             width: "90%",
                             zIndex: 9000,
                             height: "95%",
-                            // maxWidth: "100%",
                         }}
                     ></View>
                     <View

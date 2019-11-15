@@ -2,51 +2,69 @@ import React, { useContext } from "react"
 import { StyleSheet } from "react-native"
 import NavigationService from "../../navigation/NavigationService"
 import SearchBar from "../../components/search/SearchBar"
-import { Text, View, Input, Item, Button, Icon } from "native-base"
+import { Text, View, Input, Item, Button, Icon, Badge } from "native-base"
 import { SearchBarContext } from "../search/SearchBarContext"
 import BottomLocationBar from "./BottomLocationBar"
+import { LinearGradient } from "expo-linear-gradient"
 const BottomBar = () => {
     const { state, dispatch } = useContext(SearchBarContext)
     if (state.selectedPlaceObj !== null) {
         return <BottomLocationBar />
     }
     return (
-        <View style={styles.wrapper}>
+        <LinearGradient
+            colors={["#966FD6", "#6B3BB9"]}
+            start={[0, 0]}
+            end={[1, 1]}
+            location={[-0.1, 0.8251]}
+            style={styles.wrapper}
+        >
             <View style={styles.left}>
-                <Button
-                    transparent
-                    onPress={() => {
-                        console.log("Toggle drawer")
-                        NavigationService.toggleDrawer()
+                <Badge
+                    style={{
+                        marginTop: 10,
+                        marginLeft: 10,
+                        width: 40,
+                        height: 40,
+                        backgroundColor: "transparent",
+                        borderRadius: 40,
+                        borderColor: "#fff",
+                        borderWidth: 1,
+                        display: "flex",
+                        textAlign: "center",
+                        alignItems: "center",
+                        justifyContent: "center",
                     }}
                 >
                     <Icon
+                        onPress={() => {
+                            console.log("Toggle drawer")
+                            NavigationService.toggleDrawer()
+                        }}
                         style={{
                             textAlign: "center",
                             alignItems: "center",
                             justifyContent: "center",
-                            marginLeft: 25,
-                            fontSize: 30,
-                            marginTop: 10,
+                            fontSize: 26,
+                            color: "#fff",
                         }}
-                        name="menu"
+                        name="ios-menu"
                     />
-                </Button>
+                </Badge>
             </View>
             <View style={styles.center}>
                 <SearchBar />
             </View>
             <View style={styles.right}>
-                <Button transparent>
-                    <Text>Cancel</Text>
-                </Button>
+                <Button transparent>{/* <Text>Cancel</Text> */}</Button>
             </View>
-        </View>
+        </LinearGradient>
     )
 }
 
 const styles = StyleSheet.create({
     wrapper: {
+        borderRadius: 40,
         position: "absolute",
         display: "flex",
         justifyContent: "space-between",
@@ -54,28 +72,27 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         zIndex: 990,
-        backgroundColor: "#fff",
-        width: "100%",
+        backgroundColor: "#000",
+        width: "96%",
+        left: "2%",
+        right: "2%",
+        marginBottom: 15,
         height: 60,
         bottom: 0,
     },
     left: {
-        // flex: "0 0 auto",
-        width: 80,
+        width: 150,
         height: 60,
-        borderRightWidth: 1,
-        borderColor: "#000",
+        flex: 1,
     },
     center: {
-        // flex: "1 1 auto",
-        alignItems: "stretch",
+        alignItems: "center",
+        flex: 1,
     },
     right: {
-        // flex: "0 0 auto",
-        width: 80,
+        width: 150,
         height: 60,
-        borderLeftWidth: 1,
-        borderColor: "#000",
+        flex: 1,
     },
 })
 export default BottomBar
