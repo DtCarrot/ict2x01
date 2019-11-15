@@ -5,10 +5,11 @@ import { StyleSheet, TouchableOpacity } from "react-native"
 import { Text, Content, H1, View, Button, Icon,} from "native-base"
 import 'firebase/firestore'
 import * as firebase from "firebase"
+import { getUsersDetails, getuserScoreAndPosition, getTop10Users} from '../db/leaderboardService'
+
 
 const LeaderboardScreen = ({ navigation }) => {
     const [userDetails, setUserDetails] = useState([])
-    const [usersDetails, setUsersDetails] = useState([])
     const [top10Details, setTop10Details] = useState([])
     const B = (props) => <Text style={{ fontWeight: 'bold', color:"white" }}>{props.children}</Text>
     var db = firebase.firestore()
@@ -25,62 +26,15 @@ const LeaderboardScreen = ({ navigation }) => {
         this.props.navigation.dispatch(DrawerActions.closeDrawer())
     }
 
-    const getUsersDetails = async () => {
-        try {
-            const usersDetailsSnapshot = await db.collection('user').get()
-            let userDetailsCollection = []
-            usersDetailsSnapshot.docs.map((doc) => {
-                userDetailsCollection.push({ Name: doc.data().name, Points: doc.data().points, UpdatedDate: Date.parse(doc.data().pointsUpdatedDate) })
-            })
-            userDetailsCollection = userDetailsCollection.sort((a, b) => {
-                return a.Points < b.Points
-            });
-            for (let i = 0; i < userDetailsCollection.length - 1; i++) {
-                if (userDetailsCollection[i].Points === userDetailsCollection[i + 1].Points) {
-                    if (userDetailsCollection[i].UpdatedDate > userDetailsCollection[i + 1].UpdatedDate) {
-                        let tmp = userDetailsCollection[i];
-                        userDetailsCollection[i] = userDetailsCollection[i + 1];
-                        userDetailsCollection[i + 1] = tmp;
-                    }
-                }
-            }
-            setUsersDetails(userDetailsCollection)
-            return userDetailsCollection
-        } catch (err) {
-            console.log("Failed to retrieve data", err)
-        }
-    }
-
-    const getuserScoreAndPosition = async (usersDetails) => {
-        var userId = firebase.auth().currentUser.uid
-        const usersInformation = await usersDetails
-        try {
-            const userData = await db.collection("user").doc(userId).get()
-            if (userData.exists) {
-                const userPosition = usersInformation.findIndex(x => x.Points === userData.data().points && x.UpdatedDate === Date.parse(userData.data().pointsUpdatedDate))
-                setUserDetails({ Position: userPosition, Points: userData.data().points })
-            }
-            else {
-                db.collection("user").doc(userId).set({ points: 0 })
-            }
-        } catch (err) {
-            console.log("Failed to retrieve data", err)
-        }
-    }
-
-    const getTop10Users = async (usersDetails) => {
-        let top10UsersDetails = []
-        const usersInformation = await usersDetails
-        for (let i = 0; i < 10; i++) {
-            top10UsersDetails.push({ UserName: usersInformation[i].Name, Points: usersInformation[i].Points, Position: i + 1 })
-        }
-        setTop10Details(top10UsersDetails)
-    }
-
     useEffect(() => {
-        const usersDetails = getUsersDetails()
-        getuserScoreAndPosition(usersDetails)
-        getTop10Users(usersDetails)
+        const init = async () => {
+            const usersDetails = await getUsersDetails()
+            const userDetails = await getuserScoreAndPosition(usersDetails)
+            setUserDetails(userDetails)
+            const top10Users = await getTop10Users(usersDetails)
+            setTop10Details(top10Users)
+        }
+       init()
     }, [])
 
     return (
