@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { NavigationActions } from "react-navigation"
 import { DrawerActions } from "react-navigation"
 import { StyleSheet, TouchableOpacity } from "react-native"
-import { Text, Content, H1, View} from "native-base"
+import { Text, Content, H1, View, Button, Icon,} from "native-base"
 import 'firebase/firestore'
 import * as firebase from "firebase"
 
@@ -10,7 +10,7 @@ const LeaderboardScreen = ({ navigation }) => {
     const [userDetails, setUserDetails] = useState([])
     const [usersDetails, setUsersDetails] = useState([])
     const [top10Details, setTop10Details] = useState([])
-    const B = (props) => <Text style={{ fontWeight: 'bold' }}>{props.children}</Text>
+    const B = (props) => <Text style={{ fontWeight: 'bold', color:"white" }}>{props.children}</Text>
     var db = firebase.firestore()
 
     const navigationOptions = {
@@ -85,18 +85,13 @@ const LeaderboardScreen = ({ navigation }) => {
 
     return (
         <Content style={styles.content}>
-            <TouchableOpacity style={styles.btnLogin} onPress={() => navigation.navigate('Home')}>
-                <Text style={{
-                    fontSize: 15
-                }}
-                >
-                    Back
-                    </Text>
-            </TouchableOpacity>
+            <Button transparent style={{marginTop:20}} onPress={() => navigation.navigate('Home')}>
+              <Icon name="arrow-back" style={{color:"white"}} />
+            </Button>
             <View style={styles.container}>
                 <H1 style={styles.title}>Leaderboard</H1>
-                <Text><B style={{ fontSize: 40 }}>User Score:  </B>{userDetails.Points}</Text>
-                <Text><B style={{ fontSize: 40 }}>User Position:  </B>{userDetails.Position}</Text>
+                <Text style={{color:"white"}}><B style={{ fontSize: 40}}>User Score:  </B>{userDetails.Points}</Text>
+                <Text style={{color:"white"}}><B style={{ fontSize: 40}}>User Position:  </B>{userDetails.Position}</Text>
                 {top10Details.map(top10Details => {
                     return (
                         <View
@@ -141,7 +136,7 @@ const LeaderboardScreen = ({ navigation }) => {
                                     alignItems: "center",
                                 }}
                             >
-                                <Text>
+                                <Text style={{fontWeight:"bold"}}>
                                     {top10Details.UserName}
                                 </Text>
                             </View>
@@ -197,8 +192,8 @@ const styles = StyleSheet.create({
     title: {
         color: "#fff",
         fontFamily: "Roboto",
-        paddingTop: 40,
-        marginBottom: 30,
+        paddingTop: 20,
+        marginBottom: 36,
     },
     button: {
         width: "70%",
@@ -212,16 +207,6 @@ const styles = StyleSheet.create({
     smallText: {
         fontSize: 15,
         color: "#000",
-    },
-    btnLogin: {
-        width: 45,
-        height: 20,
-        marginTop: 28,
-        marginLeft:20,
-        borderTopLeftRadius: 50,
-        borderBottomLeftRadius:50,
-        backgroundColor: "#A9A9B0",
-        alignItems: "center",
     },
 })
 

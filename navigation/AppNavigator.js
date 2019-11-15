@@ -50,15 +50,6 @@ const JourneyStack = createStackNavigator(
     }
 )
 
-const LeaderboardStack = createStackNavigator(
-    {
-        Leaderboard: LeaderboardScreen,
-    },
-    {
-        headerMode: "none",
-    }
-)
-
 const DrawerStack = createDrawerNavigator(
     {
         Home: {
