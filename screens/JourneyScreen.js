@@ -18,7 +18,7 @@ import GameDialog from "../components/journey/GameDialog"
 import mapStyles from "../components/map/mapStyles"
 import BottomJourneyBar from "../components/journey/BottomJourneyBar"
 import EndJourneyPromptDialog from "../components/journey/EndJourneyPromptDialog"
-import { checkAllDistance } from "../components/journey/distanceCalculator"
+import { checkAllDistance, checkReachedDestination } from "../components/journey/distanceCalculator"
 
 import { startJourney } from "../db/journeyService"
 
@@ -111,10 +111,23 @@ const JourneyScreen = ({ navigation }) => {
         await getGPSPosition()
         const { latitude: currLat, longitude: currLng } = gpsPosition
 
+        if (checkReachedDestination(journeyDetails, { currLat, currLng })) {
+            dispatch({
+                type: "toggleEndJourney",
+                open: true,
+            })
+            console.log("Reached destination")
+            return
+        } else {
+            console.log("Not reached")
+        }
+
         const closeDistanceList = checkAllDistance(journeyDetails, { currLat, currLng })
         console.log("Distance: ", closeDistanceList)
+
         if (closeDistanceList.length > 0) {
             let { innerStep, outerStep, distance } = closeDistanceList[0]
+            // Check if the closest distance is the final destination.
             let oldStep = journeyDetails.legs[0].steps[outerStep]
             let newOuterStep = outerStep
             let newInnerStep = innerStep
