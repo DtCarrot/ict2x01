@@ -58,32 +58,32 @@ const JourneyScreen = ({ navigation }) => {
         console.log("Camera obj: ", cameraObj)
         mapRef.current.setCamera(cameraObj)
     }
-    useInterval(() => {
-        Location.watchHeadingAsync(heading => {
-            const {
-                gpsPosition: { heading: currHeading },
-            } = state
-            // console.log("Heading: ", heading)
-            const { magHeading } = heading
-            const currentTime = new Date()
-            // If the time is not null
-            if (dateTimeRef.current !== null) {
-                const diffSeconds = differenceInSeconds(dateTimeRef.current, currentTime)
-                if (diffSeconds < 3) {
-                    return false
-                }
-                dateTimeRef.current = currentTime
+    // useInterval(() => {
+    Location.watchHeadingAsync(heading => {
+        const {
+            gpsPosition: { heading: currHeading },
+        } = state
+        // console.log("Heading: ", heading)
+        const { magHeading } = heading
+        const currentTime = new Date()
+        // If the time is not null
+        if (dateTimeRef.current !== null) {
+            const diffSeconds = differenceInSeconds(dateTimeRef.current, currentTime)
+            if (diffSeconds < 3) {
+                return false
             }
-            if (currHeading === null || Math.abs(currHeading - magHeading) > 5) {
-                dispatch({ type: "setGPSHeading", heading: magHeading })
-                const cameraObj = {
-                    heading: magHeading,
-                }
-                // console.log("Camera obj: ", cameraObj)
-                mapRef.current.animateCamera(cameraObj, { duration: 100 })
+            dateTimeRef.current = currentTime
+        }
+        if (currHeading === null || Math.abs(currHeading - magHeading) > 5) {
+            dispatch({ type: "setGPSHeading", heading: magHeading })
+            const cameraObj = {
+                heading: magHeading,
             }
-        })
-    }, 1000)
+            // console.log("Camera obj: ", cameraObj)
+            mapRef.current.animateCamera(cameraObj, { duration: 100 })
+        }
+    })
+    // }, 1000)
     // }, [])
     // Update the position every 30 seconds
     useInterval(async () => {
