@@ -35,7 +35,7 @@ class DrawerScreen extends Component {
                 this.navigateToScreen("Profile")
                 break
             case "adminVoucher":
-                this.navigateToScreen("adminVoucher")
+                this.navigateToScreen("AdminVoucher")
                 break
         }
     }
