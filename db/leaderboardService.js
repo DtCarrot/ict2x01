@@ -6,7 +6,6 @@ const getUsersDetails = async () => {
     try {
         const usersDetailsSnapshot = await db.collection("user").get()
         let userDetailsCollection = []
-        // console.log("User Details: ", usersDetailsSnapshot.docs)
         usersDetailsSnapshot.docs.map(doc => {
             userDetailsCollection.push({
                 Name: doc.data().name,
@@ -14,7 +13,6 @@ const getUsersDetails = async () => {
                 UpdatedDate: Date.parse(doc.data().pointsUpdatedDate),
             })
         })
-        console.log("User Details: ", userDetailsCollection)
         userDetailsCollection = userDetailsCollection.sort((a, b) => {
             return b.Points - a.Points
         })
@@ -29,7 +27,6 @@ const getUsersDetails = async () => {
                 }
             }
         }
-        // setUsersDetails(userDetailsCollection)
         return userDetailsCollection
     } catch (err) {
         console.log("Failed to retrieve data", err)
