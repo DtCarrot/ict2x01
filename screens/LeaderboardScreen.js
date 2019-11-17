@@ -2,16 +2,15 @@ import React, { useState, useEffect } from "react"
 import { NavigationActions } from "react-navigation"
 import { DrawerActions } from "react-navigation"
 import { StyleSheet, TouchableOpacity } from "react-native"
-import { Text, Content, H1, View, Button, Icon,} from "native-base"
-import 'firebase/firestore'
+import { Text, Content, H1, View, Button, Icon } from "native-base"
+import "firebase/firestore"
 import * as firebase from "firebase"
-import { getUsersDetails, getuserScoreAndPosition, getTop10Users} from '../db/leaderboardService'
-
+import { getUsersDetails, getuserScoreAndPosition, getTop10Users } from "../db/leaderboardService"
 
 const LeaderboardScreen = ({ navigation }) => {
     const [userDetails, setUserDetails] = useState([])
     const [top10Details, setTop10Details] = useState([])
-    const B = (props) => <Text style={{ fontWeight: 'bold', color:"white" }}>{props.children}</Text>
+    const B = props => <Text style={{ fontWeight: "bold", color: "white" }}>{props.children}</Text>
     var db = firebase.firestore()
 
     const navigationOptions = {
@@ -32,20 +31,31 @@ const LeaderboardScreen = ({ navigation }) => {
             const userDetails = await getuserScoreAndPosition(usersDetails)
             setUserDetails(userDetails)
             const top10Users = await getTop10Users(usersDetails)
+            console.log("Top 10 users: ", top10Users)
             setTop10Details(top10Users)
         }
-       init()
+        init()
     }, [])
 
     return (
         <Content style={styles.content}>
-            <Button transparent style={{marginTop:20}} onPress={() => navigation.navigate('Home')}>
-              <Icon name="arrow-back" style={{color:"white"}} />
+            <Button
+                transparent
+                style={{ marginTop: 20 }}
+                onPress={() => navigation.navigate("Home")}
+            >
+                <Icon name="arrow-back" style={{ color: "white" }} />
             </Button>
             <View style={styles.container}>
                 <H1 style={styles.title}>Leaderboard</H1>
-                <Text style={{color:"white"}}><B style={{ fontSize: 40}}>User Score:  </B>{userDetails.Points}</Text>
-                <Text style={{color:"white"}}><B style={{ fontSize: 40}}>User Position:  </B>{userDetails.Position}</Text>
+                <Text style={{ color: "white" }}>
+                    <B style={{ fontSize: 40 }}>User Score: </B>
+                    {userDetails.Points}
+                </Text>
+                <Text style={{ color: "white" }}>
+                    <B style={{ fontSize: 40 }}>User Position: </B>
+                    {userDetails.Position}
+                </Text>
                 {top10Details.map(top10Details => {
                     return (
                         <View
@@ -90,9 +100,7 @@ const LeaderboardScreen = ({ navigation }) => {
                                     alignItems: "center",
                                 }}
                             >
-                                <Text style={{fontWeight:"bold"}}>
-                                    {top10Details.UserName}
-                                </Text>
+                                <Text style={{ fontWeight: "bold" }}>{top10Details.UserName}</Text>
                             </View>
                             <View
                                 style={{
@@ -102,9 +110,10 @@ const LeaderboardScreen = ({ navigation }) => {
                             >
                                 <Text
                                     style={{
-                                        position: 'absolute',
-                                        right: 0
-                                    }}>
+                                        position: "absolute",
+                                        right: 0,
+                                    }}
+                                >
                                     {top10Details.Points}
                                 </Text>
                             </View>
@@ -113,7 +122,7 @@ const LeaderboardScreen = ({ navigation }) => {
                 })}
             </View>
         </Content>
-    );
+    )
 }
 const styles = StyleSheet.create({
     container: {
