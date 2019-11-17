@@ -95,7 +95,7 @@ const LeaderboardScreen = ({ navigation }) => {
                                 style={{
                                     marginTop: 7,
                                     marginLeft: 30,
-                                    width: 80,
+                                    width: 150,
                                     display: "flex",
                                     alignItems: "center",
                                 }}
@@ -105,7 +105,7 @@ const LeaderboardScreen = ({ navigation }) => {
                             <View
                                 style={{
                                     marginTop: 7,
-                                    marginLeft: 160,
+                                    marginLeft: 100,
                                 }}
                             >
                                 <Text

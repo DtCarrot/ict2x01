@@ -27,6 +27,8 @@ const getUsersDetails = async () => {
                 }
             }
         }
+        console.log("Users Details")
+        console.log(userDetailsCollection)
         return userDetailsCollection
     } catch (err) {
         console.log("Failed to retrieve data", err)
