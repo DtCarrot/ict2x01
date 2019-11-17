@@ -1,5 +1,5 @@
+const functions = require('firebase-functions');
 
-const functions = require("firebase-functions");
 const sgMail = require("@sendgrid/mail");
 const cors = require("cors")({
   origin: true
@@ -27,7 +27,6 @@ exports.emailMessage = functions.https.onRequest((req, res) => {
     res.status(200).send("success");
   })
 });
-
 
 
 
