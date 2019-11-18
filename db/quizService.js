@@ -16,6 +16,8 @@ const getRandomQuiz = () => {
 const validateQuiz = (quizIdx, answerIdx) => {
     // Retrieve the quiz records based on quiz index
     const { correctAnswerIdx } = quizRecords[quizIdx]
+    console.log(`Compare answer`)
+    console.log(`${correctAnswerIdx} vs ${answerIdx}`)
     if (correctAnswerIdx === answerIdx) {
         // Answer is incorrect
         return true

@@ -8,6 +8,8 @@ const FinishedJourney = ({ navigation }) => {
         endJourney()
     }, [])
     const backToHome = () => {
+        console.log("Navigation: ", navigation)
+        console.log("Route name: ", navigation.state.routeName)
         navigation.navigate("Home")
     }
     return (

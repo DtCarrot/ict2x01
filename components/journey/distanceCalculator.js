@@ -77,4 +77,28 @@ const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
     return closeDistanceList
 }
 
-export { checkAllDistance }
+const checkReachedDestination = (journeyDetails, { currLat, currLng }) => {
+    const {
+        end_location: { lat: endLat, lng: endLng },
+    } = journeyDetails.legs[0]
+    const distance = getPreciseDistance(
+        {
+            latitude: currLat,
+            longitude: currLng,
+        },
+        {
+            latitude: endLat,
+            longitude: endLng,
+        }
+    )
+    console.log("Distance away: ", distance)
+    // Reached destination
+    if (distance < 30) {
+        console.log("Reached destination")
+        return true
+    }
+    console.log("Have not reached destination")
+    return false
+}
+
+export { checkAllDistance, checkReachedDestination }
