@@ -20,6 +20,7 @@ import LeaderboardScreen from "../screens/LeaderboardScreen"
 import FinishedJourneyScreen from "../screens/FinishedJourney"
 import AdminVoucherScreen from "../screens/adminVoucherScreen"
 import EditVoucherScreen from "../screens/editVoucherScreen"
+import AddVoucherScreen from "../screens/addVoucherScreen"
 
 import * as firebase from "firebase"
 
@@ -83,6 +84,9 @@ const DrawerStack = createDrawerNavigator(
         },
         EditVoucher:{
             screen: EditVoucherScreen
+        },
+        AddVoucher:{
+            screen: AddVoucherScreen
         }
     },
     {

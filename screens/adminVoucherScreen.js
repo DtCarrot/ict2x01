@@ -52,7 +52,7 @@ const AdminVoucherScreen = ({ navigation }) => {
                 if (doc.data().quantity > 0) {
                     VoucherCollection.push({ Name: doc.data().name, Id: doc.id, Description: doc.data().description, Quantity: doc.data().quantity, Point: doc.data().point })
                 }
-    
+
             });
             setvoucherlist(VoucherCollection)
         }
@@ -101,6 +101,12 @@ const AdminVoucherScreen = ({ navigation }) => {
                 <H1 style={styles.title}>Voucher</H1>
             </View>
 
+            <View style ={{flex:1}}>
+                <Button transparent style={{marginLeft: 305 }} onPress={() => navigation.navigate('AddVoucher')}>
+                    <Icon name="add" style={{ color: "white" }} />
+                </Button>
+            </View>
+
             {voucherDetails.map(voucherDetails => {
                 return (
                     <Card style={{ width: 335, marginLeft: 10 }}>
@@ -129,14 +135,14 @@ const AdminVoucherScreen = ({ navigation }) => {
                                         Quantity: voucherDetails.Quantity
                                     })}
                             >
-                                <Icon name="create" style={{color:"#446CB3"}} />
+                                <Icon name="create" style={{ color: "#446CB3" }} />
                             </Button>
                             <Button
                                 transparent
                                 style={{ marginLeft: 10 }}
                                 onPress={() => alertDeleteVoucher(voucherDetails.Id)}
                             >
-                                <Icon name="trash" style={{color:"#446CB3"}}/>
+                                <Icon name="trash" style={{ color: "#446CB3" }} />
                             </Button>
                         </CardItem>
 
@@ -188,7 +194,7 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontFamily: "Roboto",
         paddingTop: 20,
-        marginBottom: 36,
+        marginBottom: 30,
     },
     button: {
         width: "70%",
