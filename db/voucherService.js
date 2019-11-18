@@ -62,25 +62,32 @@ const redeemVoucher = async(voucherID) =>{
         if (voucherData.exists) {
             if(voucherData.data().quantity > 0)
             {
-                var a = userData.data().useablePoint
-                var b = voucherData.data().point
-                db.collection("user").doc(userId).update({ useablePoint:a-b})
-                db.collection("Voucher").doc(voucherID).update({quantity:voucherData.data().quantity-1})
-
-                const userVoucher = await db.collection('user').doc(userId).collection('voucher').doc(voucherID).get()
-                if(userVoucher.exists)
+                if(userData.data().useablePoint<voucherData.data().point)
                 {
-                    db.collection('user').doc(userId).collection('voucher').doc(voucherID).update({quantity:userVoucher.data().quantity+1})
+                    alert("You Does not have Enough point")
                 }
                 else
                 {
-                    let data = {
-                        description: voucherData.data().description,
-                        name: voucherData.data().name,
-                        quantity:1
-                      };
-                    db.collection('user').doc(userId).collection('voucher').doc(voucherID).set(data)
-                }                
+                    var a = userData.data().useablePoint
+                    var b = voucherData.data().point
+                    db.collection("user").doc(userId).update({ useablePoint:a-b})
+                    db.collection("Voucher").doc(voucherID).update({quantity:voucherData.data().quantity-1})
+
+                    const userVoucher = await db.collection('user').doc(userId).collection('voucher').doc(voucherID).get()
+                    if(userVoucher.exists)
+                    {
+                        db.collection('user').doc(userId).collection('voucher').doc(voucherID).update({quantity:userVoucher.data().quantity+1})
+                    }
+                    else
+                    {
+                        let data = {
+                            description: voucherData.data().description,
+                            name: voucherData.data().name,
+                            quantity:1
+                        };
+                        db.collection('user').doc(userId).collection('voucher').doc(voucherID).set(data)
+                    }  
+                }              
             }
         }
         else {
