@@ -19,7 +19,7 @@ import { ListItem } from "react-native-elements";
 // import styles from "../../styles/index"
 
 class DrawerScreen extends Component {
-  navigateToScreen = route => () => {
+  navigateToScreen = route => {
     const navigateAction = NavigationActions.navigate({
       routeName: route
     });
