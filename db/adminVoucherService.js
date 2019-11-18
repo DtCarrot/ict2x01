@@ -14,6 +14,7 @@ const getVoucherList = async () => {
             }
             
         });
+        console.log(VoucherCollection)
         return VoucherCollection
     }
     catch(err){

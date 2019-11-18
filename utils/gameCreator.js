@@ -1,5 +1,5 @@
 const chooseGame = () => {
-    QUIZ_BOX_CHANCE = 1
+    QUIZ_BOX_CHANCE = 0.8
     const randomVal = Math.random()
     if (randomVal >= QUIZ_BOX_CHANCE) {
         return {

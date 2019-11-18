@@ -8,12 +8,11 @@ import 'firebase/firestore'
 import * as firebase from "firebase"
 import { getVoucherList, alertDeleteVoucher } from "../db/adminVoucherService"
 
-const AdminVoucherScreen = ({ navigation }) => {
-    const [voucherDetails, setvoucherlist] = useState([])
-    var db = firebase.firestore()
+const EditVoucherScreen = ({ navigation }) => {
+    const [voucherDetails, setVoucherDetails] = useState([])
 
     const navigationOptions = {
-        title: "Admin Voucher",
+        title: "Admin Edit Voucher",
     }
 
     navigateToScreen = route => () => {
@@ -26,8 +25,22 @@ const AdminVoucherScreen = ({ navigation }) => {
 
     useEffect(() => {
         const init = async () => {
-            const voucherDetails = await getVoucherList()
-            setvoucherlist(voucherDetails)
+            const voucherID = navigation.getParam('ID', 'Error');
+            const voucherDescription = navigation.getParam('Description', 'Error');
+            const voucherName = navigation.getParam('Name', 'Error');
+            const voucherPoint = navigation.getParam('Point', 'Error');
+            const voucherQuantity = navigation.getParam('Quantity', 'Error');
+            let voucherDetails = []
+            console.log("fuck you voucher")
+            voucherID = JSON.stringify(voucherID)
+            console.log(voucherID)
+            voucherDescription = JSON.stringify(voucherDescription)
+            console.log(voucherDescription)
+            voucherName = JSON.stringify(voucherName)
+            voucherPoint = JSON.stringify(voucherPoint)
+            voucherQuantity = JSON.stringify(voucherQuantity)
+            voucherDetails.push({ID: voucherID, Description: voucherDescription, Name: voucherName, Point: voucherPoint, Quantity: voucherQuantity})
+            setVoucherDetails(voucherDetails)
         }
         init()
     }, [])
@@ -38,54 +51,41 @@ const AdminVoucherScreen = ({ navigation }) => {
                 <Icon name="arrow-back" style={{ color: "white" }} />
             </Button>
             <View style={styles.container}>
-                <H1 style={styles.title}>Voucher</H1>
+                <H1 style={styles.title}>FUck you</H1>
             </View>
-            {voucherDetails.map(voucherDetails => {
-                return (
-                    <Card style={{ width: 335, marginLeft: 10 }}>
-                        <CardItem header bordered>
-                            <Text>{voucherDetails.Name}</Text>
-                        </CardItem>
-                        <CardItem bordered>
-                            <Body>
-                                <Text>
-                                    {voucherDetails.Description}
-                                </Text>
-                            </Body>
-                        </CardItem>
-                        <CardItem bordered>
-                            <Text>Quanity: {voucherDetails.Quanity}</Text>
-                        </CardItem>
-                        <CardItem footer bordered>
-                            <Button
-                                onPress={() =>
-                                    navigation.navigate('EditVoucher', {
-                                        ID: voucherDetails.Id,
-                                        Description: voucherDetails.Description,
-                                        Name: voucherDetails.Name,
-                                        Point: voucherDetails.Point,
-                                        Quantity: voucherDetails.Quantity
-                                    })}
-                            >
-                                <Text>Edit</Text>
-                            </Button>
-                            <Button
-                                style={{ marginLeft: 20 }}
-                                onPress={() => alertDeleteVoucher(voucherDetails.Id)}
-                            >
-                                <Text>Delete</Text>
-                            </Button>
-                        </CardItem>
+            <Card style={{ width: 335, marginLeft: 10 }}>
+                <CardItem header bordered>
+                    <Text>{voucherDetails.Name}</Text>
+                </CardItem>
+                <CardItem bordered>
+                    <Body>
+                        <Text>
+                            {voucherDetails.Description}
+                        </Text>
+                    </Body>
+                </CardItem>
+                <CardItem bordered>
+                    <Text>Quanity: {voucherDetails.Quanity}</Text>
+                </CardItem>
+                <CardItem footer bordered>
+                    <Button>
+                        <Text>Edit</Text>
+                    </Button>
+                    <Button
+                        style={{ marginLeft: 20 }}
+                        onPress={() => alertDeleteVoucher(voucherDetails.Id)}
+                    >
+                        <Text>Delete</Text>
+                    </Button>
+                </CardItem>
 
-                    </Card>
-                )
-            })}
+            </Card>
             <View style={styles.Fabcontainer}>
                 <TouchableOpacity style={styles.fab}>
                     <Text style={styles.text}>+</Text>
                 </TouchableOpacity>
             </View>
-        </Content >
+        </Content>
     );
 }
 const styles = StyleSheet.create({
@@ -153,4 +153,4 @@ const styles = StyleSheet.create({
         backgroundColor: '#686cc3',
     },
 })
-export default AdminVoucherScreen
+export default EditVoucherScreen
