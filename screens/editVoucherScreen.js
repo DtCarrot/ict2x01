@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { StyleSheet, TouchableOpacity } from "react-native"
+import { StyleSheet, TouchableOpacity, TextInput } from "react-native"
 import { NavigationActions } from "react-navigation"
 import { DrawerActions } from "react-navigation"
 import { Container, Header, Content, Card, CardItem, Text, Body, Fab } from 'native-base';
@@ -10,6 +10,12 @@ import { getVoucherList, alertDeleteVoucher } from "../db/adminVoucherService"
 
 const EditVoucherScreen = ({ navigation }) => {
     const [voucherDetails, setVoucherDetails] = useState([])
+    const [newvoucherName, setNewVoucherName] = useState(0)
+    const voucherID = navigation.getParam('ID', 'Error');
+    const voucherDescription = navigation.getParam('Description', 'Error');
+    const voucherName = navigation.getParam('Name', 'Error');
+    const voucherPoint = navigation.getParam('Point', 'Error');
+    const voucherQuantity = navigation.getParam('Quantity', 'Error');
 
     const navigationOptions = {
         title: "Admin Edit Voucher",
@@ -25,22 +31,7 @@ const EditVoucherScreen = ({ navigation }) => {
 
     useEffect(() => {
         const init = async () => {
-            const voucherID = navigation.getParam('ID', 'Error');
-            const voucherDescription = navigation.getParam('Description', 'Error');
-            const voucherName = navigation.getParam('Name', 'Error');
-            const voucherPoint = navigation.getParam('Point', 'Error');
-            const voucherQuantity = navigation.getParam('Quantity', 'Error');
-            let voucherDetails = []
-            console.log("fuck you voucher")
-            voucherID = JSON.stringify(voucherID)
-            console.log(voucherID)
-            voucherDescription = JSON.stringify(voucherDescription)
-            console.log(voucherDescription)
-            voucherName = JSON.stringify(voucherName)
-            voucherPoint = JSON.stringify(voucherPoint)
-            voucherQuantity = JSON.stringify(voucherQuantity)
-            voucherDetails.push({ID: voucherID, Description: voucherDescription, Name: voucherName, Point: voucherPoint, Quantity: voucherQuantity})
-            setVoucherDetails(voucherDetails)
+
         }
         init()
     }, [])
@@ -51,40 +42,38 @@ const EditVoucherScreen = ({ navigation }) => {
                 <Icon name="arrow-back" style={{ color: "white" }} />
             </Button>
             <View style={styles.container}>
-                <H1 style={styles.title}>FUck you</H1>
+                <H1 style={styles.title}>Edit Voucher</H1>
             </View>
             <Card style={{ width: 335, marginLeft: 10 }}>
                 <CardItem header bordered>
-                    <Text>{voucherDetails.Name}</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder={'Email'}
+                        placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
+                        underlineColorAndroid='transparent'
+                        onChangeText={voucherName => setNewVoucherName(voucherName)}
+                        value={voucherName}
+                    />
+                    <Text>
+                        {newvoucherName}
+                    </Text>
                 </CardItem>
                 <CardItem bordered>
                     <Body>
                         <Text>
-                            {voucherDetails.Description}
+                            {voucherDescription}
                         </Text>
                     </Body>
                 </CardItem>
                 <CardItem bordered>
-                    <Text>Quanity: {voucherDetails.Quanity}</Text>
+                    <Text>Quanity: {voucherQuantity}</Text>
                 </CardItem>
-                <CardItem footer bordered>
-                    <Button>
-                        <Text>Edit</Text>
-                    </Button>
-                    <Button
-                        style={{ marginLeft: 20 }}
-                        onPress={() => alertDeleteVoucher(voucherDetails.Id)}
-                    >
-                        <Text>Delete</Text>
-                    </Button>
-                </CardItem>
-
             </Card>
-            <View style={styles.Fabcontainer}>
-                <TouchableOpacity style={styles.fab}>
-                    <Text style={styles.text}>+</Text>
-                </TouchableOpacity>
-            </View>
+            <CardItem footer bordered>
+                <Button>
+                    <Text>Confirm</Text>
+                </Button>
+            </CardItem>
         </Content>
     );
 }

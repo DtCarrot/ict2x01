@@ -6,7 +6,8 @@ import { Container, Header, Content, Card, CardItem, Text, Body, Fab } from 'nat
 import { H1, View, Button, Icon, } from "native-base"
 import 'firebase/firestore'
 import * as firebase from "firebase"
-import { getVoucherList, alertDeleteVoucher } from "../db/adminVoucherService"
+import { getVoucherList } from "../db/adminVoucherService"
+import { Alert } from 'react-native'
 
 const AdminVoucherScreen = ({ navigation }) => {
     const [voucherDetails, setvoucherlist] = useState([])
@@ -14,6 +15,50 @@ const AdminVoucherScreen = ({ navigation }) => {
 
     const navigationOptions = {
         title: "Admin Voucher",
+    }
+
+    const alertDeleteVoucher = async (voucherID) => {
+        Alert.alert(
+            'Confirmation',
+            'Are You Sure?',
+            [
+                { text: 'NO', onPress: () => null, style: 'cancel' },
+                { text: 'Yes', onPress: () => deleteVoucher(voucherID) },
+            ]
+        );
+    }
+
+    const deleteVoucher = async (voucherID) => {
+        var db = firebase.firestore()
+        try {
+            db.collection("Voucher").doc(voucherID).delete().then(async function () {
+                const voucherDetails = await getVoucherList()
+                setvoucherlist(voucherDetails)
+            }).catch(function (error) {
+                alert("Error removing document: ", error);
+            });
+        }
+        catch (err) {
+            console.log("Failed to delete voucher", err)
+        }
+    }
+
+    const refreshVoucherList = async () => {
+        var db = firebase.firestore()
+        try {
+            const VoucherListSnapshot = await db.collection('Voucher').get()
+            let VoucherCollection = []
+            VoucherListSnapshot.docs.map((doc) => {
+                if (doc.data().quantity > 0) {
+                    VoucherCollection.push({ Name: doc.data().name, Id: doc.id, Description: doc.data().description, Quanity: doc.data().quantity, Point: doc.data().point })
+                }
+    
+            });
+            setvoucherlist(VoucherCollection)
+        }
+        catch (err) {
+            console.log("Failed to retrieve data", err)
+        }
     }
 
     navigateToScreen = route => () => {
@@ -34,12 +79,28 @@ const AdminVoucherScreen = ({ navigation }) => {
 
     return (
         <Content style={styles.content}>
-            <Button transparent style={{ marginTop: 20 }} onPress={() => navigation.navigate('Home')}>
-                <Icon name="arrow-back" style={{ color: "white" }} />
-            </Button>
+            <View style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}>
+                <View style={styles.buttonContainer}>
+                    <Button transparent style={{ marginTop: 30 }} onPress={() => navigation.navigate('Home')}>
+                        <Icon name="arrow-back" style={{ color: "white" }} />
+                    </Button>
+                </View>
+                <View style={styles.buttonContainer}>
+                    <Button transparent style={{ marginTop: 30, marginLeft: 130 }} onPress={() => refreshVoucherList()}>
+                        <Icon name="refresh" style={{ color: "white" }} />
+                    </Button>
+                </View>
+            </View>
+
             <View style={styles.container}>
                 <H1 style={styles.title}>Voucher</H1>
             </View>
+
             {voucherDetails.map(voucherDetails => {
                 return (
                     <Card style={{ width: 335, marginLeft: 10 }}>
@@ -58,6 +119,7 @@ const AdminVoucherScreen = ({ navigation }) => {
                         </CardItem>
                         <CardItem footer bordered>
                             <Button
+                                transparent
                                 onPress={() =>
                                     navigation.navigate('EditVoucher', {
                                         ID: voucherDetails.Id,
@@ -67,13 +129,14 @@ const AdminVoucherScreen = ({ navigation }) => {
                                         Quantity: voucherDetails.Quantity
                                     })}
                             >
-                                <Text>Edit</Text>
+                                <Icon name="create" style={{color:"blue"}} />
                             </Button>
                             <Button
-                                style={{ marginLeft: 20 }}
+                                transparent
+                                style={{ marginLeft: 10 }}
                                 onPress={() => alertDeleteVoucher(voucherDetails.Id)}
                             >
-                                <Text>Delete</Text>
+                                <Icon name="trash" style={{color:"blue"}}/>
                             </Button>
                         </CardItem>
 
@@ -152,5 +215,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#686cc3',
     },
+    buttonContainer: {
+        flex: 1,
+    }
 })
 export default AdminVoucherScreen
