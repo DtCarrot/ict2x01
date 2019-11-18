@@ -6,7 +6,24 @@ const JOURNEY_ID = "@Store:JourneyId"
 
 const NUMBER_OF_STARS = 5
 const FeedbackForm = ({ onComplete }) => {
+    const [errorMessage, setErrorMessage] = useState(null)
     const onSubmitForm = async () => {
+        if (overallScore === 0) {
+            setErrorMessage("Please set the overall score")
+            return
+        }
+        if (safetyFeedback === 0) {
+            setErrorMessage("Please set the safety rating")
+            return
+        }
+        if (speedFeedback === 0) {
+            setErrorMessage("Please set the speed rating")
+            return
+        }
+        if (enjoyFeedback === 0) {
+            setErrorMessage("Please set the score rating")
+            return
+        }
         console.log("Preparing to submit form ")
         const journeyId = await AsyncStorage.getItem(JOURNEY_ID)
         const feedbackObj = {
@@ -19,7 +36,6 @@ const FeedbackForm = ({ onComplete }) => {
         await addFeedback(feedbackObj, journeyId)
         onComplete()
     }
-    const [errorMessage, setErrorMessage] = useState(null)
     const [overallScore, setOverallScore] = useState(0)
     const [safetyFeedback, setSafetyFeedback] = useState(0)
     const [speedFeedback, setSpeedFeedback] = useState(0)
@@ -82,9 +98,28 @@ const FeedbackForm = ({ onComplete }) => {
                     experience
                 </Text>
             </View>
-            {errorMessage && <Text style={{ color: "#fff" }}>{errorMessage}</Text>}
+            {errorMessage && (
+                <View
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginTop: 20,
+                    }}
+                >
+                    <Text
+                        style={{
+                            width: "60%",
+                            backgroundColor: "#fff",
+                            color: "#000",
+                            padding: 10,
+                        }}
+                    >
+                        {errorMessage}
+                    </Text>
+                </View>
+            )}
             <View style={styles.container}>
-                <FeedbackHeader name="Overall Feedback" />
+                <FeedbackHeader name="Overall Rating" />
                 <View
                     style={{
                         flexDirection: "row",
@@ -93,7 +128,7 @@ const FeedbackForm = ({ onComplete }) => {
                 >
                     {renderOverallFeedbackStar(setOverallScore, overallScore)}
                 </View>
-                <FeedbackHeader name="Safety Feedback" />
+                <FeedbackHeader name="Safety Rating" />
                 <View
                     style={{
                         flexDirection: "row",
@@ -102,7 +137,7 @@ const FeedbackForm = ({ onComplete }) => {
                 >
                     {renderOverallFeedbackStar(setSafetyFeedback, safetyFeedback)}
                 </View>
-                <FeedbackHeader name="Speed Feedback" />
+                <FeedbackHeader name="Speed Rating" />
                 <View
                     style={{
                         flexDirection: "row",
@@ -111,7 +146,7 @@ const FeedbackForm = ({ onComplete }) => {
                 >
                     {renderOverallFeedbackStar(setSpeedFeedback, speedFeedback)}
                 </View>
-                <FeedbackHeader name="Enjoyment Feedback" />
+                <FeedbackHeader name="Enjoyment Rating" />
                 <View
                     style={{
                         flexDirection: "row",
