@@ -5,6 +5,7 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
+import LeaderboardScreen from '../screens/LeaderboardScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import VoucherScreen from '../screens/VoucherScreen';
 
@@ -16,7 +17,11 @@ const config = Platform.select({
 const HomeStack = createStackNavigator(
   {
     Home: HomeScreen,
+<<<<<<< HEAD
     Voucher: VoucherScreen,
+=======
+    Leaderboard: LeaderboardScreen,
+>>>>>>> 92059eec882c825fbc468fa5df2e33f7902054ca
   },
   config
 );

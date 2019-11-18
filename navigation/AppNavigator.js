@@ -16,6 +16,7 @@ import AuthLoadingScreen from "../screens/AuthLoadingScreen"
 import MainScreen from "../screens/MainScreen"
 import DrawerScreen from "../screens/Menu"
 import JourneyScreen from "../screens/JourneyScreen"
+import LeaderboardScreen from "../screens/LeaderboardScreen"
 import FinishedJourneyScreen from "../screens/FinishedJourney"
 import VoucherScreen from "../screens/VoucherScreen"
 import UserVoucherScreen from "../screens/UserVoucherScreen"
@@ -74,9 +75,15 @@ const DrawerStack = createDrawerNavigator(
         Home: {
             screen: MainScreen,
         },
+<<<<<<< HEAD
         Voucher: {
             screen: VoucherScreen,
         },
+=======
+        Leaderboard:{
+            screen: LeaderboardScreen
+        }
+>>>>>>> 92059eec882c825fbc468fa5df2e33f7902054ca
     },
     {
         contentComponent: props => <DrawerScreen {...props} />,
@@ -106,7 +113,7 @@ export default createAppContainer(
             // JourneyNavigator: { screen: JourneyNavigator },
             JourneyStack: JourneyStack,
             // SignUp: SignUpScreen,
-            // Home: MainScreen,
+            // Home: MainScreen,    
             // Main: MainTabNavigator,
             DrawerNavigator: { screen: DrawerNavigator },
         },

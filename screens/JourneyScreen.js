@@ -18,13 +18,15 @@ import GameDialog from "../components/journey/GameDialog"
 import mapStyles from "../components/map/mapStyles"
 import BottomJourneyBar from "../components/journey/BottomJourneyBar"
 import EndJourneyPromptDialog from "../components/journey/EndJourneyPromptDialog"
-import { checkAllDistance } from "../components/journey/distanceCalculator"
+import { checkAllDistance, checkReachedDestination } from "../components/journey/distanceCalculator"
 
 import { startJourney } from "../db/journeyService"
 
 const JourneyScreen = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
+    const headingRef = useRef(null)
     const dateTimeRef = useRef(null)
+    const locationRef = useRef(null)
     const mapRef = useRef()
     const [journeyRoute, setJourneyRoute] = useState(null)
     const [initialRender, setInitialRender] = useState(false)
@@ -58,36 +60,51 @@ const JourneyScreen = ({ navigation }) => {
         console.log("Camera obj: ", cameraObj)
         mapRef.current.setCamera(cameraObj)
     }
-    useInterval(() => {
-        Location.watchHeadingAsync(heading => {
-            const {
-                gpsPosition: { heading: currHeading },
-            } = state
-            // console.log("Heading: ", heading)
-            const { magHeading } = heading
-            const currentTime = new Date()
-            // If the time is not null
-            if (dateTimeRef.current !== null) {
-                const diffSeconds = differenceInSeconds(dateTimeRef.current, currentTime)
-                if (diffSeconds < 3) {
-                    return false
+
+    useEffect(() => {
+        const watchHeading = async () => {
+            // Watch for update in location heading even in background
+            const headingEventListener = await Location.watchHeadingAsync(heading => {
+                const {
+                    gpsPosition: { heading: currHeading },
+                } = state
+                const { magHeading } = heading
+                const currentTime = new Date()
+                // If the time is not null
+                if (dateTimeRef.current !== null) {
+                    const diffSeconds = differenceInSeconds(dateTimeRef.current, currentTime)
+                    if (diffSeconds < 3) {
+                        return false
+                    }
+                    dateTimeRef.current = currentTime
                 }
-                dateTimeRef.current = currentTime
-            }
-            if (currHeading === null || Math.abs(currHeading - magHeading) > 5) {
-                dispatch({ type: "setGPSHeading", heading: magHeading })
-                const cameraObj = {
-                    heading: magHeading,
+                // Update the heading arrow on the journey navigation UI
+                if (currHeading === null || Math.abs(currHeading - magHeading) > 5) {
+                    dispatch({ type: "setGPSHeading", heading: magHeading })
+                    const cameraObj = {
+                        heading: magHeading,
+                    }
+                    mapRef.current.animateCamera(cameraObj, { duration: 100 })
                 }
-                // console.log("Camera obj: ", cameraObj)
-                mapRef.current.animateCamera(cameraObj, { duration: 100 })
-            }
-        })
-    }, 1000)
-    // }, [])
-    // Update the position every 30 seconds
-    useInterval(async () => {
-        // console.log("Journey details: ", state.journeyDetails.overview_polyline)
+            })
+            headingRef.current = headingEventListener
+        }
+        watchHeading()
+    }, [])
+
+    useEffect(() => {
+        // Create cleanup return function when component
+        // unmounts
+        console.log("Setting cleanup function")
+        return () => {
+            console.log("----Cleaning up----")
+            headingRef.current.remove()
+            locationRef.current.remove()
+            // useInterval(checkGPSPosition, null)
+        }
+    }, [])
+    const checkGPSPosition = async currPosition => {
+        console.log("Checking position")
         if (state.journeyDetails === null) {
             return
         }
@@ -109,12 +126,27 @@ const JourneyScreen = ({ navigation }) => {
         }
 
         await getGPSPosition()
-        const { latitude: currLat, longitude: currLng } = gpsPosition
+        const { latitude: currLat, longitude: currLng } = currPosition
+
+        if (checkReachedDestination(journeyDetails, { currLat, currLng })) {
+            dispatch({
+                type: "toggleEndJourney",
+                open: true,
+            })
+            console.log("Reached destination")
+            return
+        } else {
+            console.log("Not reached")
+        }
 
         const closeDistanceList = checkAllDistance(journeyDetails, { currLat, currLng })
         console.log("Distance: ", closeDistanceList)
+
+        // Update the current navigation step
+        // If there is a point within 20 metres
         if (closeDistanceList.length > 0) {
             let { innerStep, outerStep, distance } = closeDistanceList[0]
+            // Check if the closest distance is the final destination.
             let oldStep = journeyDetails.legs[0].steps[outerStep]
             let newOuterStep = outerStep
             let newInnerStep = innerStep
@@ -133,8 +165,6 @@ const JourneyScreen = ({ navigation }) => {
                     newInnerStep++
                 }
             } else {
-                // very simple if it does not have inner steps
-                // just inc the outer step by 1
                 newOuterStep++
                 const newStep = journeyDetails.legs[0].steps[newOuterStep]
                 if ("steps" in newStep) {
@@ -152,11 +182,14 @@ const JourneyScreen = ({ navigation }) => {
             })
         }
 
+        // If there is a GPS position,
+        // we update the distance travelled. This is esential
+        // for giving game points to the user
         if (lastKnownPosition !== null) {
             const distanceBetweenCurrAndPrevGPS = getPreciseDistance(
                 {
-                    latitude: gpsPosition.latitude,
-                    longitude: gpsPosition.longitude,
+                    latitude: currLat,
+                    longitude: currLng,
                 },
                 lastKnownPosition
             )
@@ -168,25 +201,22 @@ const JourneyScreen = ({ navigation }) => {
                 distanceTravelled: distanceTravelled + distanceBetweenCurrAndPrevGPS,
             })
         }
+    }
+    useEffect(() => {
+        const trackPosition = async () => {
+            const locationEvent = Location.watchPositionAsync(
+                {
+                    timeInterval: 10000,
+                },
+                checkGPSPosition
+            )
+            // locationRef.current = locationEvent
+        }
+        trackPosition()
+    }, [])
 
-        // Reached destination
-        // if (distance < 10) {
-        //     // Check the current leg length
-        //     if (journeyStepSubIdx + 1 >= journeyDetails.legs[0].steps[journeyStepIdx].length) {
-        //         dispatch({
-        //             type: "setJourneyStep",
-        //             journeyStepIdx: journeyStepIdx + 1,
-        //             journeyStepSubIdx: 0,
-        //         })
-        //     } else {
-        //         dispatch({
-        //             type: "setJourneyStep",
-        //             journeyStepIdx,
-        //             journeyStepSubIdx: journeyStepSubIdx + 1,
-        //         })
-        //     }
-        // }
-    }, 30000)
+    // Run an interval to constantly check for the current GPS Position
+    // useInterval(checkGPSPosition, 30000)
 
     const transformRoute = route => {
         const leg = route.legs[0]
