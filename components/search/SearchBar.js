@@ -20,7 +20,14 @@ const SearchBar = () => {
                 }}
                 placeholder="Search"
             >
-                <Text>Search</Text>
+                <Text
+                    style={{
+                        fontFamily: "Roboto",
+                        color: "#fff",
+                    }}
+                >
+                    Search
+                </Text>
             </Button>
         </Item>
     )

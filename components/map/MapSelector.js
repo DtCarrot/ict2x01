@@ -14,14 +14,31 @@ const mapRegion = {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
 }
+const edgePadding = {
+    top: 15,
+    left: 15,
+    right: 15,
+    bottom: 15,
+}
+
 const MapSelector = () => {
     const currentLocMarker = useRef()
+    const targetLocMarker = useRef()
     const mapRef = useRef(null)
     const [markerLoaded, setMarkerLoaded] = useState(false)
+    const [location, setLocation] = useState(null)
     // const [routeState, setRoutes] = useState(null)
     const [currCoord, setCurrCoord] = useState(null)
     const { state, dispatch } = useContext(SearchBarContext)
     const { state: routeState, dispatch: routeDispatch } = useContext(RouteContext)
+    const getReverseGeocode = async (lat, lng) => {
+        const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_DIRECTION_API_KEY}`
+        console.log(geocodeUrl)
+        let resp = await fetch(geocodeUrl)
+        let respJson = await resp.json()
+        console.log("Response json: ", respJson)
+        return respJson.results[0].formatted_address
+    }
     useEffect(() => {
         const _getLocationAsync = async () => {
             const { status } = await Permissions.askAsync(Permissions.LOCATION)
@@ -33,16 +50,18 @@ const MapSelector = () => {
                 const {
                     coords: { latitude, longitude },
                 } = location
+                setCurrCoord({
+                    latitude,
+                    longitude,
+                })
+                const name = await getReverseGeocode(latitude, longitude)
+                setLocation(name)
                 mapRef.current.animateCamera({
                     center: {
                         latitude,
                         longitude,
                     },
                     zoom: 18,
-                })
-                setCurrCoord({
-                    latitude,
-                    longitude,
                 })
             }
         }
@@ -74,12 +93,6 @@ const MapSelector = () => {
                 return routeObj
             })
             routeDispatch({ type: "setRouteDetails", routeDetails: routesList })
-            const edgePadding = {
-                top: 20,
-                left: 20,
-                right: 20,
-                bottom: 20,
-            }
             mapRef.current.fitToCoordinates(fitCoords, { edgePadding })
         } catch (error) {
             console.log(error)
@@ -95,6 +108,7 @@ const MapSelector = () => {
         }
         if (state.selectedPlaceObj !== null) {
             getDirectionsAPI()
+            // targetLocMarker.current.showCallout()
         }
     }, [state.selectedPlaceObj])
 
@@ -106,16 +120,25 @@ const MapSelector = () => {
     }, [markerLoaded])
 
     const renderRoutes = routes => {
-        return routes.map((route, idx) => {
-            return (
-                <MapView.Polyline
-                    key={idx}
-                    coordinates={route.overview_polyline}
-                    strokeWidth={2}
-                    strokeColor="red"
-                />
-            )
-        })
+        const currRouteDetails = routeState.routeDetails[routeState.currRouteIdx]
+        // currRouteDetails.concat(currCoord)
+        // const fitPositions = []
+        // fitPositions.concat(currCoord)
+        // fitPositions.concat(currRouteDetails.overview_polyline)
+        const fitPositions = [...currRouteDetails.overview_polyline, ...[currCoord]]
+
+        mapRef.current.fitToCoordinates(fitPositions, { edgePadding })
+        // return routeState.routeDetails[routeState.currRouteIdx].map((route, idx) => {
+        // return (
+        return (
+            <MapView.Polyline
+                coordinates={currRouteDetails.overview_polyline}
+                strokeWidth={2}
+                strokeColor="red"
+            />
+        )
+        // )
+        // })
     }
 
     return (
@@ -134,29 +157,36 @@ const MapSelector = () => {
                 <MapView.Marker
                     ref={ref => {
                         currentLocMarker.current = ref
-                        setTimeout(() => currentLocMarker.current.showCallout(), 1)
+                        setTimeout(() => {
+                            if (currentLocMarker.current !== null) {
+                                currentLocMarker.current.showCallout()
+                            }
+                        }, 1)
                     }}
                     coordinate={currCoord}
                 >
                     <Image
-                        source={require("../../assets/navigation/icons8-navigation-48.png")}
+                        source={require("../../assets/navigation/maps-and-flags.png")}
                         style={{ width: 48, height: 48 }}
                     />
-                    <LocationCallout />
+                    {location !== null && <LocationCallout name={location} />}
                 </MapView.Marker>
             )}
             {state.selectedPlaceObj !== null && (
                 <MapView.Marker
+                    ref={ref => {
+                        targetLocMarker.current = ref
+                    }}
                     coordinate={{
                         latitude: state.selectedPlaceObj.lat,
                         longitude: state.selectedPlaceObj.lng,
                     }}
                 >
                     <Image
-                        source={require("../../assets/navigation/icons8-navigation-48.png")}
+                        source={require("../../assets/navigation/maps-and-flags.png")}
                         style={{ width: 48, height: 48 }}
                     />
-                    <LocationCallout />
+                    <LocationCallout name={state.selectedPlaceObj.description} />
                 </MapView.Marker>
             )}
         </MapView>

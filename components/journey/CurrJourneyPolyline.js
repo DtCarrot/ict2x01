@@ -10,9 +10,13 @@ const CurrJourneyPolyline = () => {
     useEffect(() => {
         const getCurrentPolyline = () => {
             if (state.journeyDetails !== null) {
-                const { gpsPosition, journeyDetails, journeyStepIdx, journeyStepSubIdx } = state
-                const nextTarget =
-                    journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
+                const { journeyDetails, journeyStepIdx, journeyStepSubIdx } = state
+                let nextTarget = journeyDetails.legs[0].steps[journeyStepIdx]
+                // Check if there is any substeps in the navigation
+                if ("steps" in nextTarget) {
+                    // Get the substep
+                    nextTarget = nextTarget.steps[journeyStepSubIdx]
+                }
 
                 console.log("Next target:", nextTarget)
                 const points = Polyline.decode(nextTarget.polyline.points)
@@ -39,7 +43,7 @@ const CurrJourneyPolyline = () => {
                         zIndex: 101,
                     }}
                     strokeWidth={4}
-                    strokeColor="blue"
+                    strokeColor="#fc5c65"
                 />
             )}
         </Fragment>

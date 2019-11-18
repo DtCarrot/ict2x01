@@ -5,18 +5,49 @@ const JourneyContext = createContext()
 const initialState = {
     distanceTravelled: 0,
     journeyDetails: null,
-    gpsPosition: null,
+    gpsPosition: {
+        latitude: null,
+        longitude: null,
+        heading: null,
+    },
     journeyStepIdx: 0,
     journeyStepSubIdx: 0,
     currPolyline: null,
-    currentAvailChance: 0,
+    currentAvailChance: 5,
     lastKnownPosition: null,
-    totalChance: 0,
+    totalChance: 5,
+    finished: false,
+    gameInProgress: true,
+    gameDialogOpen: false,
+    gameType: null,
+    endJourneyDialogOpen: false,
+    quizCorrect: false,
+    quizAnswered: false,
 }
 
 const reducer = (state, action) => {
-    console.log("Prev state: ", state)
     switch (action.type) {
+        case "startGame":
+            return {
+                ...state,
+                gameType: action.gameType,
+                finished: false,
+                quizAnswered: false,
+                quizCorrect: false,
+                // quizAnswered: true,
+                // quizCorrect: true,
+                // finished: true,
+            }
+        case "endGame":
+            return {
+                ...state,
+                finished: true,
+            }
+        case "toggleGameDialog":
+            return {
+                ...state,
+                gameDialogOpen: action.open,
+            }
         case "setJourneyDetails":
             return {
                 ...state,
@@ -26,7 +57,21 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 lastKnownPosition: state.gpsPosition,
-                gpsPosition: action.gpsPosition,
+                // gpsPosition: action.gpsPosition,
+                gpsPosition: {
+                    ...state.gpsPosition,
+                    latitude: action.latitude,
+                    longitude: action.longitude,
+                },
+            }
+        case "setGPSHeading":
+            console.log("Position: ", state.gpsPosition)
+            return {
+                ...state,
+                gpsPosition: {
+                    ...state.gpsPosition,
+                    heading: action.heading,
+                },
             }
         case "setJourneyStep":
             console.log("New journey step idx: ", action)
@@ -51,6 +96,23 @@ const reducer = (state, action) => {
                 ...state,
                 currentAvailChance: action.currentAvailChance,
                 totalChance: action.totalChance,
+            }
+        case "toggleEndJourney":
+            return {
+                ...state,
+                endJourneyDialogOpen: action.open,
+            }
+        case "answerQuestion":
+            return {
+                ...state,
+                quizAnswered: true,
+                quizCorrect: action.quizCorrect,
+                finished: true,
+            }
+        case "resetQuestion":
+            return {
+                ...state,
+                quizAnswered: false,
             }
         default:
             return state

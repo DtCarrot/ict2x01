@@ -1,9 +1,18 @@
 import React, { useState } from "react"
-// import { Input } from "react-native-ui-kitten"
-import { TextInput, ActivityIndicator, AsyncStorage, StatusBar, StyleSheet } from "react-native"
-import { Text, Button, Item, Input, Content, H1, View } from "native-base"
+// // import { Input } from "react-native-ui-kitten"
+// import { TextInput, ActivityIndicator, AsyncStorage, StatusBar, StyleSheet } from "react-native"
+// import { Text, Button, Item, Input, Content, H1, View } from "native-base"
+
+import { StyleSheet, Text, View, ImageBackground, Image, TextInput, Dimensions, TouchableOpacity} from 'react-native';
+//import {Icon,Button} from 'native-base';
+import { Icon } from 'native-base'
+
+import bgImage from '../assets/images/gradient.png'
+import logo from '../assets/images/logo.png'
 
 import * as firebase from "firebase"
+
+const { width: WIDTH } = Dimensions.get('window')
 
 const SignInScreen = ({ navigation }) => {
     const [errorMessage, setErrorMessage] = useState(null)
@@ -22,87 +31,148 @@ const SignInScreen = ({ navigation }) => {
             console.log("Failed to signin: ", err)
         }
     }
+
+
     return (
-        <Content style={styles.content}>
-            <View style={styles.container}>
-                <H1 style={styles.logo}>Login</H1>
-                {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
-                <Item regular style={styles.item}>
-                    <Input
-                        style={styles.textInput}
-                        placeholder="Email"
-                        onChangeText={email => setEmail(email)}
-                        value={email}
-                    />
-                </Item>
-                <Item regular style={styles.item}>
-                    <Input
-                        style={styles.textInput}
-                        secureTextEntry
-                        placeholder="Password"
-                        onChangeText={password => setPassword(password)}
-                        value={password}
-                    />
-                </Item>
-                <Button style={styles.button} title="Login" onPress={() => signIn()}>
-                    <Text style={styles.text}>Login</Text>
-                </Button>
-                <Text style={styles.smallText} onPress={() => navigation.navigate("SignUp")}>
-                    Don't have an account? Sign up
-                </Text>
-            </View>
-        </Content>
+        // <Content style={styles.content}>
+        //     <View style={styles.container}>
+        //         <H1 style={styles.logo}>Login</H1>
+        //         {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
+        //         <Item regular style={styles.item}>
+        //             <Input
+        //                 style={styles.textInput}
+        //                 placeholder="Email"
+        //                 onChangeText={email => setEmail(email)}
+        //                 value={email}
+        //             />
+        //         </Item>
+        //         <Item regular style={styles.item}>
+        //             <Input
+        //                 style={styles.textInput}
+        //                 secureTextEntry
+        //                 placeholder="Password"
+        //                 onChangeText={password => setPassword(password)}
+        //                 value={password}
+        //             />
+        //         </Item>
+        //         <Button style={styles.button} title="Login" onPress={() => signIn()}>
+        //             <Text style={styles.text}>Login</Text>
+        //         </Button>
+        //         <Text style={styles.smallText} onPress={() => navigation.navigate("SignUp")}>
+        //             Don't have an account? Sign up
+        //         </Text>
+        //     </View>
+        // </Content>
+
+        <ImageBackground source={bgImage} style={styles.backgroundContainer}>
+        <View style={styles.logoContainer}>
+            <Image source={logo} style={styles.logo} />
+            {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
+        </View>
+
+        <View style={styles.inputContainer}>
+            <Icon name="ios-person" size={28} color={'rgba(255, 255, 255, 0.7)'}  
+              style={styles.inputIcon} />
+            <TextInput
+                style={styles.input}
+                placeholder={'Email'}
+                placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
+                underlineColorAndroid='transparent'
+                onChangeText={email => setEmail(email)}
+                value={email}
+            />
+        </View>
+
+        <View style={styles.inputContainer}>
+            <Icon name="ios-lock" size={28} color={'rgba(255, 255, 255, 0.7)'}
+              style={styles.inputIcon}/>
+            <TextInput 
+                style={styles.input}
+                placeholder={'Password'}
+                //secureTextEntry={this.state.showPass}
+                placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
+                underlineColorAndroid='transparent'
+                onChangeText={password => setPassword(password)}
+                value={password}
+            />     
+        </View>
+
+            <TouchableOpacity style={styles.btnLogin} onPress={() => signIn()}>
+                <Text style={styles.text}>Login</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.smallText} onPress={() => navigation.navigate("SignUp")}>
+                Don't have an account? Sign up
+            </Text>
+   
+    </ImageBackground>
+
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        // justifyContent: "center",
-        // alignItems: "center",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
+    backgroundContainer: {
+      flex: 1,
+      width: null,
+      height: null,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
-    textInput: {
-        height: 60,
-        width: "90%",
-        borderColor: "white",
-        // borderWidth: 2,
-        backgroundColor: "#fff",
-        // marginTop: 20,
-    },
-    content: {
-        backgroundColor: "#446CB3",
-    },
-    text: {
-        color: "#fff",
-        fontSize: 20,
-        textTransform: "uppercase",
-    },
-    item: {
-        width: "80%",
+    logoContainer: {
+      alignItems: 'center',
+      marginBottom: 50
     },
     logo: {
-        color: "#fff",
-        fontFamily: "Roboto",
-        fontSize: 45,
-        paddingTop: 150,
-        marginBottom: 50,
+      width: 220,
+      height: 220
     },
-    button: {
-        width: "70%",
-        marginBottom: 20,
-        marginTop: 20,
-        borderRadius: 50,
-        textAlign: "center",
-        alignItems: "center",
-        justifyContent: "center",
+    logoText: {
+      color: 'white',
+      fontSize: 20,
+      fontWeight: '500',
+      marginTop: 10,
+      opacity: 0.5
+    },
+    inputContainer: {
+      marginTop: 10
+    },
+    input: {
+      width: WIDTH - 55,
+      height: 45,
+      borderRadius: 25,
+      fontSize: 16,
+      paddingLeft: 45,
+      backgroundColor: 'rgba(0, 0, 0, 0.35)',
+      color: 'rgba(255, 255, 255, 0.7)',
+      marginHorizontal: 25
+    },
+    inputIcon: {
+      position: 'absolute',
+      top: 8,
+      left: 37
+    },
+    btnEye: {
+      position: 'absolute',
+      top: 8,
+      right: 37
+    },
+    btnLogin: {
+      width: WIDTH - 55,
+      height: 45,
+      borderRadius: 25,
+      backgroundColor: '#e66e12',
+      justifyContent: 'center',
+      marginTop: 20
+    },
+    text: {
+      color: 'rgba(255, 255, 255, 0.7)',
+      fontSize: 16,
+      textAlign: 'center'
     },
     smallText: {
         fontSize: 15,
         color: "#000",
-    },
-})
+    }
+  });
 
 export default SignInScreen

@@ -3,10 +3,10 @@ import MapView from "react-native-maps"
 import { Text } from "native-base"
 import { Image, View, StyleSheet } from "react-native"
 
-const LocationCallout = () => (
+const LocationCallout = ({ name }) => (
     <MapView.Callout tooltip={true}>
         <View style={styles.calloutOverlay}>
-            <Text style={styles.text}>{`You are here:\nNanyang Polytechnic`}</Text>
+            <Text style={styles.text}>{`You are here:\n${name}`}</Text>
         </View>
     </MapView.Callout>
 )
@@ -15,9 +15,10 @@ const styles = StyleSheet.create({
     calloutOverlay: {
         width: 260,
         height: 70,
-        borderColor: "#000",
-        borderWidth: 2,
-        backgroundColor: "#fff",
+        marginBottom: 10,
+        // borderColor: "#000",
+        // borderWidth: 2,
+        backgroundColor: "#966FD6",
         borderRadius: 40,
     },
     text: {
@@ -26,6 +27,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         justifyContent: "center",
         alignItems: "center",
+        color: "#fff",
         flex: 1,
     },
 })
