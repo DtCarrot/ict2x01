@@ -23,7 +23,7 @@ const BottomJourneyBar = ({ onUserFocus }) => {
         >
             {/* <View style={styles.container}> */}
             <View style={styles.left}>
-                <Badge
+                {/* <Badge
                     style={{
                         marginTop: 10,
                         marginLeft: 10,
@@ -54,7 +54,7 @@ const BottomJourneyBar = ({ onUserFocus }) => {
                         }}
                         name="ios-menu"
                     />
-                </Badge>
+                </Badge> */}
 
                 <Badge
                     style={{
