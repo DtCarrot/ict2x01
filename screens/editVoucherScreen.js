@@ -3,22 +3,52 @@ import { StyleSheet, TouchableOpacity, TextInput } from "react-native"
 import { NavigationActions } from "react-navigation"
 import { DrawerActions } from "react-navigation"
 import { Container, Header, Content, Card, CardItem, Text, Body, Fab } from 'native-base';
-import { H1, View, Button, Icon, } from "native-base"
+import { H1, View, Button, Icon } from "native-base"
 import 'firebase/firestore'
 import * as firebase from "firebase"
-import { getVoucherList, alertDeleteVoucher } from "../db/adminVoucherService"
+import { Alert } from 'react-native'
 
 const EditVoucherScreen = ({ navigation }) => {
-    const [voucherDetails, setVoucherDetails] = useState([])
-    const [newvoucherName, setNewVoucherName] = useState(0)
+    const [newVoucherName, setNewVoucherName] = useState("")
+    const [newVoucherDescription, setNewVoucherDescription] = useState("")
+    const [newVoucherPoint, setNewVoucherPoint] = useState("")
+    const [newVoucherQuantity, setNewVoucherQuantity] = useState("")
     const voucherID = navigation.getParam('ID', 'Error');
     const voucherDescription = navigation.getParam('Description', 'Error');
     const voucherName = navigation.getParam('Name', 'Error');
     const voucherPoint = navigation.getParam('Point', 'Error');
     const voucherQuantity = navigation.getParam('Quantity', 'Error');
+    var db = firebase.firestore()
 
     const navigationOptions = {
         title: "Admin Edit Voucher",
+    }
+
+    const alertEditVoucher = async (voucherID) => {
+        Alert.alert(
+            'Confirmation',
+            'Are You Sure?',
+            [
+                { text: 'NO', onPress: () => null, style: 'cancel' },
+                { text: 'Yes', onPress: () => editVoucher(voucherID) },
+            ]
+        );
+    }
+
+    const editVoucher = async (voucherID) => {
+        try {
+            await db.collection("Voucher")
+                .doc(voucherID)
+                .update({ 
+                    name: newVoucherName,
+                    description: newVoucherDescription,
+                    point: newVoucherPoint,
+                    quantity: newVoucherQuantity,
+                })
+                navigation.navigate('AdminVoucher')
+        } catch (err) {
+            console.log("Failed to update data", err)
+        }
     }
 
     navigateToScreen = route => () => {
@@ -29,117 +59,194 @@ const EditVoucherScreen = ({ navigation }) => {
         this.props.navigation.dispatch(DrawerActions.closeDrawer())
     }
 
-    useEffect(() => {
-        const init = async () => {
+    const changeVoucherDetails = async () => {
 
-        }
-        init()
+    }
+
+    useEffect(() => {
+        setNewVoucherName(voucherName)
+        setNewVoucherDescription(voucherDescription)
+        let stringVoucherPoint = voucherPoint.toString()
+        let stringVoucherQuantity = voucherQuantity.toString()
+        setNewVoucherPoint(stringVoucherPoint)
+        setNewVoucherQuantity(stringVoucherQuantity)
     }, [])
 
     return (
         <Content style={styles.content}>
-            <Button transparent style={{ marginTop: 20 }} onPress={() => navigation.navigate('Home')}>
+            <Button
+                transparent
+                style={{ marginTop: 30 }}
+                onPress={() => navigation.navigate("Home")}
+            >
                 <Icon name="arrow-back" style={{ color: "white" }} />
             </Button>
             <View style={styles.container}>
                 <H1 style={styles.title}>Edit Voucher</H1>
-            </View>
-            <Card style={{ width: 335, marginLeft: 10 }}>
-                <CardItem header bordered>
-                    <TextInput
-                        style={styles.input}
-                        placeholder={'Email'}
-                        placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
-                        underlineColorAndroid='transparent'
-                        onChangeText={voucherName => setNewVoucherName(voucherName)}
-                        value={voucherName}
-                    />
-                    <Text>
-                        {newvoucherName}
-                    </Text>
-                </CardItem>
-                <CardItem bordered>
-                    <Body>
-                        <Text>
-                            {voucherDescription}
-                        </Text>
-                    </Body>
-                </CardItem>
-                <CardItem bordered>
-                    <Text>Quanity: {voucherQuantity}</Text>
-                </CardItem>
-            </Card>
-            <CardItem footer bordered>
-                <Button>
-                    <Text>Confirm</Text>
+                <View style={styles.inputContainer}>
+                    <View style={{ alignSelf: "flex-start", width: 120 }}>
+                        <Text style={styles.fieldTitle}>Name:</Text>
+                    </View>
+                    <View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={'Voucher Name'}
+                            placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
+                            onChangeText={(newVoucherName) => setNewVoucherName(newVoucherName)}
+                            value={newVoucherName}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <View style={{ alignSelf: "flex-start", width: 120 }}>
+                        <Text style={styles.fieldTitle}>Point:</Text>
+                    </View>
+                    <View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={'Voucher Point'}
+                            placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
+                            onChangeText={(newVoucherPoint) => setNewVoucherPoint(newVoucherPoint)}
+                            value={newVoucherPoint}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <View style={{ alignSelf: "flex-start", width: 120 }}>
+                        <Text style={styles.fieldTitle}>Quantity:</Text>
+                    </View>
+                    <View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={'Voucher Quantity'}
+                            placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
+                            onChangeText={(newVoucherQuantity) => setNewVoucherQuantity(newVoucherQuantity)}
+                            value={newVoucherQuantity}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <View style={{ alignSelf: "flex-start", width: 120 }}>
+                        <Text style={styles.fieldTitle}>Description:</Text>
+                    </View>
+                    <View>
+                        <TextInput
+                            multiline={true}
+                            style={styles.inputDescription}
+                            placeholder={'Voucher Description'}
+                            placeholderTextColor={'rgba(255, 255, 255, 0.7)'}
+                            onChangeText={(newVoucherDescription) => setNewVoucherDescription(newVoucherDescription)}
+                            value={newVoucherDescription}
+                        />
+                    </View>
+                </View>
+
+                <Button
+                    style={{
+                        marginTop: 20,
+                        backgroundColor: "white",
+                        borderRadius: 10,
+                    }}
+                    onPress={() => alertEditVoucher(voucherID)}
+                >
+                    <Text style={styles.text}>Confirm</Text>
                 </Button>
-            </CardItem>
+            </View>
         </Content>
     );
 }
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        // justifyContent: "center",
-        // alignItems: "center",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    Fabcontainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
-    textInput: {
-        height: 60,
-        width: "90%",
-        borderColor: "white",
-        // borderWidth: 2,
-        backgroundColor: "#fff",
-        // marginTop: 20,
-    },
     content: {
         backgroundColor: "#446CB3",
     },
-    text: {
+
+    fieldTitle: {
         color: "#fff",
-        fontSize: 20,
-        textTransform: "uppercase",
+        fontFamily: "Roboto",
+        fontSize: 17,
+        textAlign: 'left',
     },
-    item: {
-        width: "80%",
-    },
+
     title: {
         color: "#fff",
         fontFamily: "Roboto",
         paddingTop: 20,
-        marginBottom: 36,
+        marginBottom: 56,
     },
-    button: {
-        width: "70%",
-        marginBottom: 20,
-        marginTop: 20,
-        borderRadius: 50,
-        textAlign: "center",
+    container: {
+        flex: 1,
+        // justifyContent: "center",
+        // alignItems: "center",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+    },
+    logoContainer: {
+        alignItems: 'center',
+        marginBottom: 50
+    },
+    logo: {
+        width: 220,
+        height: 220
+    },
+    logoText: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: '500',
+        marginTop: 10,
+        opacity: 0.5
+    },
+    inputContainer: {
+        marginBottom: 40,
+        flexDirection: 'row',
+
+    },
+    input: {
+        width: 150,
+        height: 25,
+        fontSize: 16,
+        backgroundColor: 'white',
+        color: 'black',
+        marginLeft: 10
+    },
+    inputDescription: {
+        width: 150,
+        height: 115,
+        fontSize: 16,
+        backgroundColor: 'white',
+        color: 'black',
+        marginLeft: 10,
+        textAlignVertical: 'top',
+    },
+    inputIcon: {
+        position: 'absolute',
+        top: 8,
+        left: 37
+    },
+    btnEye: {
+        position: 'absolute',
+        top: 8,
+        right: 37
+    },
+    btnLogin: {
+        width: 50,
+        height: 45,
+        borderRadius: 25,
+        backgroundColor: '#e66e12',
+        justifyContent: 'center',
+        marginTop: 20
+    },
+    text: {
+        color: '#446CB3',
+        fontSize: 16,
+        textAlign: 'center'
     },
     smallText: {
         fontSize: 15,
         color: "#000",
-    },
-    fab: {
-        height: 50,
-        width: 50,
-        borderRadius: 200,
-        position: 'absolute',
-        bottom: 0,
-        right: 20,
-        zIndex: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#686cc3',
-    },
+    }
 })
 export default EditVoucherScreen

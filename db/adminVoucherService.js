@@ -1,6 +1,5 @@
 import 'firebase/firestore'
 import * as firebase from "firebase"
-import { Alert } from 'react-native'
 
 const getVoucherList = async () => {
     var db = firebase.firestore()
@@ -9,7 +8,7 @@ const getVoucherList = async () => {
         let VoucherCollection = []
         VoucherListSnapshot.docs.map((doc) => {
             if (doc.data().quantity > 0) {
-                VoucherCollection.push({ Name: doc.data().name, Id: doc.id, Description: doc.data().description, Quanity: doc.data().quantity, Point: doc.data().point })
+                VoucherCollection.push({ Name: doc.data().name, Id: doc.id, Description: doc.data().description, Quantity: doc.data().quantity, Point: doc.data().point })
             }
 
         });

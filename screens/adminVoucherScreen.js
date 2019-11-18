@@ -50,7 +50,7 @@ const AdminVoucherScreen = ({ navigation }) => {
             let VoucherCollection = []
             VoucherListSnapshot.docs.map((doc) => {
                 if (doc.data().quantity > 0) {
-                    VoucherCollection.push({ Name: doc.data().name, Id: doc.id, Description: doc.data().description, Quanity: doc.data().quantity, Point: doc.data().point })
+                    VoucherCollection.push({ Name: doc.data().name, Id: doc.id, Description: doc.data().description, Quantity: doc.data().quantity, Point: doc.data().point })
                 }
     
             });
@@ -115,7 +115,7 @@ const AdminVoucherScreen = ({ navigation }) => {
                             </Body>
                         </CardItem>
                         <CardItem bordered>
-                            <Text>Quanity: {voucherDetails.Quanity}</Text>
+                            <Text>Quanity: {voucherDetails.Quantity}</Text>
                         </CardItem>
                         <CardItem footer bordered>
                             <Button
@@ -129,14 +129,14 @@ const AdminVoucherScreen = ({ navigation }) => {
                                         Quantity: voucherDetails.Quantity
                                     })}
                             >
-                                <Icon name="create" style={{color:"blue"}} />
+                                <Icon name="create" style={{color:"#446CB3"}} />
                             </Button>
                             <Button
                                 transparent
                                 style={{ marginLeft: 10 }}
                                 onPress={() => alertDeleteVoucher(voucherDetails.Id)}
                             >
-                                <Icon name="trash" style={{color:"blue"}}/>
+                                <Icon name="trash" style={{color:"#446CB3"}}/>
                             </Button>
                         </CardItem>
 
