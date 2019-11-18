@@ -75,15 +75,12 @@ const DrawerStack = createDrawerNavigator(
         Home: {
             screen: MainScreen,
         },
-<<<<<<< HEAD
         Voucher: {
             screen: VoucherScreen,
         },
-=======
         Leaderboard:{
             screen: LeaderboardScreen
         }
->>>>>>> 92059eec882c825fbc468fa5df2e33f7902054ca
     },
     {
         contentComponent: props => <DrawerScreen {...props} />,

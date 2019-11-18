@@ -17,11 +17,8 @@ const config = Platform.select({
 const HomeStack = createStackNavigator(
   {
     Home: HomeScreen,
-<<<<<<< HEAD
     Voucher: VoucherScreen,
-=======
     Leaderboard: LeaderboardScreen,
->>>>>>> 92059eec882c825fbc468fa5df2e33f7902054ca
   },
   config
 );

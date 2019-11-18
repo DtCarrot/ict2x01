@@ -9,33 +9,6 @@ import { ListItem } from "react-native-elements"
 // import styles from "../../styles/index"
 
 class DrawerScreen extends Component {
-<<<<<<< HEAD
-  navigateToScreen = route => {
-    const navigateAction = NavigationActions.navigate({
-      routeName: route
-    });
-    this.props.navigation.dispatch(navigateAction);
-    this.props.navigation.dispatch(DrawerActions.closeDrawer());
-  };
-  logout = async () => {
-    await firebase.auth().signOut();
-    this.navigateToScreen("SignIn");
-  };
-  navigate = to => {
-    switch (to) {
-      case "navigate":
-        this.navigateToScreen("Home");
-        break;
-      case "leaderboard":
-        this.navigateToScreen("Leaderboard");
-        break;
-      case "voucher":
-        this.navigateToScreen("Voucher");
-        break;
-      case "profile":
-        this.navigateToScreen("Profile");
-        break;
-=======
     navigateToScreen = route => {
         const navigateAction = NavigationActions.navigate({
             routeName: route,
@@ -62,7 +35,6 @@ class DrawerScreen extends Component {
                 this.navigateToScreen("Profile")
                 break
         }
->>>>>>> 92059eec882c825fbc468fa5df2e33f7902054ca
     }
 
     render() {
