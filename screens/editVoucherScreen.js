@@ -13,6 +13,10 @@ const EditVoucherScreen = ({ navigation }) => {
     const [newVoucherDescription, setNewVoucherDescription] = useState("")
     const [newVoucherPoint, setNewVoucherPoint] = useState("")
     const [newVoucherQuantity, setNewVoucherQuantity] = useState("")
+    const [quantityErrorMessage, setQuantityErrorMessage] = useState("")
+    const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("")
+    const [nameErrorMessage, setNameErrorMessage] = useState("")
+    const [pointErrorMessage, setPointErrorMessage] = useState("")
     const voucherID = navigation.getParam('ID', 'Error');
     const voucherDescription = navigation.getParam('Description', 'Error');
     const voucherName = navigation.getParam('Name', 'Error');
@@ -36,18 +40,50 @@ const EditVoucherScreen = ({ navigation }) => {
     }
 
     const editVoucher = async (voucherID) => {
-        try {
-            await db.collection("Voucher")
-                .doc(voucherID)
-                .update({ 
-                    name: newVoucherName,
-                    description: newVoucherDescription,
-                    point: newVoucherPoint,
-                    quantity: newVoucherQuantity,
-                })
+        let errCounter = 0
+        setNameErrorMessage("")
+        setDescriptionErrorMessage("")
+        setPointErrorMessage("")
+        setQuantityErrorMessage("")
+
+        if (newVoucherName == "") {
+            setNameErrorMessage("Please enter a voucher name")
+            errCounter += 1
+        }
+        if (newVoucherDescription == "") {
+            setDescriptionErrorMessage("Please enter a voucher description")
+            errCounter += 1
+        }
+        if (isNaN(newVoucherPoint)) {
+            setPointErrorMessage("Please enter an integer")
+            errCounter += 1
+        }
+        if (newVoucherPoint == "") {
+            setPointErrorMessage("Please enter an integer")
+            errCounter += 1
+        }
+        if (isNaN(newVoucherQuantity)) {
+            setQuantityErrorMessage("Please enter an integer")
+            errCounter += 1
+        }
+        if (newVoucherQuantity == "") {
+            setQuantityErrorMessage("Please enter an integer")
+            errCounter += 1
+        }
+        if (errCounter == 0) {
+            try {
+                await db.collection("Voucher")
+                    .doc(voucherID)
+                    .update({
+                        name: newVoucherName,
+                        description: newVoucherDescription,
+                        point: newVoucherPoint,
+                        quantity: newVoucherQuantity,
+                    })
                 navigation.navigate('AdminVoucher')
-        } catch (err) {
-            console.log("Failed to update data", err)
+            } catch (err) {
+                console.log("Failed to update data", err)
+            }
         }
     }
 
@@ -57,10 +93,6 @@ const EditVoucherScreen = ({ navigation }) => {
         })
         this.props.navigation.dispatch(navigateAction)
         this.props.navigation.dispatch(DrawerActions.closeDrawer())
-    }
-
-    const changeVoucherDetails = async () => {
-
     }
 
     useEffect(() => {
@@ -97,7 +129,9 @@ const EditVoucherScreen = ({ navigation }) => {
                         />
                     </View>
                 </View>
-
+                <View style={styles.ErrorText}>
+                    <Text style={{ color: "#e50000" }}>{nameErrorMessage}</Text>
+                </View>
                 <View style={styles.inputContainer}>
                     <View style={{ alignSelf: "flex-start", width: 120 }}>
                         <Text style={styles.fieldTitle}>Point:</Text>
@@ -111,6 +145,9 @@ const EditVoucherScreen = ({ navigation }) => {
                             value={newVoucherPoint}
                         />
                     </View>
+                </View>
+                <View style={styles.ErrorText}>
+                    <Text style={{ color: "#e50000" }}>{pointErrorMessage}</Text>
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -126,6 +163,9 @@ const EditVoucherScreen = ({ navigation }) => {
                             value={newVoucherQuantity}
                         />
                     </View>
+                </View>
+                <View style={styles.ErrorText}>
+                    <Text style={{ color: "#e50000" }}>{quantityErrorMessage}</Text>
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -143,10 +183,11 @@ const EditVoucherScreen = ({ navigation }) => {
                         />
                     </View>
                 </View>
-
+                <View style={styles.ErrorText}>
+                    <Text style={{ color: "#e50000" }}>{descriptionErrorMessage}</Text>
+                </View>
                 <Button
                     style={{
-                        marginTop: 20,
                         backgroundColor: "white",
                         borderRadius: 10,
                     }}
@@ -199,10 +240,12 @@ const styles = StyleSheet.create({
         marginTop: 10,
         opacity: 0.5
     },
+    ErrorText: {
+        marginBottom:25,
+    },
     inputContainer: {
-        marginBottom: 40,
+        marginBottom: 10,
         flexDirection: 'row',
-
     },
     input: {
         width: 150,
