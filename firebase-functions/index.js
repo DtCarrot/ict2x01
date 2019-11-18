@@ -1,38 +1,38 @@
+'use strict';
+
 const functions = require('firebase-functions');
-
-const sgMail = require("@sendgrid/mail");
-const cors = require("cors")({
-  origin: true
+const nodemailer = require('nodemailer');
+// Configure the email transport using the default SMTP transport and a GMail account.
+// For other types of transports such as Sendgrid see https://nodemailer.com/transports/
+// TODO: Configure the `gmail.email` and `gmail.password` Google Cloud environment variables.
+const gmailEmail = "ict2x01@gmail.com";
+const gmailPassword = "ICT2x01!";
+const mailTransport = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: gmailEmail,
+    pass: gmailPassword,
+  },
 });
 
-exports.emailMessage = functions.https.onRequest((req, res) => {
+// Sends an email confirmation when a user changes his mailing list subscription.
+exports.sendEmailConfirmation = functions.https.onRequest((req, res) => {
+
+
+  const mailOptions = {
+    from: '"Pathfinder Admin" <noreply@firebase.com>',
+    to: "idris0127@gmail.com",
+  };
+
+  // Building Email message.
+  mailOptions.subject = "Welcome to PathFinder!";
+  mailOptions.text = "Test";
   
-  return cors(req, res, () => {
-    var text = `<div>
-      <h4>Thank you for registering with PathFinder.</h4>
-      <p>To get started, login into the PathFinder app.</p>
-      
-    </div>`;
-    const msg = {
-      to: "idris0127@gmail.com",
-      from: "admin@pathfinder.com",
-      subject: `Thank you for registering PathFinder`,
-      text: text,
-      html: text
-    };
-    sgMail.setApiKey(
-      "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"
-    );
-    sgMail.send(msg);
-    res.status(200).send("success");
-  })
+  try {
+    mailTransport.sendMail(mailOptions);
+    console.log(`New subscription confirmation email sent to: test`);
+  } catch(error) {
+    console.error('There was an error while sending the email:', error);
+  }
+  return null;
 });
-
-
-
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
