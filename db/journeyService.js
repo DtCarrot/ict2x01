@@ -74,4 +74,26 @@ const endJourney = async () => {
     }
 }
 
-export { startJourney, endJourney }
+/*
+ * addFeedback() method
+ *
+ * {
+ * overallScore, safetyScore, speedScore, enjoyFeedback,
+ * otherComments
+ * }
+ *
+ *
+ *
+ */
+const addFeedback = async (feedbackObj, journeyId) => {
+    const db = firebase.firestore()
+    const journeyRef = db.collection("journey").doc(journeyId)
+    console.log("JourneyId: ", journeyId)
+    await journeyRef.update({
+        feedbackObj: {
+            ...feedbackObj,
+        },
+    })
+}
+
+export { startJourney, endJourney, addFeedback }
