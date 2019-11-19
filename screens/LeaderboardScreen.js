@@ -62,7 +62,7 @@ const LeaderboardScreen = ({ navigation }) => {
             >
                 <View
                     style={{
-                        paddingTop: 30,
+                        paddingTop: 25,
                         display: "flex",
                         flex: 1,
                         flexDirection: "row",
@@ -80,7 +80,7 @@ const LeaderboardScreen = ({ navigation }) => {
                     <View style={styles.center}>
                         <H1 style={styles.title}>Leaderboard</H1>
                     </View>
-                    <View style={styles.right} />
+                    <View style={styles.right}></View>
                 </View>
                 <View
                     style={{
@@ -126,6 +126,34 @@ const LeaderboardScreen = ({ navigation }) => {
                             <B style={{ fontSize: 40 }}>{userDetails.Points}</B>
                         </Text>
                     </View>
+                    <View
+                        style={{
+                            borderRadius: 10,
+                            height: 60,
+                            // marginRight: 20,
+                            width: 140,
+                            alignItems: "center",
+                            marginTop: 5,
+                            justifyContent: "center",
+                            padding: 10,
+                        }}
+                    >
+                        <Text
+                            style={{
+                                paddingLeft: 10,
+                                paddingRight: 10,
+                                backgroundColor: "#fff",
+                                fontSize: 25,
+                                flex: 1,
+                                justifyContent: "center",
+                                fontFamily: "Roboto",
+                                color: "#1e1e1e",
+                                alignItems: "center",
+                            }}
+                        >
+                            #{userDetails.Position + 1}
+                        </Text>
+                    </View>
                 </View>
             </LinearGradient>
             <ScrollView contentContainerStyle={styles.container}>
@@ -156,14 +184,28 @@ const LeaderboardScreen = ({ navigation }) => {
                                     alignItems: "center",
                                 }}
                             >
-                                <Icon
-                                    style={{
-                                        color: "#fff",
-                                        marginTop: 12,
-                                        fontSize: 36,
-                                    }}
-                                    name="ios-trophy"
-                                />
+                                {topIdx <= 2 && (
+                                    <Icon
+                                        style={{
+                                            color: "#fff",
+                                            marginTop: 12,
+                                            fontSize: 36,
+                                        }}
+                                        name="ios-trophy"
+                                    />
+                                )}
+                                {topIdx > 2 && (
+                                    <Text
+                                        style={{
+                                            fontSize: 20,
+                                            color: "#fff",
+                                            fontFamily: "Roboto",
+                                            marginTop: 15,
+                                        }}
+                                    >
+                                        #{topIdx + 1}
+                                    </Text>
+                                )}
                             </View>
                             <View
                                 style={{
@@ -195,6 +237,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: "#fff",
+        marginBottom: 10,
     },
     textInput: {
         height: 60,
