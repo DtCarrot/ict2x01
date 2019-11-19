@@ -5,7 +5,7 @@ import { DrawerActions } from "react-navigation"
 import { Container, Header, Content, Card, CardItem, Text, Body } from 'native-base';
 import { H1, View, Button, Icon, } from "native-base"
 import 'firebase/firestore'
-import { claimVoucher, getuserVoucherList } from "../db/voucherService"
+import { claimVoucher, getuserVoucherList, getRandomRedeemCode } from "../db/voucherService"
 
 
 const UserVoucherScreen = ({ navigation }) => {
@@ -28,7 +28,8 @@ const UserVoucherScreen = ({ navigation }) => {
 
   const voucherClicked = async (voucherID) => {
     await claimVoucher(voucherID)
-    await showRedeemCode()
+    var redeemCode = await getRandomRedeemCode(7)
+    await showRedeemCode(redeemCode)
   }
 
   const reloadPage = async () => {
@@ -48,10 +49,10 @@ const UserVoucherScreen = ({ navigation }) => {
 
   }
 
-  const showRedeemCode = async (voucherID) => {
+  const showRedeemCode = async (redeemCode) => {
     Alert.alert(
       'Redeem Code',
-      'A1XZeE6l61AS',
+       redeemCode,
       [
         { text: 'YES', onPress: () => reloadPage() },
       ]

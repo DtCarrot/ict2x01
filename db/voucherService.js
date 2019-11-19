@@ -69,6 +69,16 @@ const getuserVoucherList = async () => {
     }
 }
 
+const getRandomRedeemCode = async (length) => {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
 const claimVoucher = async (voucherID) => {
     var db = firebase.firestore()
     var userId = firebase.auth().currentUser.uid
@@ -123,4 +133,4 @@ const redeemVoucher = async (voucherID) => {
         console.log("Failed to retrieve data", err)
     }
 }
-export { getVoucherList, redeemVoucher, alertVoucher, getuserDetail, getuserVoucherList, claimVoucher } 
+export { getVoucherList, redeemVoucher, alertVoucher, getuserDetail, getuserVoucherList, claimVoucher,getRandomRedeemCode } 
