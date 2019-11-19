@@ -5,12 +5,11 @@ import { DrawerActions } from "react-navigation"
 import { Container, Header, Content, Card, CardItem, Text, Body} from 'native-base';
 import { H1, View, Button, Icon,} from "native-base"
 import 'firebase/firestore'
-import { getVoucherList, redeemVoucher,getuserDetail}  from "../db/voucherService"
+import { claimVoucher,getuserVoucherList}  from "../db/voucherService"
 
 
 const UserVoucherScreen = ({ navigation }) => {
-    const UserDetails =  navigation.getParam('UserDetails', 'nothing sent');
-//   const [voucherDetails, setvoucherlist] = useState([])
+    const [voucherDetails, setvoucherlist] = useState([])
 //   const [userData, setuserData] = useState([])
 //   const [redeemed, setRedeemed] = useState(false)
 //   var db = firebase.firestore()
@@ -28,10 +27,13 @@ const UserVoucherScreen = ({ navigation }) => {
   }
 
   const voucherClicked = async(voucherID) =>{
-    await redeemVoucher(voucherID)
-    
-    navigation.navigate('Voucher')
+    await claimVoucher(voucherID)
+    await showRedeemCode()
+  }
 
+  const reloadPage = async() =>{
+    const voucherDetails = await getuserVoucherList()
+    setvoucherlist(voucherDetails)
   }
 
   const alertVoucher = async(voucherID) =>
@@ -47,12 +49,24 @@ const UserVoucherScreen = ({ navigation }) => {
 
 }
 
+const showRedeemCode = async(voucherID) =>
+{
+    Alert.alert(
+        'Redeem Code',
+        'A1XZeE6l61AS',
+        [
+          {text: 'YES', onPress: () => reloadPage()},
+        ]
+      );
+
+}
+
   useEffect(() => {
       const init = async () => {
-        //   const voucherDetails = await getVoucherList()
+         const voucherDetails = await getuserVoucherList()
         //   const userData = await getuserDetail()   
         //   const redeemed = false       
-        //   setvoucherlist(voucherDetails)
+        setvoucherlist(voucherDetails)
         //   setuserData(userData)
         //   setRedeemed(redeemed)
       }
@@ -60,36 +74,39 @@ const UserVoucherScreen = ({ navigation }) => {
   }, [])
 
   return (
-      <Content style={styles.content}>
-          <Button transparent style={{marginTop:20}} onPress={() => navigation.navigate('Voucher')}>
-            <Icon name="arrow-back" style={{color:"white"}} />
-          </Button>
-          <View style={styles.container}>
-              <H1 style={styles.title}>Confirmation</H1>
-              <Text style={{color:"white"}}> Is the Following Voucher you wish to claim? </Text>
-          </View>
-          <Card>
-            <CardItem header bordered>
-                <Text>{UserDetails.Name}</Text>
-            </CardItem>
-            <CardItem bordered>
-            <Body>
-                <Text>
-                {UserDetails.Description}
-                </Text>
-            </Body>
-            </CardItem>
-            <CardItem bordered>
-                <Text>Quanity: {UserDetails.Quanity}</Text>
-            </CardItem>
-            <CardItem footer bordered>
-            <Button onPress={() => alertVoucher(UserDetails.Id)}>
-                <Text>{UserDetails.Point} To Claim</Text>
-            </Button>
-            </CardItem>
+    <Content style={styles.content}>
+    <Button transparent style={{marginTop:30}} onPress={() => navigation.navigate('Home')}>
+      <Icon name="arrow-back" style={{color:"white"}} />
+    </Button>
+    <View style={styles.container}>
+        <H1 style={styles.title}>Inventory</H1>
+    </View>
+        {voucherDetails.map(voucherDetails => {
+            return (
+                <Card>
+                  <CardItem header bordered>
+                    <Text>{voucherDetails.Name}</Text>
+                 </CardItem>
+                 <CardItem bordered>
+                  <Body>
+                    <Text>
+                    {voucherDetails.Description}
+                    </Text>
+                  </Body>
+                </CardItem>
+                <CardItem bordered>
+                    <Text>Quanity: {voucherDetails.Quanity}</Text>
+                 </CardItem>
+                <CardItem footer bordered>
+                  <Button onPress={() => alertVoucher(voucherDetails.Id)}>
+                    <Text>Click To Claim</Text>
+                  </Button>
+                 </CardItem>
 
-        </Card>
-      </Content>
+              </Card>
+            )
+        })}
+</Content>
   );
 }
 

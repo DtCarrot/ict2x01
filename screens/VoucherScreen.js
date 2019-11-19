@@ -5,15 +5,12 @@ import { DrawerActions } from "react-navigation"
 import { Container, Header, Content, Card, CardItem, Text, Body} from 'native-base';
 import { H1, View, Button, Icon,} from "native-base"
 import 'firebase/firestore'
-import * as firebase from "firebase"
 import { getVoucherList, redeemVoucher,getuserDetail}  from "../db/voucherService"
 
 
 const VoucherScreen = ({ navigation }) => {
   const [voucherDetails, setvoucherlist] = useState([])
   const [userData, setuserData] = useState([])
-  var db = firebase.firestore()
-  
 
   const navigationOptions = {
       title: "Voucher",
@@ -29,7 +26,6 @@ const VoucherScreen = ({ navigation }) => {
  
   const voucherClicked = async(voucherID) =>{
     await redeemVoucher(voucherID)
-
     const voucherDetails = await getVoucherList()
     const userData = await getuserDetail()         
     setvoucherlist(voucherDetails)
@@ -52,12 +48,10 @@ const VoucherScreen = ({ navigation }) => {
 }
 
 
-
-
   useEffect(() => {
       const init = async () => {
           const voucherDetails = await getVoucherList()
-          const userData = await getuserDetail()         
+          const userData = await getuserDetail()       
           setvoucherlist(voucherDetails)
           setuserData(userData)
       }
@@ -70,8 +64,8 @@ const VoucherScreen = ({ navigation }) => {
             <Icon name="arrow-back" style={{color:"white"}} />
           </Button>
           <View style={styles.container}>
-              <H1 style={styles.title}>Voucher</H1>
-              <Text style={{color:"white"}}> Point: {userData.Points} </Text>
+              <H1 style={styles.title}>Market Place</H1>
+              <Text style={{color:"white"}}> Point Remaning: {userData.Points} </Text>
           </View>
               {voucherDetails.map(voucherDetails => {
                   return (

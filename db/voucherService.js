@@ -2,11 +2,12 @@ import 'firebase/firestore'
 import * as firebase from "firebase"
 import React, { Component } from 'react';
 import {Text,Alert,TouchableOpacity,} from 'react-native';
+//import VoucherScreen from '../screens/VoucherScreen';
 
 const getVoucherList = async () => {
     var db = firebase.firestore()
     try{
-        const VoucherListSnapshot = await db.collection('Voucher').get()
+        const VoucherListSnapshot = await db.collection("Voucher").get()
         let VoucherCollection = []
         VoucherListSnapshot.docs.map((doc)=>{
             if(doc.data().quantity >0)
@@ -52,6 +53,40 @@ const getuserDetail = async () => {
     }
 }
 
+const getuserVoucherList = async () => {
+    var db = firebase.firestore()
+    var userId = firebase.auth().currentUser.uid
+    try {
+        const VoucherListSnapshot = await db.collection("user").doc(userId).collection("voucher").get()
+        let VoucherCollection = []
+        VoucherListSnapshot.docs.map((doc)=>{
+            if(doc.data().quantity >0)
+            {
+                VoucherCollection.push({Name:doc.data().name,Id:doc.id,Description:doc.data().description,Quanity:doc.data().quantity})
+            }
+            
+        });
+        return VoucherCollection
+    } catch (err) {
+        console.log("Failed to retrieve data", err)
+    }
+}
+
+const claimVoucher = async (voucherID) =>{
+    var db = firebase.firestore()
+    var userId = firebase.auth().currentUser.uid
+    try{
+        const VoucherListSnapshot = await db.collection("user").doc(userId).collection("voucher").doc(voucherID).get()
+        if(VoucherListSnapshot.data().quantity > 0)
+        {
+            db.collection("user").doc(userId).collection("voucher").doc(voucherID).update({quantity:VoucherListSnapshot.data().quantity-1})
+        }
+    }catch (err) {
+        console.log("Failed to retrieve data", err)
+    }
+
+
+}
 
 const redeemVoucher = async(voucherID) =>{
     var db = firebase.firestore()
@@ -97,4 +132,4 @@ const redeemVoucher = async(voucherID) =>{
         console.log("Failed to retrieve data", err)
     }
 }
-export { getVoucherList, redeemVoucher, alertVoucher, getuserDetail} 
+export { getVoucherList, redeemVoucher, alertVoucher, getuserDetail,getuserVoucherList, claimVoucher} 
