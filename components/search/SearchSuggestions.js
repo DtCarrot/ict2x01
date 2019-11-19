@@ -55,6 +55,10 @@ const SearchSuggestions = () => {
     const placeSuggestions = renderPlaceSuggestions(state.places)
     return (
         <List>
+<<<<<<< HEAD
+            {/* <Fragment>{personalRender}</Fragment> */}
+=======
+>>>>>>> 57321bee6be54877439ca843632132599c251fdd
             <Fragment>{placeSuggestions}</Fragment>
         </List>
     )
