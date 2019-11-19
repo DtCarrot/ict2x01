@@ -55,6 +55,10 @@ const SearchSuggestions = () => {
     const placeSuggestions = renderPlaceSuggestions(state.places)
     return (
         <List>
+<<<<<<< HEAD
+=======
+            {/* <Fragment>{personalRender}</Fragment> */}
+>>>>>>> parent of 2082910... Revert "Sync search suggestions"
             <Fragment>{placeSuggestions}</Fragment>
         </List>
     )
