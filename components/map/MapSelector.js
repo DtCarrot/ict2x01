@@ -119,6 +119,15 @@ const MapSelector = () => {
         }
     }, [markerLoaded])
 
+    const { currRouteIdx, routeDetails } = routeState
+    useEffect(() => {
+        if (currRouteIdx >= 0 && routeDetails !== null) {
+            const currRouteDetails = routeState.routeDetails[routeState.currRouteIdx]
+            const fitPositions = [...currRouteDetails.overview_polyline, ...[currCoord]]
+            mapRef.current.fitToCoordinates(fitPositions, { edgePadding })
+        }
+    }, [currRouteIdx])
+
     const renderRoutes = routes => {
         const currRouteDetails = routeState.routeDetails[routeState.currRouteIdx]
         // currRouteDetails.concat(currCoord)
@@ -127,7 +136,6 @@ const MapSelector = () => {
         // fitPositions.concat(currRouteDetails.overview_polyline)
         const fitPositions = [...currRouteDetails.overview_polyline, ...[currCoord]]
 
-        mapRef.current.fitToCoordinates(fitPositions, { edgePadding })
         // return routeState.routeDetails[routeState.currRouteIdx].map((route, idx) => {
         // return (
         return (

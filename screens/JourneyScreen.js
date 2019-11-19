@@ -98,8 +98,12 @@ const JourneyScreen = ({ navigation }) => {
         console.log("Setting cleanup function")
         return () => {
             console.log("----Cleaning up----")
-            headingRef.current.remove()
-            locationRef.current.remove()
+            if (headingRef.current !== null) {
+                headingRef.current.remove()
+            }
+            if (locationRef.current !== null) {
+                locationRef.current.remove()
+            }
             // useInterval(checkGPSPosition, null)
         }
     }, [])
