@@ -15,8 +15,20 @@ const DirectionsOverlay = () => {
     const { journeyDetails, navigationToggleOpen } = state
     const [directions, setDirections] = useState(null)
     const renderDirections = directions => {
-        return directions.map(direction => {
-            return <Text>{convertHtmlToText(direction)}</Text>
+        return directions.map((direction, idx) => {
+            return (
+                <Text
+                    key={idx}
+                    style={{
+                        borderBottomWidth: 1,
+                        borderBottomColor: "#000",
+                        paddingBottom: 5,
+                        paddingTop: 5,
+                    }}
+                >
+                    {convertHtmlToText(direction)}
+                </Text>
+            )
         })
     }
     useEffect(() => {
@@ -47,7 +59,13 @@ const DirectionsOverlay = () => {
     }
     return (
         <View style={styles.container}>
-            <ScrollView>{journeyDetails !== null && renderDirections(directions)}</ScrollView>
+            <ScrollView
+                style={{
+                    backgroundColor: "#ececec",
+                }}
+            >
+                {journeyDetails !== null && renderDirections(directions)}
+            </ScrollView>
         </View>
     )
 }
@@ -56,6 +74,7 @@ const styles = StyleSheet.create({
     container: {
         zIndex: 9999,
         backgroundColor: "#ececec",
+        padding: 10,
         position: "absolute",
         left: 30,
         bottom: 100,

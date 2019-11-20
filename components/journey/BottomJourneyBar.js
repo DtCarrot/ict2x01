@@ -66,7 +66,9 @@ const BottomJourneyBar = ({ onUserFocus }) => {
                     />
                 </BADGE>
  */}
-                <Badge
+                <Button
+                    badge
+                    onPress={() => onDirectionClick()}
                     style={{
                         marginTop: 10,
                         marginLeft: 10,
@@ -83,8 +85,6 @@ const BottomJourneyBar = ({ onUserFocus }) => {
                     }}
                 >
                     <Icon
-                        // transparent
-                        onPress={() => onDirectionClick()}
                         style={{
                             textAlign: "center",
                             alignItems: "center",
@@ -94,7 +94,7 @@ const BottomJourneyBar = ({ onUserFocus }) => {
                         }}
                         name="information"
                     />
-                </Badge>
+                </Button>
                 <Badge
                     style={{
                         marginTop: 10,
