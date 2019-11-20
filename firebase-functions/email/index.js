@@ -15,8 +15,8 @@ const mailTransport = nodemailer.createTransport({
   },
 });
 
-// Sends an email confirmation when a user changes his mailing list subscription.
-exports.sendEmailConfirmation = functions.https.onRequest((req, res) => {
+
+exports.sendEmailConfirmation = functions.database.ref('/users/{uid}').onWrite(async (change) => {
 
 
   const mailOptions = {
@@ -26,11 +26,11 @@ exports.sendEmailConfirmation = functions.https.onRequest((req, res) => {
 
   // Building Email message.
   mailOptions.subject = "Welcome to PathFinder!";
-  mailOptions.text = "Test";
+  mailOptions.text = "Thank you for registering with PathFinder. We hope you will enjoy the application.";
   
   try {
     mailTransport.sendMail(mailOptions);
-    console.log(`New subscription confirmation email sent to: test`);
+    console.log(`New email sent out`);
   } catch(error) {
     console.error('There was an error while sending the email:', error);
   }
