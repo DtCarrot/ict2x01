@@ -18,6 +18,11 @@ import DrawerScreen from "../screens/Menu"
 import JourneyScreen from "../screens/JourneyScreen"
 import LeaderboardScreen from "../screens/LeaderboardScreen"
 import FinishedJourneyScreen from "../screens/FinishedJourney"
+import AdminVoucherScreen from "../screens/adminVoucherScreen"
+import EditVoucherScreen from "../screens/editVoucherScreen"
+import AddVoucherScreen from "../screens/addVoucherScreen"
+import VoucherScreen from "../screens/VoucherScreen"
+import UserVoucherScreen from "../screens/UserVoucherScreen"
 
 import * as firebase from "firebase"
 
@@ -73,8 +78,20 @@ const DrawerStack = createDrawerNavigator(
         Home: {
             screen: MainScreen,
         },
+        AdminVoucher: {
+            screen: AdminVoucherScreen,
+        },
+        Voucher: {
+            screen: VoucherScreen,
+        },
         Leaderboard:{
             screen: LeaderboardScreen
+        },
+        EditVoucher:{
+            screen: EditVoucherScreen
+        },
+        AddVoucher:{
+            screen: AddVoucherScreen
         }
     },
     {

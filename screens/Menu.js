@@ -34,6 +34,9 @@ class DrawerScreen extends Component {
             case "profile":
                 this.navigateToScreen("Profile")
                 break
+            case "adminVoucher":
+                this.navigateToScreen("AdminVoucher")
+                break
         }
     }
 
@@ -99,6 +102,12 @@ class DrawerScreen extends Component {
                         <Icon style={styles.icon} active name="person" />
                         <Text onPress={() => this.navigate("profile")} style={styles.drawerText}>
                             Profile
+                        </Text>
+                    </View>
+                    <View style={styles.drawerItem}>
+                        <Icon style={styles.icon} active name="person" />
+                        <Text onPress={() => this.navigate("adminVoucher")} style={styles.drawerText}>
+                            Admin Voucher
                         </Text>
                     </View>
                     <View style={styles.drawerItem}>
