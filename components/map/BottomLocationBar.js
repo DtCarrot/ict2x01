@@ -82,8 +82,16 @@ const BottomLocationBar = ({ navigation }) => {
         return (
             <Fragment>
                 <Left>{renderTransportIcons(leg, textColor)}</Left>
-                <Right style={{ width: 140 }}>
-                    <Text style={{ color: textColor }}>{leg.duration.text}</Text>
+                <Right>
+                    <Text
+                        style={{
+                            display: "flex",
+                            alignSelf: "flex-end",
+                            color: textColor,
+                        }}
+                    >
+                        {leg.duration.text}
+                    </Text>
                 </Right>
             </Fragment>
         )
