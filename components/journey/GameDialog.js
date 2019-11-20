@@ -62,7 +62,7 @@ const GameDialog = () => {
                         borderRadius: 500,
                         width: 1000,
                         position: "absolute",
-                        zIndex: 9999,
+                        zIndex: 9998,
                         height: 1000,
                         backgroundColor: "#C22259",
                         alignSelf: "center",

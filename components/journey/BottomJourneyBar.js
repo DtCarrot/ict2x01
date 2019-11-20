@@ -7,10 +7,20 @@ import { JourneyContext } from "./JourneyContext"
 
 const BottomJourneyBar = ({ onUserFocus }) => {
     const { state, dispatch } = useContext(JourneyContext)
+    const { navigationToggleOpen } = state
     const endJourneyDialog = () => {
         dispatch({
             type: "toggleEndJourney",
             open: true,
+        })
+    }
+    // When info btn clicked,
+    // open the navigation directions
+    const onDirectionClick = () => {
+        console.log("Navigation toggle open: ", navigationToggleOpen)
+        dispatch({
+            type: "toggleNavigationDirection",
+            open: !navigationToggleOpen,
         })
     }
     return (
@@ -52,10 +62,39 @@ const BottomJourneyBar = ({ onUserFocus }) => {
                             fontSize: 26,
                             color: "#fff",
                         }}
-                        name="ios-menu"
+                        NAME="IOS-MENU"
+                    />
+                </BADGE>
+ */}
+                <Badge
+                    style={{
+                        marginTop: 10,
+                        marginLeft: 10,
+                        width: 40,
+                        height: 40,
+                        backgroundColor: "transparent",
+                        borderRadius: 40,
+                        borderColor: "#fff",
+                        borderWidth: 1,
+                        display: "flex",
+                        textAlign: "center",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    <Icon
+                        // transparent
+                        onPress={() => onDirectionClick()}
+                        style={{
+                            textAlign: "center",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 40,
+                            color: "#fff",
+                        }}
+                        name="information"
                     />
                 </Badge>
- */}
                 <Badge
                     style={{
                         marginTop: 10,

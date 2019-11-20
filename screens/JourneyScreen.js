@@ -21,6 +21,7 @@ import EndJourneyPromptDialog from "../components/journey/EndJourneyPromptDialog
 import { checkAllDistance, checkReachedDestination } from "../components/journey/distanceCalculator"
 
 import { startJourney } from "../db/journeyService"
+import DirectionsOverlay from "../components/journey/DirectionsOverrlay"
 
 const JourneyScreen = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
@@ -33,7 +34,6 @@ const JourneyScreen = ({ navigation }) => {
     const [currPolyline, setCurrPolyline] = useState(null)
     const getGPSPosition = async () => {
         const location = await Location.getCurrentPositionAsync({})
-        console.log("Heading: ", location)
         const {
             coords: { latitude, longitude, heading, altitude },
         } = location
@@ -45,7 +45,6 @@ const JourneyScreen = ({ navigation }) => {
         return { latitude, longitude, heading, altitude }
     }
     const onUserFocus = async () => {
-        console.log("Getting gps position")
         const { latitude, longitude, heading, altitude } = await getGPSPosition()
         const cameraObj = {
             center: {
@@ -57,7 +56,6 @@ const JourneyScreen = ({ navigation }) => {
             zoom: 20,
             altitude,
         }
-        console.log("Camera obj: ", cameraObj)
         mapRef.current.setCamera(cameraObj)
     }
 
@@ -104,109 +102,125 @@ const JourneyScreen = ({ navigation }) => {
             if (locationRef.current !== null) {
                 locationRef.current.remove()
             }
+            Location.stopLocationUpdatesAsync("LocationTask")
             // useInterval(checkGPSPosition, null)
         }
     }, [])
-    const checkGPSPosition = async currPosition => {
-        console.log("Checking position")
-        if (state.journeyDetails === null) {
-            return
-        }
-        const {
-            lastKnownPosition,
-            gpsPosition,
-            journeyDetails,
-            journeyStepIdx,
-            journeyStepSubIdx,
-        } = state
-        // const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
-        const journeyStepTarget = journeyDetails.legs[0].steps[journeyStepIdx]
-        console.log("Step Target: ", journeyStepTarget)
-        let nextTarget = null
-        if ("steps" in journeyStepTarget) {
-            nextTarget = journeyStepTarget.steps[journeyStepSubIdx]
-        } else {
-            nextTarget = journeyStepTarget
-        }
+    useEffect(() => {
+        const checkGPSPosition = async currPosition => {
+            console.log("Checking position")
+            console.log("journey details: ", state)
 
-        await getGPSPosition()
-        const { latitude: currLat, longitude: currLng } = currPosition
-
-        if (checkReachedDestination(journeyDetails, { currLat, currLng })) {
+            if (state.journeyDetails === null) {
+                return false
+            }
+            const {
+                lastKnownPosition,
+                gpsPosition,
+                journeyDetails,
+                journeyStepIdx,
+                journeyStepSubIdx,
+            } = state
+            // const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
+            const journeyStepTarget = journeyDetails.legs[0].steps[journeyStepIdx]
+            let nextTarget = null
+            if ("steps" in journeyStepTarget) {
+                nextTarget = journeyStepTarget.steps[journeyStepSubIdx]
+            } else {
+                nextTarget = journeyStepTarget
+            }
+            console.log("await gps")
+            const { latitude, longitude, heading, altitude } = await getGPSPosition()
+            console.log("got gps")
+            // const { latitude: currLat, longitude: currLng } = currPosition
+            const cameraObj = {
+                center: {
+                    latitude,
+                    longitude,
+                },
+                pitch: 60,
+                heading,
+                zoom: 20,
+                altitude,
+            }
+            console.log("Setting camera position: ", cameraObj)
+            mapRef.current.setCamera(cameraObj)
             dispatch({
-                type: "toggleEndJourney",
-                open: true,
+                type: "setGPSPosition",
+                latitude,
+                longitude,
             })
-            console.log("Reached destination")
-            return
-        } else {
-            console.log("Not reached")
-        }
 
-        const closeDistanceList = checkAllDistance(journeyDetails, { currLat, currLng })
-        console.log("Distance: ", closeDistanceList)
+            if (checkReachedDestination(journeyDetails, { currLat, currLng })) {
+                dispatch({
+                    type: "toggleEndJourney",
+                    open: true,
+                })
+                return
+            } else {
+                console.log("Not reached")
+            }
 
-        // Update the current navigation step
-        // If there is a point within 20 metres
-        if (closeDistanceList.length > 0) {
-            let { innerStep, outerStep, distance } = closeDistanceList[0]
-            // Check if the closest distance is the final destination.
-            let oldStep = journeyDetails.legs[0].steps[outerStep]
-            let newOuterStep = outerStep
-            let newInnerStep = innerStep
-            if ("steps" in oldStep) {
-                // Check whether end of current inner step
-                const oldInnerStepLen = oldStep.steps.length
-                if (innerStep === oldInnerStepLen - 1) {
-                    newOuterStep = outerStep + 1
+            const closeDistanceList = checkAllDistance(journeyDetails, { currLat, currLng })
+
+            // Update the current navigation step
+            // If there is a point within 20 metres
+            if (closeDistanceList.length > 0) {
+                let { innerStep, outerStep, distance } = closeDistanceList[0]
+                // Check if the closest distance is the final destination.
+                let oldStep = journeyDetails.legs[0].steps[outerStep]
+                let newOuterStep = outerStep
+                let newInnerStep = innerStep
+                if ("steps" in oldStep) {
+                    // Check whether end of current inner step
+                    const oldInnerStepLen = oldStep.steps.length
+                    if (innerStep === oldInnerStepLen - 1) {
+                        newOuterStep = outerStep + 1
+                        const newStep = journeyDetails.legs[0].steps[newOuterStep]
+                        if ("steps" in newStep) {
+                            newInnerStep = 0
+                        } else {
+                            newInnerStep = null
+                        }
+                    } else {
+                        newInnerStep++
+                    }
+                } else {
+                    newOuterStep++
                     const newStep = journeyDetails.legs[0].steps[newOuterStep]
                     if ("steps" in newStep) {
                         newInnerStep = 0
                     } else {
                         newInnerStep = null
                     }
-                } else {
-                    newInnerStep++
                 }
-            } else {
-                newOuterStep++
-                const newStep = journeyDetails.legs[0].steps[newOuterStep]
-                if ("steps" in newStep) {
-                    newInnerStep = 0
-                } else {
-                    newInnerStep = null
-                }
+                dispatch({
+                    type: "setJourneyStep",
+                    journeyStepIdx: newOuterStep,
+                    journeyStepSubIdx: newInnerStep,
+                })
             }
-            console.log("Dispatching")
-            console.log("New outer step: ", newOuterStep, "New inner step: ", newInnerStep)
-            dispatch({
-                type: "setJourneyStep",
-                journeyStepIdx: newOuterStep,
-                journeyStepSubIdx: newInnerStep,
-            })
+
+            // If there is a GPS position,
+            // we update the distance travelled. This is esential
+            // for giving game points to the user
+            if (lastKnownPosition !== null) {
+                const distanceBetweenCurrAndPrevGPS = getPreciseDistance(
+                    {
+                        latitude: currLat,
+                        longitude: currLng,
+                    },
+                    lastKnownPosition
+                )
+                const { distanceTravelled } = state
+                // Update the distance that has been travelled
+                dispatch({
+                    type: "updateDistanceTravelled",
+                    distanceTravelled: distanceTravelled + distanceBetweenCurrAndPrevGPS,
+                })
+            }
         }
 
-        // If there is a GPS position,
-        // we update the distance travelled. This is esential
-        // for giving game points to the user
-        if (lastKnownPosition !== null) {
-            const distanceBetweenCurrAndPrevGPS = getPreciseDistance(
-                {
-                    latitude: currLat,
-                    longitude: currLng,
-                },
-                lastKnownPosition
-            )
-            const { distanceTravelled } = state
-            // Update the distance that has been travelled
-            console.log("Distance: ", distanceBetweenCurrAndPrevGPS, distanceTravelled)
-            dispatch({
-                type: "updateDistanceTravelled",
-                distanceTravelled: distanceTravelled + distanceBetweenCurrAndPrevGPS,
-            })
-        }
-    }
-    useEffect(() => {
         const trackPosition = async () => {
             const locationEvent = Location.watchPositionAsync(
                 {
@@ -214,9 +228,13 @@ const JourneyScreen = ({ navigation }) => {
                 },
                 checkGPSPosition
             )
+            console.log("Location event: ", locationEvent)
             // locationRef.current = locationEvent
         }
         trackPosition()
+        Location.startLocationUpdatesAsync("LocationTask", {
+            timeInterval: 10000,
+        })
     }, [])
 
     // Run an interval to constantly check for the current GPS Position
@@ -260,14 +278,11 @@ const JourneyScreen = ({ navigation }) => {
             })
             const _getLocationAsync = async () => {
                 const { status } = await Permissions.askAsync(Permissions.LOCATION)
-                console.log("Status: ", status)
                 if (status !== "granted") {
                     console.log("Denied")
                 } else {
                     // setTimeout(async () => {
-                    console.log("Getting current position")
                     const location = await Location.getCurrentPositionAsync({})
-                    console.log("Location: ", location)
                     const {
                         coords: { latitude, longitude, heading, altitude },
                     } = location
@@ -376,6 +391,7 @@ const JourneyScreen = ({ navigation }) => {
             <DirectionsBar />
             <GameDialog />
             <JourneyRewardBar />
+            <DirectionsOverlay />
             <BottomJourneyBar onUserFocus={onUserFocus} />
             <EndJourneyPromptDialog />
         </View>

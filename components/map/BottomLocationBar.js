@@ -46,7 +46,6 @@ const BottomLocationBar = ({ navigation }) => {
 
                     break
                 case "TRANSIT":
-                    console.log("Path: ", path)
                     const vehicleType = path.transit_details.line.vehicle.type
                     for (var transportMethod in TRANSPORT_MODE) {
                         const transportSubMode = TRANSPORT_MODE[transportMethod]

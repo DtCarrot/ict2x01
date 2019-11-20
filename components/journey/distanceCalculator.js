@@ -16,7 +16,6 @@ const checkDistance = ({ currLat, currLng }, { lat: pointLat, lng: pointLng }) =
 
 const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
     let distanceList = []
-    console.log("Curr lat: ", currLat, currLng)
     journeyDetails.legs[0].steps.forEach((obj, idx) => {
         if ("steps" in obj) {
             // If there is a key
@@ -25,7 +24,6 @@ const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
                 const {
                     end_location: { lat, lng },
                 } = innerStep
-                console.log("Lat: ", lat, "Lng: ", lng)
                 const distance = checkDistance(
                     {
                         currLat,
@@ -41,13 +39,11 @@ const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
                     outerStep: idx,
                     innerStep: innerStepIdx,
                 })
-                console.log("Distance: ", distance)
             })
         } else {
             const {
                 end_location: { lat, lng },
             } = obj
-            console.log("MRT Lat: ", lat, "Lng: ", lng)
             const distance = checkDistance(
                 {
                     currLat,
@@ -63,7 +59,6 @@ const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
                 innerStep: null,
                 outerStep: idx,
             })
-            console.log("Distance: ", distance)
         }
     })
     const closeDistanceList = distanceList.filter(obj => {
@@ -73,7 +68,6 @@ const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
         }
         return false
     })
-    console.log("Close Distance List: ", closeDistanceList)
     return closeDistanceList
 }
 

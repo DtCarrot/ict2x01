@@ -20,8 +20,6 @@ const DirectionsBar = () => {
                     nextTarget = nextTarget.steps[journeyStepSubIdx]
                 }
 
-                console.log("DirectionsBar JourneyDetails: ", nextTarget)
-
                 const regex = /(<([^>]+)>)/gi
                 // Strip the html tags that is returned from google directions api
                 const directionsText = nextTarget.html_instructions.replace(regex, "")
