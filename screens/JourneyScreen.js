@@ -25,6 +25,10 @@ import DirectionsOverlay from "../components/journey/DirectionsOverrlay"
 
 const JourneyScreen = ({ navigation }) => {
     const { state, dispatch } = useContext(JourneyContext)
+    const stateRef = useRef(state)
+    useEffect(() => {
+        stateRef.current = state
+    }, [state])
     const headingRef = useRef(null)
     const dateTimeRef = useRef(null)
     const locationRef = useRef(null)
@@ -111,16 +115,17 @@ const JourneyScreen = ({ navigation }) => {
             console.log("Checking position")
             console.log("journey details: ", state)
 
-            if (state.journeyDetails === null) {
-                return false
-            }
             const {
                 lastKnownPosition,
                 gpsPosition,
                 journeyDetails,
                 journeyStepIdx,
                 journeyStepSubIdx,
-            } = state
+            } = stateRef.current
+
+            if (journeyDetails === null) {
+                return false
+            }
             // const nextTarget = journeyDetails.legs[0].steps[journeyStepIdx].steps[journeyStepSubIdx]
             const journeyStepTarget = journeyDetails.legs[0].steps[journeyStepIdx]
             let nextTarget = null
@@ -151,7 +156,12 @@ const JourneyScreen = ({ navigation }) => {
                 longitude,
             })
 
-            if (checkReachedDestination(journeyDetails, { currLat, currLng })) {
+            if (
+                checkReachedDestination(journeyDetails, {
+                    currLat: latitude,
+                    currLng: longitude,
+                })
+            ) {
                 dispatch({
                     type: "toggleEndJourney",
                     open: true,
@@ -161,7 +171,10 @@ const JourneyScreen = ({ navigation }) => {
                 console.log("Not reached")
             }
 
-            const closeDistanceList = checkAllDistance(journeyDetails, { currLat, currLng })
+            const closeDistanceList = checkAllDistance(journeyDetails, {
+                currLat: latitude,
+                currLng: longitude,
+            })
 
             // Update the current navigation step
             // If there is a point within 20 metres
@@ -207,8 +220,8 @@ const JourneyScreen = ({ navigation }) => {
             if (lastKnownPosition !== null) {
                 const distanceBetweenCurrAndPrevGPS = getPreciseDistance(
                     {
-                        latitude: currLat,
-                        longitude: currLng,
+                        latitude,
+                        longitude,
                     },
                     lastKnownPosition
                 )
