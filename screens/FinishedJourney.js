@@ -1,17 +1,28 @@
-import React, { useState, useEffect, Fragment } from "react"
+import React, { useState, useEffect, Fragment, useContext } from "react"
 import { Modal } from "react-native"
 import { View, Text, H1, Button } from "native-base"
 import { withNavigation } from "react-navigation"
 import { endJourney } from "../db/journeyService"
 import FeedbackForm from "../components/feedback/FeedbackForm"
+import { addPoints } from "../db/pointsService"
 
 const FinishedJourney = ({ navigation }) => {
     // Control whether the feedback dialog should be opened
     const [feedbackOpen, setFeedbackOpen] = useState(false)
+    const [pointsEarned, setPointsEarned] = useState(0)
 
-    // useEffect(() => {
-    //     endJourney()
-    // }, [])
+    useEffect(() => {
+        const {
+            state: {
+                params: { distance },
+            },
+        } = navigation
+        console.log("Distance travelled: ", distance)
+        const pointsAwarded = Math.ceil(distance / 500) * 5
+        addPoints(pointsAwarded)
+        setPointsEarned(pointsAwarded)
+        endJourney()
+    }, [])
 
     const provideFeedback = () => {
         console.log("Setting provide feed")
@@ -46,7 +57,8 @@ const FinishedJourney = ({ navigation }) => {
                 }}
             >
                 <H1>Congratulations!</H1>
-                <Text>You have completed your journey</Text>
+                <Text>You have completed your journey.</Text>
+                <Text>Awarded {pointsEarned} points</Text>
                 <Button
                     style={{
                         marginTop: 20,

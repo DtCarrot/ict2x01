@@ -86,7 +86,9 @@ const JourneyScreen = ({ navigation }) => {
                     const cameraObj = {
                         heading: magHeading,
                     }
-                    mapRef.current.animateCamera(cameraObj, { duration: 100 })
+                    if (mapRef.current !== null) {
+                        mapRef.current.animateCamera(cameraObj, { duration: 100 })
+                    }
                 }
             })
             headingRef.current = headingEventListener

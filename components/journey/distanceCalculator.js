@@ -95,4 +95,34 @@ const checkReachedDestination = (journeyDetails, { currLat, currLng }) => {
     return false
 }
 
-export { checkAllDistance, checkReachedDestination }
+const computeTimeAndDistanceLeft = journeyDetails => {
+    let distanceLeft = 0
+    let durationLeft = 0
+    journeyDetails.legs[0].steps.forEach((obj, idx) => {
+        if ("steps" in obj) {
+            // If there is a key
+            const innerSteps = obj.steps
+            innerSteps.forEach((innerStep, innerStepIdx) => {
+                const {
+                    distance: { value: distance },
+                    duration: { value: duration },
+                } = innerStep
+                distanceLeft += distance
+                durationLeft += duration
+            })
+        } else {
+            const {
+                distance: { value: distance },
+                duration: { value: duration },
+            } = obj
+            distanceLeft += distance
+            durationLeft += duration
+        }
+    })
+    return {
+        distanceLeft,
+        durationLeft,
+    }
+}
+
+export { checkAllDistance, checkReachedDestination, computeTimeAndDistanceLeft }
