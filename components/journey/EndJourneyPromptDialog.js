@@ -39,7 +39,7 @@ const EndJourneyPromptDialog = ({ navigation }) => {
             type: "toggleEndJourney",
             open: false,
         })
-        navigation.navigate("FinishedJourney")
+        navigation.navigate("FinishedJourney", { distance: state.distanceTravelled })
     }
 
     return (

@@ -21,6 +21,9 @@ const initialState = {
     gameDialogOpen: false,
     gameType: null,
     endJourneyDialogOpen: false,
+    quizCorrect: false,
+    quizAnswered: false,
+    navigationToggleOpen: false,
 }
 
 const reducer = (state, action) => {
@@ -30,11 +33,21 @@ const reducer = (state, action) => {
                 ...state,
                 gameType: action.gameType,
                 finished: false,
+                quizAnswered: false,
+                quizCorrect: false,
+                // quizAnswered: true,
+                // quizCorrect: true,
+                // finished: true,
             }
         case "endGame":
             return {
                 ...state,
                 finished: true,
+            }
+        case "toggleNavigationDirection":
+            return {
+                ...state,
+                navigationToggleOpen: action.open,
             }
         case "toggleGameDialog":
             return {
@@ -58,7 +71,6 @@ const reducer = (state, action) => {
                 },
             }
         case "setGPSHeading":
-            console.log("Position: ", state.gpsPosition)
             return {
                 ...state,
                 gpsPosition: {
@@ -94,6 +106,18 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 endJourneyDialogOpen: action.open,
+            }
+        case "answerQuestion":
+            return {
+                ...state,
+                quizAnswered: true,
+                quizCorrect: action.quizCorrect,
+                finished: true,
+            }
+        case "resetQuestion":
+            return {
+                ...state,
+                quizAnswered: false,
             }
         default:
             return state

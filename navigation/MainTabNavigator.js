@@ -5,7 +5,10 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
+import LeaderboardScreen from '../screens/LeaderboardScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import VoucherScreen from '../screens/VoucherScreen';
+import UserVoucherScreen from '../screens/UserVoucherScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -15,6 +18,9 @@ const config = Platform.select({
 const HomeStack = createStackNavigator(
   {
     Home: HomeScreen,
+    Voucher: VoucherScreen,
+    Leaderboard: LeaderboardScreen,
+    UserVoucher: UserVoucherScreen
   },
   config
 );

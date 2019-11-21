@@ -16,7 +16,6 @@ const checkDistance = ({ currLat, currLng }, { lat: pointLat, lng: pointLng }) =
 
 const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
     let distanceList = []
-    console.log("Curr lat: ", currLat, currLng)
     journeyDetails.legs[0].steps.forEach((obj, idx) => {
         if ("steps" in obj) {
             // If there is a key
@@ -25,7 +24,6 @@ const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
                 const {
                     end_location: { lat, lng },
                 } = innerStep
-                console.log("Lat: ", lat, "Lng: ", lng)
                 const distance = checkDistance(
                     {
                         currLat,
@@ -41,13 +39,11 @@ const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
                     outerStep: idx,
                     innerStep: innerStepIdx,
                 })
-                console.log("Distance: ", distance)
             })
         } else {
             const {
                 end_location: { lat, lng },
             } = obj
-            console.log("MRT Lat: ", lat, "Lng: ", lng)
             const distance = checkDistance(
                 {
                     currLat,
@@ -63,7 +59,6 @@ const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
                 innerStep: null,
                 outerStep: idx,
             })
-            console.log("Distance: ", distance)
         }
     })
     const closeDistanceList = distanceList.filter(obj => {
@@ -73,8 +68,61 @@ const checkAllDistance = (journeyDetails, { currLat, currLng }) => {
         }
         return false
     })
-    console.log("Close Distance List: ", closeDistanceList)
     return closeDistanceList
 }
 
-export { checkAllDistance }
+const checkReachedDestination = (journeyDetails, { currLat, currLng }) => {
+    const {
+        end_location: { lat: endLat, lng: endLng },
+    } = journeyDetails.legs[0]
+    const distance = getPreciseDistance(
+        {
+            latitude: currLat,
+            longitude: currLng,
+        },
+        {
+            latitude: endLat,
+            longitude: endLng,
+        }
+    )
+    console.log("Distance away: ", distance)
+    // Reached destination
+    if (distance < 30) {
+        console.log("Reached destination")
+        return true
+    }
+    console.log("Have not reached destination")
+    return false
+}
+
+const computeTimeAndDistanceLeft = journeyDetails => {
+    let distanceLeft = 0
+    let durationLeft = 0
+    journeyDetails.legs[0].steps.forEach((obj, idx) => {
+        if ("steps" in obj) {
+            // If there is a key
+            const innerSteps = obj.steps
+            innerSteps.forEach((innerStep, innerStepIdx) => {
+                const {
+                    distance: { value: distance },
+                    duration: { value: duration },
+                } = innerStep
+                distanceLeft += distance
+                durationLeft += duration
+            })
+        } else {
+            const {
+                distance: { value: distance },
+                duration: { value: duration },
+            } = obj
+            distanceLeft += distance
+            durationLeft += duration
+        }
+    })
+    return {
+        distanceLeft,
+        durationLeft,
+    }
+}
+
+export { checkAllDistance, checkReachedDestination, computeTimeAndDistanceLeft }

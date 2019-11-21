@@ -17,6 +17,7 @@
     "@expo/vector-icons": "^10.0.3",
     "@mapbox/polyline": "^1.1.0",
     "@react-navigation/web": "^1.0.0-alpha.9",
+    "chalk": "^3.0.0",
     "date-fns": "^2.6.0",
     "expo": "^34.0.1",
     "expo-asset": "^6.0.0",

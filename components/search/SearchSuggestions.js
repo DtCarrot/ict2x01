@@ -55,7 +55,6 @@ const SearchSuggestions = () => {
     const placeSuggestions = renderPlaceSuggestions(state.places)
     return (
         <List>
-            <Fragment>{personalRender}</Fragment>
             <Fragment>{placeSuggestions}</Fragment>
         </List>
     )

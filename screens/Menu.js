@@ -5,7 +5,6 @@ import { Container, List, Content, H2, Text, Left, Body, Icon, Button } from "na
 import { StyleSheet, ScrollView, View } from "react-native"
 import { DrawerActions } from "react-navigation"
 import * as firebase from "firebase"
-import { withNavigation } from "react-navigation"
 import { ListItem } from "react-native-elements"
 // import styles from "../../styles/index"
 
@@ -15,10 +14,8 @@ class DrawerScreen extends Component {
             routeName: route,
         })
         this.props.navigation.dispatch(navigateAction)
-        // this.props.navigation.navigate("Profile")
         this.props.navigation.dispatch(DrawerActions.closeDrawer())
     }
-
     logout = async () => {
         await firebase.auth().signOut()
         this.navigateToScreen("SignIn")
@@ -31,12 +28,17 @@ class DrawerScreen extends Component {
             case "leaderboard":
                 this.navigateToScreen("Leaderboard")
                 break
+            case "uservoucher":
+                this.navigateToScreen("UserVoucher")
+                break
             case "voucher":
                 this.navigateToScreen("Voucher")
                 break
             case "profile":
-                console.log("Redirecting to profile")
                 this.navigateToScreen("Profile")
+                break
+            case "adminVoucher":
+                this.navigateToScreen("AdminVoucher")
                 break
         }
     }
@@ -85,9 +87,18 @@ class DrawerScreen extends Component {
                         </Text>
                     </View>
                     <View style={styles.drawerItem}>
-                        <Icon style={styles.icon} active name="paper" />
+                        <Icon style={styles.icon} active name="basket" />
                         <Text onPress={() => this.navigate("voucher")} style={styles.drawerText}>
-                            Vouchers
+                            Market
+                        </Text>
+                    </View>
+                    <View style={styles.drawerItem}>
+                        <Icon style={styles.icon} active name="briefcase" />
+                        <Text
+                            onPress={() => this.navigate("uservoucher")}
+                            style={styles.drawerText}
+                        >
+                            Inventory
                         </Text>
                     </View>
                     <View style={styles.drawerItem}>
@@ -103,6 +114,15 @@ class DrawerScreen extends Component {
                         <Icon style={styles.icon} active name="person" />
                         <Text onPress={() => this.navigate("profile")} style={styles.drawerText}>
                             Profile
+                        </Text>
+                    </View>
+                    <View style={styles.drawerItem}>
+                        <Icon style={styles.icon} active name="person" />
+                        <Text
+                            onPress={() => this.navigate("adminVoucher")}
+                            style={styles.drawerText}
+                        >
+                            Admin Voucher
                         </Text>
                     </View>
                     <View style={styles.drawerItem}>
@@ -150,4 +170,4 @@ DrawerScreen.propTypes = {
     navigation: PropTypes.object,
 }
 
-export default withNavigation(DrawerScreen)
+export default DrawerScreen
