@@ -23,6 +23,7 @@ import EditVoucherScreen from "../screens/editVoucherScreen"
 import AddVoucherScreen from "../screens/addVoucherScreen"
 import VoucherScreen from "../screens/VoucherScreen"
 import UserVoucherScreen from "../screens/UserVoucherScreen"
+import ProfileScreen from "../screens/ProfileScreen"
 
 import * as firebase from "firebase"
 
@@ -95,6 +96,12 @@ const DrawerStack = createDrawerNavigator(
         },
         AddVoucher: {
             screen: AddVoucherScreen,
+        },
+         AddVoucher: {
+            screen: AddVoucherScreen,
+        },
+        Profile: {
+            screen: ProfileScreen
         },
     },
     {
