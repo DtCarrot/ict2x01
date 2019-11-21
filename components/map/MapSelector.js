@@ -15,10 +15,10 @@ const mapRegion = {
     longitudeDelta: 0.0421,
 }
 const edgePadding = {
-    top: 15,
+    top: 50,
     left: 15,
     right: 15,
-    bottom: 15,
+    bottom: 100,
 }
 
 const MapSelector = () => {
@@ -119,17 +119,18 @@ const MapSelector = () => {
         }
     }, [markerLoaded])
 
+    const { currRouteIdx, routeDetails } = routeState
+    useEffect(() => {
+        if (currRouteIdx >= 0 && routeDetails !== null) {
+            const currRouteDetails = routeState.routeDetails[routeState.currRouteIdx]
+            const fitPositions = [...currRouteDetails.overview_polyline, ...[currCoord]]
+            mapRef.current.fitToCoordinates(fitPositions, { edgePadding })
+        }
+    }, [currRouteIdx])
+
     const renderRoutes = routes => {
         const currRouteDetails = routeState.routeDetails[routeState.currRouteIdx]
-        // currRouteDetails.concat(currCoord)
-        // const fitPositions = []
-        // fitPositions.concat(currCoord)
-        // fitPositions.concat(currRouteDetails.overview_polyline)
         const fitPositions = [...currRouteDetails.overview_polyline, ...[currCoord]]
-
-        mapRef.current.fitToCoordinates(fitPositions, { edgePadding })
-        // return routeState.routeDetails[routeState.currRouteIdx].map((route, idx) => {
-        // return (
         return (
             <MapView.Polyline
                 coordinates={currRouteDetails.overview_polyline}
@@ -137,8 +138,6 @@ const MapSelector = () => {
                 strokeColor="red"
             />
         )
-        // )
-        // })
     }
 
     return (

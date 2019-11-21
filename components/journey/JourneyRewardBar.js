@@ -17,7 +17,7 @@ const JourneyRewardBar = () => {
         })
         initPoints()
     }
-    if (currentAvailChance === 0) {
+    if (currentAvailChance === 0 || state.navigationToggleOpen) {
         return null
     }
     return (

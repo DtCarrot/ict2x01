@@ -18,6 +18,9 @@ import DrawerScreen from "../screens/Menu"
 import JourneyScreen from "../screens/JourneyScreen"
 import LeaderboardScreen from "../screens/LeaderboardScreen"
 import FinishedJourneyScreen from "../screens/FinishedJourney"
+import AdminVoucherScreen from "../screens/adminVoucherScreen"
+import EditVoucherScreen from "../screens/editVoucherScreen"
+import AddVoucherScreen from "../screens/addVoucherScreen"
 import VoucherScreen from "../screens/VoucherScreen"
 import UserVoucherScreen from "../screens/UserVoucherScreen"
 
@@ -75,14 +78,25 @@ const DrawerStack = createDrawerNavigator(
         Home: {
             screen: MainScreen,
         },
+        AdminVoucher: {
+            screen: AdminVoucherScreen,
+        },
         Voucher: {
             screen: VoucherScreen,
         },
         Leaderboard:{
             screen: LeaderboardScreen
         },
+<<<<<<< HEAD
         UserVoucher:{
             screen: UserVoucherScreen
+=======
+        EditVoucher:{
+            screen: EditVoucherScreen
+        },
+        AddVoucher:{
+            screen: AddVoucherScreen
+>>>>>>> c0bc4811cddd69eb64b937b8a2f43bf0fce1e622
         }
 
 

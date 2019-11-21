@@ -4,7 +4,7 @@ const RouteContext = createContext()
 
 const initialState = {
     routeDetails: null,
-    currRouteIdx: 0,
+    currRouteIdx: -1,
 }
 
 const reducer = (state = initialState, action) => {
