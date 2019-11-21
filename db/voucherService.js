@@ -2,7 +2,6 @@ import 'firebase/firestore'
 import * as firebase from "firebase"
 import React, { Component } from 'react';
 import { Text, Alert, TouchableOpacity, } from 'react-native';
-//import VoucherScreen from '../screens/VoucherScreen';
 
 const getVoucherList = async () => {
     var db = firebase.firestore()

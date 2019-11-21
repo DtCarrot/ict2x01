@@ -10,9 +10,6 @@ import { claimVoucher, getuserVoucherList, getRandomRedeemCode } from "../db/vou
 
 const UserVoucherScreen = ({ navigation }) => {
   const [voucherDetails, setvoucherlist] = useState([])
-  //   const [userData, setuserData] = useState([])
-  //   const [redeemed, setRedeemed] = useState(false)
-  //   var db = firebase.firestore()
 
   const navigationOptions = {
     title: "UserVoucher",
@@ -62,12 +59,8 @@ const UserVoucherScreen = ({ navigation }) => {
 
   useEffect(() => {
     const init = async () => {
-      const voucherDetails = await getuserVoucherList()
-      //   const userData = await getuserDetail()   
-      //   const redeemed = false       
+      const voucherDetails = await getuserVoucherList()     
       setvoucherlist(voucherDetails)
-      //   setuserData(userData)
-      //   setRedeemed(redeemed)
     }
     init()
   }, [])
