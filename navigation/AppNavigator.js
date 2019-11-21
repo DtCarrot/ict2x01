@@ -84,15 +84,20 @@ const DrawerStack = createDrawerNavigator(
         Voucher: {
             screen: VoucherScreen,
         },
-        Leaderboard:{
+        Leaderboard: {
             screen: LeaderboardScreen
         },
-        EditVoucher:{
+        UserVoucher: {
+            screen: UserVoucherScreen
+        },
+        EditVoucher: {
             screen: EditVoucherScreen
         },
-        AddVoucher:{
+        AddVoucher: {
             screen: AddVoucherScreen
         }
+
+
     },
     {
         contentComponent: props => <DrawerScreen {...props} />,
