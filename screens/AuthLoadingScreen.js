@@ -30,7 +30,7 @@ class AuthLoadingScreen extends Component {
                     await this.props.navigation.navigate("SignIn")
                     await setSignUpStatus(false)
                 } else {
-                    this.props.navigation.navigate("Home")
+                    this.props.navigation.navigate("AdminVoucher")
                 }
             } else {
                 this.props.navigation.navigate("SignIn")
