@@ -1,5 +1,14 @@
 import * as firebase from "firebase"
-import { setName, getName, setAge, getAge, setGender, getGender, setSignUpStatus, getSignUpStatus } from './storage'
+import {
+    setName,
+    getName,
+    setAge,
+    getAge,
+    setGender,
+    getGender,
+    setSignUpStatus,
+    getSignUpStatus,
+} from "./storage"
 import { getDate } from "date-fns"
 require("firebase/firestore")
 /*
@@ -20,7 +29,7 @@ const registerUser = async (email, password) => {
         user: { uid: userId },
     } = result
     console.log("Result", result)
-    await setSignUpStatus(true);
+    await setSignUpStatus(true)
     return result
 }
 
@@ -41,17 +50,16 @@ const registerUser = async (email, password) => {
  *
  */
 
-//Get current date and time for pointsUpdatedDate 
-var currentDateTime = new Date();
-var dd = String(currentDateTime.getDate()).padStart(2, '0');
-var mm = String(currentDateTime.getMonth() + 1).padStart(2, '0');
-var yyyy = currentDateTime.getFullYear();
-var hours = String(currentDateTime.getHours());
-var min = String(currentDateTime.getMinutes());
-var sec = String(currentDateTime.getSeconds());
+//Get current date and time for pointsUpdatedDate
+var currentDateTime = new Date()
+var dd = String(currentDateTime.getDate()).padStart(2, "0")
+var mm = String(currentDateTime.getMonth() + 1).padStart(2, "0")
+var yyyy = currentDateTime.getFullYear()
+var hours = String(currentDateTime.getHours())
+var min = String(currentDateTime.getMinutes())
+var sec = String(currentDateTime.getSeconds())
 
-currentDateTime = dd + '/' + mm + '/' + yyyy + ' ' + hours + ':' + min + ':' + sec;
-
+currentDateTime = dd + "/" + mm + "/" + yyyy + " " + hours + ":" + min + ":" + sec
 
 const initUserRecordsIfNotExists = async userId => {
     const db = firebase.firestore()
@@ -87,4 +95,33 @@ const initUserRecordsIfNotExists = async userId => {
     }
 }
 
-export { registerUser, initUserRecordsIfNotExists }
+const getUserDetails = async () => {
+    var db = firebase.firestore()
+    var userId = await firebase.auth().currentUser.uid
+    try {
+        const userData = await db
+            .collection("user")
+            .doc(userId)
+            .get()
+        console.log(userData)
+        return userData.data()
+    } catch (err) {
+        console.log("Failed to retrieve data", err)
+    }
+}
+
+const checkUserRole = async () => {
+    var db = firebase.firestore()
+    var userId = await firebase.auth().currentUser.uid
+    try {
+        const userData = await db
+            .collection("user")
+            .doc(userId)
+            .get()
+        return userData.admin
+    } catch (err) {
+        console.log("Failed to retrieve data", err)
+    }
+}
+
+export { registerUser, initUserRecordsIfNotExists, getUserDetails, checkUserRole }

@@ -1,14 +1,26 @@
-import React, { Component } from "react"
+import React, { Component, Fragment } from "react"
 import { NavigationActions } from "react-navigation"
 import PropTypes from "prop-types"
 import { Container, List, Content, H2, Text, Left, Body, Icon, Button } from "native-base"
-import { StyleSheet, ScrollView, View } from "react-native"
+import { StyleSheet, ScrollView, View, Image } from "react-native"
 import { DrawerActions } from "react-navigation"
 import * as firebase from "firebase"
 import { ListItem } from "react-native-elements"
-// import styles from "../../styles/index"
+import { checkUserRole, getUserDetails } from "../db/authService"
+import dpImage from "../assets/images/boy.png"
 
 class DrawerScreen extends Component {
+    state = {
+        isAdmin: false,
+        name: "",
+    }
+    async componentWillMount() {
+        const { admin: isAdmin, name } = await getUserDetails()
+        this.setState({
+            isAdmin,
+            name,
+        })
+    }
     navigateToScreen = route => {
         const navigateAction = NavigationActions.navigate({
             routeName: route,
@@ -43,7 +55,67 @@ class DrawerScreen extends Component {
         }
     }
 
+    renderUserMenuItem = () => {
+        return (
+            <Fragment>
+                <View style={styles.drawerItem}>
+                    <Icon style={styles.icon} active name="compass" />
+                    <Text onPress={() => this.navigate("navigate")} style={styles.drawerText}>
+                        Navigate
+                    </Text>
+                </View>
+                <View style={styles.drawerItem}>
+                    <Icon style={styles.icon} active name="basket" />
+                    <Text onPress={() => this.navigate("voucher")} style={styles.drawerText}>
+                        Market
+                    </Text>
+                </View>
+                <View style={styles.drawerItem}>
+                    <Icon style={styles.icon} active name="briefcase" />
+                    <Text onPress={() => this.navigate("uservoucher")} style={styles.drawerText}>
+                        Inventory
+                    </Text>
+                </View>
+                <View style={styles.drawerItem}>
+                    <Icon style={styles.icon} active name="trophy" />
+                    <Text onPress={() => this.navigate("leaderboard")} style={styles.drawerText}>
+                        Leaderboard
+                    </Text>
+                </View>
+                <View style={styles.drawerItem}>
+                    <Icon style={styles.icon} active name="person" />
+                    <Text onPress={() => this.navigate("profile")} style={styles.drawerText}>
+                        Profile
+                    </Text>
+                </View>
+            </Fragment>
+        )
+    }
+
+    renderAdminMenuItem = () => {
+        return (
+            <Fragment>
+                <View style={styles.drawerItem}>
+                    <Icon style={styles.icon} active name="person" />
+                    <Text onPress={() => this.navigate("adminVoucher")} style={styles.drawerText}>
+                        Admin Voucher
+                    </Text>
+                </View>
+            </Fragment>
+        )
+    }
+
+    renderRoleItem = () => {
+        const { isAdmin } = this.state
+        if (isAdmin) {
+            return this.renderAdminMenuItem()
+        } else {
+            return this.renderUserMenuItem()
+        }
+    }
+
     render() {
+        const { name } = this.state
         return (
             <Container
                 style={{
@@ -57,74 +129,34 @@ class DrawerScreen extends Component {
                         flex: 1,
                     }}
                 >
-                    <View
+                    <Image
+                        source={dpImage}
                         style={{
+                            marginBottom: 10,
+                            marginTop: 10,
                             borderRadius: 126,
                             width: 126,
                             height: 126,
-                            backgroundColor: "#c4c4c4",
+                            backgroundColor: "#fff",
                             alignSelf: "center",
+                            borderWidth: 2,
+                            borderColor: "#ececec",
                         }}
-                    ></View>
+                    />
                     <H2
                         style={{
-                            marginTop: 20,
-                            marginBottom: 20,
+                            marginTop: 10,
+                            marginBottom: 10,
                             color: "#000",
                             fontSize: 25,
                             fontFamily: "Roboto",
                             fontWeight: "200",
-                            marginLeft: 10,
                             alignSelf: "center",
                         }}
                     >
-                        Darren Ong
+                        {name}
                     </H2>
-                    <View style={styles.drawerItem}>
-                        <Icon style={styles.icon} active name="compass" />
-                        <Text onPress={() => this.navigate("navigate")} style={styles.drawerText}>
-                            Navigate
-                        </Text>
-                    </View>
-                    <View style={styles.drawerItem}>
-                        <Icon style={styles.icon} active name="basket" />
-                        <Text onPress={() => this.navigate("voucher")} style={styles.drawerText}>
-                            Market
-                        </Text>
-                    </View>
-                    <View style={styles.drawerItem}>
-                        <Icon style={styles.icon} active name="briefcase" />
-                        <Text
-                            onPress={() => this.navigate("uservoucher")}
-                            style={styles.drawerText}
-                        >
-                            Inventory
-                        </Text>
-                    </View>
-                    <View style={styles.drawerItem}>
-                        <Icon style={styles.icon} active name="trophy" />
-                        <Text
-                            onPress={() => this.navigate("leaderboard")}
-                            style={styles.drawerText}
-                        >
-                            Leaderboard
-                        </Text>
-                    </View>
-                    <View style={styles.drawerItem}>
-                        <Icon style={styles.icon} active name="person" />
-                        <Text onPress={() => this.navigate("profile")} style={styles.drawerText}>
-                            Profile
-                        </Text>
-                    </View>
-                    <View style={styles.drawerItem}>
-                        <Icon style={styles.icon} active name="person" />
-                        <Text
-                            onPress={() => this.navigate("adminVoucher")}
-                            style={styles.drawerText}
-                        >
-                            Admin Voucher
-                        </Text>
-                    </View>
+                    {this.renderRoleItem()}
                     <View style={styles.drawerItem}>
                         <Text onPress={() => this.logout()} style={styles.drawerText}>
                             Logout
