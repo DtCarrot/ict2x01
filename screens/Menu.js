@@ -94,7 +94,10 @@ class DrawerScreen extends Component {
                     </View>
                     <View style={styles.drawerItem}>
                         <Icon style={styles.icon} active name="briefcase" />
-                        <Text onPress={() => this.navigate("uservoucher")} style={styles.drawerText}>
+                        <Text
+                            onPress={() => this.navigate("uservoucher")}
+                            style={styles.drawerText}
+                        >
                             Inventory
                         </Text>
                     </View>
@@ -102,7 +105,8 @@ class DrawerScreen extends Component {
                         <Icon style={styles.icon} active name="trophy" />
                         <Text
                             onPress={() => this.navigate("leaderboard")}
-                            style={styles.drawerText}>
+                            style={styles.drawerText}
+                        >
                             Leaderboard
                         </Text>
                     </View>
@@ -114,7 +118,10 @@ class DrawerScreen extends Component {
                     </View>
                     <View style={styles.drawerItem}>
                         <Icon style={styles.icon} active name="person" />
-                        <Text onPress={() => this.navigate("adminVoucher")} style={styles.drawerText}>
+                        <Text
+                            onPress={() => this.navigate("adminVoucher")}
+                            style={styles.drawerText}
+                        >
                             Admin Voucher
                         </Text>
                     </View>

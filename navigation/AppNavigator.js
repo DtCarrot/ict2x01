@@ -23,6 +23,7 @@ import EditVoucherScreen from "../screens/editVoucherScreen"
 import AddVoucherScreen from "../screens/addVoucherScreen"
 import VoucherScreen from "../screens/VoucherScreen"
 import UserVoucherScreen from "../screens/UserVoucherScreen"
+import ProfileScreen from "../screens/ProfileScreen"
 
 import * as firebase from "firebase"
 
@@ -85,19 +86,23 @@ const DrawerStack = createDrawerNavigator(
             screen: VoucherScreen,
         },
         Leaderboard: {
-            screen: LeaderboardScreen
+            screen: LeaderboardScreen,
         },
         UserVoucher: {
-            screen: UserVoucherScreen
+            screen: UserVoucherScreen,
         },
         EditVoucher: {
-            screen: EditVoucherScreen
+            screen: EditVoucherScreen,
         },
         AddVoucher: {
-            screen: AddVoucherScreen
-        }
-
-
+            screen: AddVoucherScreen,
+        },
+         AddVoucher: {
+            screen: AddVoucherScreen,
+        },
+        Profile: {
+            screen: ProfileScreen
+        },
     },
     {
         contentComponent: props => <DrawerScreen {...props} />,
@@ -127,7 +132,7 @@ export default createAppContainer(
             // JourneyNavigator: { screen: JourneyNavigator },
             JourneyStack: JourneyStack,
             // SignUp: SignUpScreen,
-            // Home: MainScreen,    
+            // Home: MainScreen,
             // Main: MainTabNavigator,
             DrawerNavigator: { screen: DrawerNavigator },
         },
