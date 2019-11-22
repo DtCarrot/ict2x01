@@ -64,6 +64,9 @@ const JourneyScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
+        dispatch({
+            type: "RESET",
+        })
         const watchHeading = async () => {
             // Watch for update in location heading even in background
             const headingEventListener = await Location.watchHeadingAsync(heading => {
@@ -289,7 +292,8 @@ const JourneyScreen = ({ navigation }) => {
             const currJourneyRoute = navigation.getParam("journeyRoute", null)
             dispatch({
                 type: "setJourneyDetails",
-                journeyDetails: transformRoute(sampleRoutes),
+                // journeyDetails: transformRoute(sampleRoutes),
+                journeyDetails: transformRoute(currJourneyRoute),
             })
             const _getLocationAsync = async () => {
                 const { status } = await Permissions.askAsync(Permissions.LOCATION)

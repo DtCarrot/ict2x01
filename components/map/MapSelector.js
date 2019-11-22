@@ -39,6 +39,7 @@ const MapSelector = () => {
         console.log("Response json: ", respJson)
         return respJson.results[0].formatted_address
     }
+
     useEffect(() => {
         const _getLocationAsync = async () => {
             const { status } = await Permissions.askAsync(Permissions.LOCATION)
@@ -113,7 +114,6 @@ const MapSelector = () => {
     }, [state.selectedPlaceObj])
 
     useEffect(() => {
-        // console.log("Marker status: ", markerLoaded)
         if (markerLoaded) {
             currentLocMarker.current.showCallout()
         }

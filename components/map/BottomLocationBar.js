@@ -3,6 +3,7 @@ import { Icon, Button, Text, View, Content, List, ListItem, Left, Right, H3 } fr
 import { StyleSheet } from "react-native"
 import { RouteContext } from "../routes/RouteContext"
 import { withNavigation } from "react-navigation"
+import { SearchBarContext } from "../search/SearchBarContext"
 
 const TRANSPORT_MODE = {
     BUS: ["BUS"],
@@ -21,6 +22,7 @@ const TRANSPORT_MODE = {
 
 const BottomLocationBar = ({ navigation }) => {
     const { state, dispatch } = useContext(RouteContext)
+    const { state: searchState, dispatch: searchDispatch } = useContext(SearchBarContext)
     const [selectedRouteIdx, setSelectedRouteIdx] = useState(0)
     // Reset the index if the routeDetails state have changed
     useEffect(() => {
@@ -141,11 +143,23 @@ const BottomLocationBar = ({ navigation }) => {
                         marginRight: 20,
                         marginBottom: 10,
                     }}
-                    onPress={() =>
+                    onPress={() => {
                         navigation.navigate("Journey", {
                             journeyRoute: state.routeDetails[selectedRouteIdx],
                         })
-                    }
+                        // Reset the state
+                        dispatch({
+                            type: "setRouteDetails",
+                            routeDetails: null,
+                        })
+                        dispatch({
+                            type: "setRouteIdx",
+                            idx: -1,
+                        })
+                        searchDispatch({
+                            type: "RESET",
+                        })
+                    }}
                 >
                     <Text>Start Navigation</Text>
                 </Button>
