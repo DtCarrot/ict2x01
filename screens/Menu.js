@@ -28,6 +28,9 @@ class DrawerScreen extends Component {
             case "leaderboard":
                 this.navigateToScreen("Leaderboard")
                 break
+            case "uservoucher":
+                this.navigateToScreen("UserVoucher")
+                break
             case "voucher":
                 this.navigateToScreen("Voucher")
                 break
@@ -84,17 +87,22 @@ class DrawerScreen extends Component {
                         </Text>
                     </View>
                     <View style={styles.drawerItem}>
-                        <Icon style={styles.icon} active name="paper" />
+                        <Icon style={styles.icon} active name="basket" />
                         <Text onPress={() => this.navigate("voucher")} style={styles.drawerText}>
-                            Vouchers
+                            Market
+                        </Text>
+                    </View>
+                    <View style={styles.drawerItem}>
+                        <Icon style={styles.icon} active name="briefcase" />
+                        <Text onPress={() => this.navigate("uservoucher")} style={styles.drawerText}>
+                            Inventory
                         </Text>
                     </View>
                     <View style={styles.drawerItem}>
                         <Icon style={styles.icon} active name="trophy" />
                         <Text
                             onPress={() => this.navigate("leaderboard")}
-                            style={styles.drawerText}
-                        >
+                            style={styles.drawerText}>
                             Leaderboard
                         </Text>
                     </View>
