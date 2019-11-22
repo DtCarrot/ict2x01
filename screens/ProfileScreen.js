@@ -41,7 +41,7 @@ const ProfileScreen = ({ navigation }) => {
         try {
             const userData = await db
                 .collection("user")
-                .doc("pqjXhIdLU6kGSY9oPCGN")
+                .doc(userId)
                 .get()
             setPts(userData.data().pts)
             setName(userData.data().name)
@@ -72,7 +72,7 @@ const ProfileScreen = ({ navigation }) => {
                 var db = firebase.firestore()
                 var userId = await firebase.auth().currentUser.uid
                 db.collection("user")
-                    .doc("pqjXhIdLU6kGSY9oPCGN")
+                    .doc(userId)
                     .update({
                         name: name,
                         age: age,
