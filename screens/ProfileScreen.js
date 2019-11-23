@@ -27,7 +27,7 @@ import {
 import "firebase/firestore"
 import * as firebase from "firebase"
 import { set } from "date-fns"
-import dpImage from '../assets/images/boy.png'
+import dpImage from "../assets/images/boy.png"
 
 const ProfileScreen = ({ navigation }) => {
     const [errorMessage, setErrorMessage] = useState(null)
@@ -43,7 +43,7 @@ const ProfileScreen = ({ navigation }) => {
                 .collection("user")
                 .doc(userId)
                 .get()
-            setPts(userData.data().pts)
+            setPts(userData.data().points)
             setName(userData.data().name)
             setAge(String(userData.data().age))
         } catch (err) {
@@ -60,14 +60,12 @@ const ProfileScreen = ({ navigation }) => {
     }
 
     const saveChanges = async () => {
-        var ageInt = parseInt(age, 10);
+        var ageInt = parseInt(age, 10)
         if (name === "") {
             setErrorMessage("Please enter name")
-        } 
-        else if (!Number.isInteger(ageInt)) {
-             setErrorMessage("Please only enter numbers")
-        }  
-        else {
+        } else if (!Number.isInteger(ageInt)) {
+            setErrorMessage("Please only enter numbers")
+        } else {
             try {
                 var db = firebase.firestore()
                 var userId = await firebase.auth().currentUser.uid
@@ -103,7 +101,9 @@ const ProfileScreen = ({ navigation }) => {
             >
                 <Icon name="arrow-back" style={{ color: "white" }} />
             </Button>
-            <Image source={dpImage} style={{
+            <Image
+                source={dpImage}
+                style={{
                     marginTop: 60,
                     marginBottom: 20,
                     borderRadius: 126,
@@ -111,7 +111,8 @@ const ProfileScreen = ({ navigation }) => {
                     height: 126,
                     backgroundColor: "#fff",
                     alignSelf: "center",
-            }}/>
+                }}
+            />
             <H2
                 style={{
                     marginBottom: 20,
@@ -126,7 +127,9 @@ const ProfileScreen = ({ navigation }) => {
                 {pts} Points
             </H2>
             <View style={styles.container}>
-            {errorMessage && <Text style={{ color: "red", marginBottom: 10 }}>{errorMessage}</Text>}
+                {errorMessage && (
+                    <Text style={{ color: "red", marginBottom: 10 }}>{errorMessage}</Text>
+                )}
                 <Item regular style={styles.item}>
                     <Input
                         style={styles.textInput}
