@@ -12,8 +12,8 @@ const { width: WIDTH } = Dimensions.get('window')
 const SignUpScreen = ({ navigation }) => {
 
   var radio_props = [
-    { label: 'Male', value: 'MALE' },
-    { label: 'Female', value: 'FEMALE' }
+    { label: 'Male', value: 'Male' },
+    { label: 'Female', value: 'Female' }
   ];
 
   const [errorMessage, setErrorMessage] = useState(null)
@@ -44,11 +44,13 @@ const SignUpScreen = ({ navigation }) => {
       } else if (age < 0) {
         setErrorMessage("Please insert only numbers for age!")
         return
-
+      } else if (gender == '') {
+        setErrorMessage("Gender is required!")
+        return
       } else {
         await setName(name)
         await setAge(age)
-        await setGender(gender.toUpperCase())
+        await setGender(gender)
 
         await registerUser(email, password)
         await firebase.auth().signOut();
@@ -103,7 +105,7 @@ const SignUpScreen = ({ navigation }) => {
           <View style={styles.inputContainer}>
             <RadioForm
               radio_props={RadioProps}
-              initial={0}
+              initial={-1}
               formHorizontal={true}
               borderWidth={1}
               buttonSize={20}
