@@ -9,7 +9,7 @@ import * as firebase from "firebase"
 import { getUsersDetails, getuserScoreAndPosition, getTop10Users } from "../db/leaderboardService"
 
 const LeaderboardScreen = ({ navigation }) => {
-    const [userDetails, setUserDetails] = useState([])
+    const [userDetails, setUserDetails] = useState(null)
     const [top10Details, setTop10Details] = useState([])
     const B = props => <Text style={{ fontSize: 19, color: "white" }}>{props.children}</Text>
     var db = firebase.firestore()
@@ -122,38 +122,42 @@ const LeaderboardScreen = ({ navigation }) => {
                         <Text style={{ color: "white" }}>
                             <B style={{ fontSize: 40 }}>User Score: </B>
                         </Text>
-                        <Text style={{ color: "white" }}>
-                            <B style={{ fontSize: 40 }}>{userDetails.Points}</B>
-                        </Text>
+                        {userDetails !== null && (
+                            <Text style={{ color: "white" }}>
+                                <B style={{ fontSize: 40 }}>{userDetails.Points}</B>
+                            </Text>
+                        )}
                     </View>
-                    <View
-                        style={{
-                            borderRadius: 10,
-                            height: 60,
-                            // marginRight: 20,
-                            width: 140,
-                            alignItems: "center",
-                            marginTop: 5,
-                            justifyContent: "center",
-                            padding: 10,
-                        }}
-                    >
-                        <Text
+                    {userDetails !== null && (
+                        <View
                             style={{
-                                paddingLeft: 10,
-                                paddingRight: 10,
-                                backgroundColor: "#fff",
-                                fontSize: 25,
-                                flex: 1,
-                                justifyContent: "center",
-                                fontFamily: "Roboto",
-                                color: "#1e1e1e",
+                                borderRadius: 10,
+                                height: 60,
+                                // marginRight: 20,
+                                width: 140,
                                 alignItems: "center",
+                                marginTop: 5,
+                                justifyContent: "center",
+                                padding: 10,
                             }}
                         >
-                            #{userDetails.Position + 1}
-                        </Text>
-                    </View>
+                            <Text
+                                style={{
+                                    paddingLeft: 10,
+                                    paddingRight: 10,
+                                    backgroundColor: "#fff",
+                                    fontSize: 25,
+                                    flex: 1,
+                                    justifyContent: "center",
+                                    fontFamily: "Roboto",
+                                    color: "#1e1e1e",
+                                    alignItems: "center",
+                                }}
+                            >
+                                #{userDetails.Position + 1}
+                            </Text>
+                        </View>
+                    )}
                 </View>
             </LinearGradient>
             <ScrollView contentContainerStyle={styles.container}>

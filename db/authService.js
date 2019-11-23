@@ -59,7 +59,7 @@ var hours = String(currentDateTime.getHours())
 var min = String(currentDateTime.getMinutes())
 var sec = String(currentDateTime.getSeconds())
 
-currentDateTime = dd + "/" + mm + "/" + yyyy + " " + hours + ":" + min + ":" + sec
+// currentDateTime = dd + "/" + mm + "/" + yyyy + " " + hours + ":" + min + ":" + sec
 
 const initUserRecordsIfNotExists = async userId => {
     const db = firebase.firestore()
@@ -79,7 +79,7 @@ const initUserRecordsIfNotExists = async userId => {
                 .doc(userId)
                 .set({
                     points: 0,
-                    pointsUpdatedDate: currentDateTime,
+                    pointsUpdatedDate: currentDateTime.toString(),
                     useablePoint: 0,
                     admin: false,
                     name: getName(),

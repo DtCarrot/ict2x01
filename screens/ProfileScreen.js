@@ -126,7 +126,7 @@ const ProfileScreen = ({ navigation }) => {
                     alignSelf: "center",
                 }}
             >
-                {pts} Points
+                Total Points: {pts}
             </H2>
             <View style={styles.container}>
                 {errorMessage && (

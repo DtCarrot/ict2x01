@@ -67,7 +67,8 @@ const getTop10Users = async usersDetails => {
     var db = firebase.firestore()
     let top10UsersDetails = []
     const usersInformation = await usersDetails
-    for (let i = 0; i < 10; i++) {
+    let length = usersInformation.length >= 10 ? 10 : usersInformation.length
+    for (let i = 0; i < length; i++) {
         top10UsersDetails.push({
             UserName: usersInformation[i].Name,
             Points: usersInformation[i].Points,
