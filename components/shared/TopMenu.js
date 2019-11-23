@@ -43,8 +43,8 @@ const TopMenu = ({
                     <H1 style={styles.title}>{screenTitle}</H1>
                 </View>
 
-                {rightIcon && !extraRightIcon && (
-                    <View style={styles.right}>
+                <View style={styles.right}>
+                    {rightIcon && !extraRightIcon && (
                         <Button
                             transparent
                             style={{ marginTop: 10 }}
@@ -52,8 +52,8 @@ const TopMenu = ({
                         >
                             <Icon name={rightIcon} style={{ color: "white" }} />
                         </Button>
-                    </View>
-                )}
+                    )}
+                </View>
                 {rightIcon && extraRightIcon && (
                     <Fragment>
                         <View style={styles.rightMultiple}>

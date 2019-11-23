@@ -28,6 +28,7 @@ import "firebase/firestore"
 import * as firebase from "firebase"
 import { set } from "date-fns"
 import dpImage from "../assets/images/boy.png"
+import TopMenu from "../components/shared/TopMenu"
 
 const ProfileScreen = ({ navigation }) => {
     const [errorMessage, setErrorMessage] = useState(null)
@@ -94,13 +95,14 @@ const ProfileScreen = ({ navigation }) => {
 
     return (
         <Content style={styles.content}>
-            <Button
+            <TopMenu screenTitle="User Profile"></TopMenu>
+            {/* <Button
                 transparent
                 style={{ marginTop: 20 }}
                 onPress={() => navigation.navigate("Home")}
             >
                 <Icon name="arrow-back" style={{ color: "white" }} />
-            </Button>
+            </Button> */}
             <Image
                 source={dpImage}
                 style={{
