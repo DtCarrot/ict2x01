@@ -122,14 +122,14 @@ const QuizDialog = () => {
                             <View
                                 key={idx}
                                 style={{
-                                    marginTop: 14,
+                                    marginTop: 12,
                                     borderRadius: 30,
                                     height: 50,
                                     flexDirection: "row",
                                     width: "100%",
                                     backgroundColor: "#fff",
                                     alignContent: "center",
-                                    borderWidth: 2,
+                                    borderWidth: 3,
                                     borderColor: idx === selectedIdx ? "#000" : "#fff",
                                 }}
                             >
@@ -149,7 +149,7 @@ const QuizDialog = () => {
                                         style={{
                                             fontSize: 21,
                                             fontFamily: "Roboto",
-                                            color: "#fff",
+                                            color: idx === selectedIdx ? "#000" : "#fff",
                                         }}
                                     >
                                         {idx}

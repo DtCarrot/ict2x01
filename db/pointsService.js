@@ -9,6 +9,7 @@ const addPoints = async value => {
     const { uid: userId } = user
     const doc = await db.collection("user").doc(userId)
     doc.update("points", firebase.firestore.FieldValue.increment(value))
+    doc.update("useablePoint", firebase.firestore.FieldValue.increment(value))
 }
 
 // Function to initialize the point information

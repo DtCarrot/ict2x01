@@ -1,6 +1,18 @@
 import React, { Component } from "react"
 import { initUserRecordsIfNotExists } from "../db/authService"
+import {
+    setName,
+    getName,
+    setAge,
+    getAge,
+    setGender,
+    getGender,
+    setSignUpStatus,
+    getSignUpStatus,
+} from "../db/storage"
 import * as firebase from "firebase"
+
+import { withNavigation } from "react-navigation"
 
 class AuthLoadingScreen extends Component {
     componentDidMount() {
@@ -14,12 +26,15 @@ class AuthLoadingScreen extends Component {
                 const { uid: userId } = user
                 const success = await initUserRecordsIfNotExists(userId)
                 console.log("We are authenticated now!")
-                // this.props.navigation.navigate("Journey")
-                this.props.navigation.navigate("Leaderboard")
-                // this.props.navigation.navigate("Home")
-                return
+                if (getSignUpStatus() == true) {
+                    await this.props.navigation.navigate("SignIn")
+                    await setSignUpStatus(false)
+                } else {
+                    this.props.navigation.navigate("Home")
+                }
+            } else {
+                this.props.navigation.navigate("SignIn")
             }
-            this.props.navigation.navigate("SignIn")
         })
     }
     render() {
@@ -27,4 +42,4 @@ class AuthLoadingScreen extends Component {
     }
 }
 
-export default AuthLoadingScreen
+export default withNavigation(AuthLoadingScreen)

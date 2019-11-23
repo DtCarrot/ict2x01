@@ -3,12 +3,30 @@ import { View, StyleSheet } from "react-native"
 import { JourneyContext } from "../../components/journey/JourneyContext"
 import { LinearGradient } from "expo-linear-gradient"
 import { Button, Text } from "native-base"
+import { computeTimeAndDistanceLeft } from "./distanceCalculator"
+import addSeconds from "date-fns/addSeconds"
+import format from "date-fns/format"
 
 const DirectionsBar = () => {
     const { state, dispatch } = useContext(JourneyContext)
     const [text, setText] = useState(null)
+    const [distanceText, setDistanceText] = useState("")
+    const { journeyDetails } = state
     // Called on every state change
     useEffect(() => {
+        // Calculate the time taken from current position to the final destination
+        const calculateTimeTaken = () => {
+            if (state.journeyDetails !== null) {
+                const { distanceLeft, durationLeft } = computeTimeAndDistanceLeft(journeyDetails)
+                const updatedDate = addSeconds(new Date(), durationLeft)
+                const formattedDate = format(updatedDate, "HH:mm")
+                setDistanceText(
+                    `${Math.round(durationLeft / 60)} mins | ${distanceLeft /
+                        1000} km | ${formattedDate}`
+                )
+            }
+        }
+
         const renderDirections = () => {
             // Check if the state is not null
             if (state.journeyDetails !== null) {
@@ -20,8 +38,6 @@ const DirectionsBar = () => {
                     nextTarget = nextTarget.steps[journeyStepSubIdx]
                 }
 
-                console.log("DirectionsBar JourneyDetails: ", nextTarget)
-
                 const regex = /(<([^>]+)>)/gi
                 // Strip the html tags that is returned from google directions api
                 const directionsText = nextTarget.html_instructions.replace(regex, "")
@@ -30,6 +46,7 @@ const DirectionsBar = () => {
             }
         }
         renderDirections()
+        calculateTimeTaken()
     }, [state.journeyDetails, state.journeyStepIdx, state.journeyStepSubIdx])
     return (
         <View style={styles.wrapper}>
@@ -66,7 +83,7 @@ const DirectionsBar = () => {
                         color: "#fff",
                     }}
                 >
-                    17 min | 10 km | 09:51
+                    {distanceText}
                 </Text>
                 {/* </Button> */}
             </LinearGradient>
@@ -78,7 +95,7 @@ const DirectionsBar = () => {
 
 const styles = StyleSheet.create({
     timeBtn: {
-        width: 240,
+        width: 290,
         borderRadius: 20,
         height: 38,
         marginTop: 10,

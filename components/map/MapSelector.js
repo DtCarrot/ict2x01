@@ -15,10 +15,10 @@ const mapRegion = {
     longitudeDelta: 0.0421,
 }
 const edgePadding = {
-    top: 15,
+    top: 50,
     left: 15,
     right: 15,
-    bottom: 15,
+    bottom: 100,
 }
 
 const MapSelector = () => {
@@ -39,6 +39,7 @@ const MapSelector = () => {
         console.log("Response json: ", respJson)
         return respJson.results[0].formatted_address
     }
+
     useEffect(() => {
         const _getLocationAsync = async () => {
             const { status } = await Permissions.askAsync(Permissions.LOCATION)
@@ -113,23 +114,23 @@ const MapSelector = () => {
     }, [state.selectedPlaceObj])
 
     useEffect(() => {
-        // console.log("Marker status: ", markerLoaded)
         if (markerLoaded) {
             currentLocMarker.current.showCallout()
         }
     }, [markerLoaded])
 
+    const { currRouteIdx, routeDetails } = routeState
+    useEffect(() => {
+        if (currRouteIdx >= 0 && routeDetails !== null) {
+            const currRouteDetails = routeState.routeDetails[routeState.currRouteIdx]
+            const fitPositions = [...currRouteDetails.overview_polyline, ...[currCoord]]
+            mapRef.current.fitToCoordinates(fitPositions, { edgePadding })
+        }
+    }, [currRouteIdx])
+
     const renderRoutes = routes => {
         const currRouteDetails = routeState.routeDetails[routeState.currRouteIdx]
-        // currRouteDetails.concat(currCoord)
-        // const fitPositions = []
-        // fitPositions.concat(currCoord)
-        // fitPositions.concat(currRouteDetails.overview_polyline)
         const fitPositions = [...currRouteDetails.overview_polyline, ...[currCoord]]
-
-        mapRef.current.fitToCoordinates(fitPositions, { edgePadding })
-        // return routeState.routeDetails[routeState.currRouteIdx].map((route, idx) => {
-        // return (
         return (
             <MapView.Polyline
                 coordinates={currRouteDetails.overview_polyline}
@@ -137,8 +138,6 @@ const MapSelector = () => {
                 strokeColor="red"
             />
         )
-        // )
-        // })
     }
 
     return (

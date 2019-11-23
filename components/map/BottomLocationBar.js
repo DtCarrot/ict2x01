@@ -3,6 +3,7 @@ import { Icon, Button, Text, View, Content, List, ListItem, Left, Right, H3 } fr
 import { StyleSheet } from "react-native"
 import { RouteContext } from "../routes/RouteContext"
 import { withNavigation } from "react-navigation"
+import { SearchBarContext } from "../search/SearchBarContext"
 
 const TRANSPORT_MODE = {
     BUS: ["BUS"],
@@ -21,6 +22,7 @@ const TRANSPORT_MODE = {
 
 const BottomLocationBar = ({ navigation }) => {
     const { state, dispatch } = useContext(RouteContext)
+    const { state: searchState, dispatch: searchDispatch } = useContext(SearchBarContext)
     const [selectedRouteIdx, setSelectedRouteIdx] = useState(0)
     // Reset the index if the routeDetails state have changed
     useEffect(() => {
@@ -46,7 +48,6 @@ const BottomLocationBar = ({ navigation }) => {
 
                     break
                 case "TRANSIT":
-                    console.log("Path: ", path)
                     const vehicleType = path.transit_details.line.vehicle.type
                     for (var transportMethod in TRANSPORT_MODE) {
                         const transportSubMode = TRANSPORT_MODE[transportMethod]
@@ -82,8 +83,16 @@ const BottomLocationBar = ({ navigation }) => {
         return (
             <Fragment>
                 <Left>{renderTransportIcons(leg, textColor)}</Left>
-                <Right style={{ width: 140 }}>
-                    <Text style={{ color: textColor }}>{leg.duration.text}</Text>
+                <Right>
+                    <Text
+                        style={{
+                            display: "flex",
+                            alignSelf: "flex-end",
+                            color: textColor,
+                        }}
+                    >
+                        {leg.duration.text}
+                    </Text>
                 </Right>
             </Fragment>
         )
@@ -134,11 +143,23 @@ const BottomLocationBar = ({ navigation }) => {
                         marginRight: 20,
                         marginBottom: 10,
                     }}
-                    onPress={() =>
+                    onPress={() => {
                         navigation.navigate("Journey", {
                             journeyRoute: state.routeDetails[selectedRouteIdx],
                         })
-                    }
+                        // Reset the state
+                        dispatch({
+                            type: "setRouteDetails",
+                            routeDetails: null,
+                        })
+                        dispatch({
+                            type: "setRouteIdx",
+                            idx: -1,
+                        })
+                        searchDispatch({
+                            type: "RESET",
+                        })
+                    }}
                 >
                     <Text>Start Navigation</Text>
                 </Button>
