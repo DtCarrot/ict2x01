@@ -25,13 +25,21 @@ const SignInScreen = ({ navigation }) => {
     const navigationOptions = {
         title: "Sign in",
     }
+
+    const goToSignUpPage = async () => {
+        await setErrorMessage(null)
+        await navigation.navigate("SignUp")
+    }
+
     const signIn = async () => {
         try {
             console.log("Signing in")
             const signInStatus = await firebase.auth().signInWithEmailAndPassword(email, password)
             console.log("Sign in status: ", signInStatus)
-
-            navigation.navigate("Home")
+            await setEmail("")
+            await setPassword("")
+            await setErrorMessage(null)
+            await navigation.navigate("Home")
         } catch (err) {
             console.log("Failed to signin: ", err)
             setErrorMessage(err.message)
@@ -110,7 +118,7 @@ const SignInScreen = ({ navigation }) => {
                             {"\n"}Don't have an account?
                             <Text
                                 style={styles.boldText}
-                                onPress={() => navigation.navigate("SignUp")}
+                                onPress={() => goToSignUpPage()}
                             >
                                 {" "}
                                 Sign up
