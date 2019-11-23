@@ -16,7 +16,7 @@ const mailTransport = nodemailer.createTransport({
 });
 
 
-exports.sendEmailConfirmation = functions.database.ref('/users/{uid}').onWrite(async (change) => {
+exports.sendEmailConfirmation = functions.database.ref('/user/{uid}').onWrite(async (change) => {
 
 
   const mailOptions = {
