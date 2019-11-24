@@ -51,6 +51,74 @@ const LeaderboardScreen = ({ navigation }) => {
         init()
     }, [])
 
+    const refreshLeaderboard = async () => {
+        var db = firebase.firestore()
+        //Get total points of all users
+        let userDetailsCollection = []
+        try {
+            const usersDetailsSnapshot = await db.collection("user").get()
+            usersDetailsSnapshot.docs.map(doc => {
+                userDetailsCollection.push({
+                    Name: doc.data().name,
+                    Points: doc.data().points,
+                    UpdatedDate: Date.parse(doc.data().pointsUpdatedDate),
+                })
+            })
+            userDetailsCollection = userDetailsCollection.sort((a, b) => {
+                return b.Points - a.Points
+            })
+            for (let i = 0; i < userDetailsCollection.length - 1; i++) {
+                if (userDetailsCollection[i].Points === userDetailsCollection[i + 1].Points) {
+                    if (
+                        userDetailsCollection[i].UpdatedDate > userDetailsCollection[i + 1].UpdatedDate
+                    ) {
+                        let tmp = userDetailsCollection[i]
+                        userDetailsCollection[i] = userDetailsCollection[i + 1]
+                        userDetailsCollection[i + 1] = tmp
+                    }
+                }
+            }
+
+        } catch (err) {
+            console.log("Failed to retrieve data", err)
+        }
+
+        //Get user position and point
+        var userId = firebase.auth().currentUser.uid
+        try {
+            const userData = await db
+                .collection("user")
+                .doc(userId)
+                .get()
+            if (userData.exists) {
+                const userPosition = userDetailsCollection.findIndex(
+                    x =>
+                        x.Points === userData.data().points &&
+                        x.UpdatedDate === Date.parse(userData.data().pointsUpdatedDate)
+                )
+                const userDetails = { Position: userPosition, Points: userData.data().points }
+                setUserDetails(userDetails)
+            } else {
+                db.collection("user")
+                    .doc(userId)
+                    .set({ points: 0 })
+            }
+        } catch (err) {
+            console.log("Failed to retrieve data", err)
+        }
+        //Get top 10 users points and poisition
+        let top10UsersDetails = []
+        let length = userDetailsCollection.length >= 10 ? 10 : userDetailsCollection.length
+        for (let i = 0; i < length; i++) {
+            top10UsersDetails.push({
+                UserName: userDetailsCollection[i].Name,
+                Points: userDetailsCollection[i].Points,
+                Position: i + 1,
+            })
+        }
+        setTop10Details(top10UsersDetails)
+    }
+
     return (
         <Content style={styles.content}>
             <LinearGradient
@@ -80,7 +148,17 @@ const LeaderboardScreen = ({ navigation }) => {
                     <View style={styles.center}>
                         <H1 style={styles.title}>Leaderboard</H1>
                     </View>
-                    <View style={styles.right}></View>
+                    <View style={styles.right}>
+                        <Button
+                            transparent
+                            style={{ marginTop: 10 ,
+                                marginLeft: 55
+                            }}
+                            onPress={() => refreshLeaderboard()}
+                        >
+                            <Icon name="refresh" style={{ color: "white" }} />
+                        </Button>
+                    </View>
                 </View>
                 <View
                     style={{
