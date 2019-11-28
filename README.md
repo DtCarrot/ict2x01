@@ -75,7 +75,7 @@ npx react-native run-android
 ## PathFinder Video
 
 Curious and want to know more about PathFinder? Watch the PathFinder in the video link below.
-Link: 
+Link: https://youtu.be/-_SFn6BgFXk
 
 ## Feedback form
 
