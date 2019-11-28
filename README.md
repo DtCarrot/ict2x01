@@ -69,6 +69,8 @@ npx react-native run-android
 
 ## Component Diagram
 
+![Image of Component Diagram](https://github.com/DtCarrot/ict2x01/blob/master/Component%20Diagram.png)
+
 
 ## PathFinder Video
 
