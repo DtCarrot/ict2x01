@@ -14,6 +14,10 @@ PathFinder runs on both Android and iOS as it is built using React Native. PathF
 
 2. Expo CLI command line utility
 
+3. Physical mobile device or an emulator
+
+4. iOS 10.0 or greater or, Android API level 24 or greater
+
 
 ### Installing
 
@@ -49,11 +53,29 @@ In order to run the application, run
 npm start 
 ```
 
-This will open up a browser and 
+This will open up a browser and a QR code will be displayed. 
+
+Note: Its best to run in Tunnel mode.
+
+Use an Android or an iOS phone and open up the camera app. Scan the QR code and the Expo application will be launched. 
 
 ### Running on an emulator
 
+To run on an emulator, lauch the emulator though AVD manager in Android studio and run the command,
+
+```
+npx react-native run-android
+```
+
+## Component Diagram
 
 
-Feedback form link:
+## PathFinder Video
+
+Curious and want to know more about PathFinder? Watch the PathFinder in the video link below.
+Link: 
+
+## Feedback form
+
+If you would like to provide feedback on PathFinder, please use the link below.
 https://docs.google.com/forms/d/e/1FAIpQLScAwVtn7Pjr5gcqdZ9uZaia3FKgOaRR8QwSC4yXJjlMrY0kHg/viewform
